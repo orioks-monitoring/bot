@@ -1,0 +1,59 @@
+import logging
+
+from aiogram import Bot, Dispatcher, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.utils import executor
+
+import answers
+import config
+import db
+import handles_register
+import middlewares
+from checking import on_startup
+
+bot = Bot(token=config.TELEGRAM_BOT_API_TOKEN, parse_mode=types.ParseMode.MARKDOWN)
+storage = MemoryStorage()
+dp = Dispatcher(bot, storage=storage)
+
+
+@dp.callback_query_handler(lambda c: c.data == 'button_user_agreement_accept')
+async def callback_query_handler_user_agreement(callback_query: types.CallbackQuery):
+    if db.get_user_agreement_status(user_telegram_id=callback_query.from_user.id):
+        return await bot.answer_callback_query(
+            callback_query.id,
+            text='Пользовательское соглашение уже принято', show_alert=True)
+    db.update_user_agreement_status(
+        user_telegram_id=callback_query.from_user.id,
+        is_user_agreement_accepted=True
+    )
+    await bot.answer_callback_query(callback_query.id)
+    answer_message = await bot.send_message(callback_query.from_user.id, 'Пользовательское соглашение принято!')
+    await answers.menu.menu_command(chat_id=answer_message.chat.id, user_id=callback_query.from_user.id)
+
+
+@dp.callback_query_handler(lambda c: c.data in config.notify_settings_btns)
+async def callback_query_handler_notify_settings_btns(callback_query: types.CallbackQuery):
+    _row_name = callback_query.data.split('-')[1]
+    if callback_query.data != config.notify_settings_btns[0]:
+        return await bot.answer_callback_query(
+            callback_query.id,
+            text='Эта категория ещё недоступна', show_alert=True)
+    db.update_user_notify_settings(
+        user_telegram_id=callback_query.from_user.id,
+        row_name=_row_name,
+        to_value=not db.get_user_notify_settings_to_dict(user_telegram_id=callback_query.from_user.id)[_row_name],
+    )
+    sent = await answers.settings.send_user_settings(user_id=callback_query.from_user.id)
+    await bot.delete_message(chat_id=sent.chat.id, message_id=sent.message_id - 1)
+
+
+def main():
+    logging.basicConfig(level=logging.DEBUG)
+    handles_register.handles_register(dp)
+    dp.middleware.setup(middlewares.UserAgreementMiddleware())
+    dp.middleware.setup(middlewares.UserOrioksAttemptsMiddleware())
+    executor.start_polling(dp, skip_updates=True, on_startup=on_startup.on_startup)
+
+
+if __name__ == '__main__':
+    main()

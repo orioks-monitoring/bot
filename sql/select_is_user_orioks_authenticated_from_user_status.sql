@@ -1,0 +1,1 @@
+SELECT is_user_orioks_authenticated FROM user_status WHERE user_telegram_id = :user_telegram_id;
