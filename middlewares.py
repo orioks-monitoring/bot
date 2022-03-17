@@ -3,6 +3,7 @@ from aiogram import types
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
+import config
 import db
 
 inline_btn_user_agreement_accept = types.InlineKeyboardButton(
@@ -13,6 +14,8 @@ inline_agreement_accept = types.InlineKeyboardMarkup().add(inline_btn_user_agree
 
 
 class UserAgreementMiddleware(BaseMiddleware):
+    """Middleware, блокирующее дальнейшее использование Бота, если не принято пользовательское соглашение"""
+
     async def on_process_message(self, message: types.Message, *args, **kwargs):
         db.user_first_add_to_db(user_telegram_id=message.from_user.id)
         if not db.get_user_agreement_status(user_telegram_id=message.from_user.id):
@@ -22,14 +25,16 @@ class UserAgreementMiddleware(BaseMiddleware):
                     md.text('<url>'),
                     sep='\n',
                 ),
-                parse_mode=types.ParseMode.MARKDOWN, reply_markup=inline_agreement_accept
+                reply_markup=inline_agreement_accept
             )
             raise CancelHandler()
 
 
 class UserOrioksAttemptsMiddleware(BaseMiddleware):
+    """Middleware, блокирующее дальнейшее использование Бота, если превышено максимальное количество попыток входа в
+    аккаунт ОРИОКС"""
+
     async def on_process_message(self, message: types.Message, *args, **kwargs):
-        print(db.get_user_orioks_attempts(user_telegram_id=message.from_user.id))
         if db.get_user_orioks_attempts(user_telegram_id=message.from_user.id) > 10:  # todo: to config
             await message.reply(
                 md.text(
@@ -39,6 +44,14 @@ class UserOrioksAttemptsMiddleware(BaseMiddleware):
                     md.text('Связь с поддержкой Бота: <support url>'),
                     sep='\n',
                 ),
-                parse_mode=types.ParseMode.MARKDOWN, reply_markup=types.ReplyKeyboardRemove(),
+                reply_markup=types.ReplyKeyboardRemove(),
             )
+            raise CancelHandler()
+
+
+class AdminCommandsMiddleware(BaseMiddleware):
+    """Middleware, разрешающее использовать команды Админов только пользователям из `config.TELEGRAM_ADMIN_IDS_LIST`"""
+
+    async def on_process_message(self, message: types.Message, *args, **kwargs):
+        if message.get_command() in ('/stat',) and message.from_user.id not in config.TELEGRAM_ADMIN_IDS_LIST:
             raise CancelHandler()

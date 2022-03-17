@@ -1,4 +1,6 @@
 import os
+import json
+
 
 TELEGRAM_BOT_API_TOKEN = os.getenv('TELEGRAM_BOT_API_TOKEN')
 
@@ -12,3 +14,5 @@ notify_settings_btns = (
     'notify_settings-homeworks',
     'notify_settings-requests'
 )
+
+TELEGRAM_ADMIN_IDS_LIST = json.loads(os.environ['TELEGRAM_ADMIN_IDS_LIST'])

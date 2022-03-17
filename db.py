@@ -148,7 +148,7 @@ def get_user_notify_settings_to_dict(user_telegram_id: int) -> dict:
 
 def update_user_notify_settings(user_telegram_id: int, row_name: str, to_value: bool) -> None:
     """
-    row_name may only be in (marks, news, discipline_sources, homeworks, requests)
+    row_name must only be in (marks, news, discipline_sources, homeworks, requests)
     """
     db = sqlite3.connect('orioks-monitoring_bot.db')
     sql = db.cursor()
@@ -160,3 +160,26 @@ def update_user_notify_settings(user_telegram_id: int, row_name: str, to_value: 
     })
     db.commit()
     db.close()
+
+
+def select_count_notify_settings_statistics() -> dict:
+    """
+    row_name must only be in (marks, news, discipline_sources, homeworks, requests)
+    """
+    db = sqlite3.connect('orioks-monitoring_bot.db')
+    sql = db.cursor()
+    with open(os.path.join(PATH_TO_SQL_FOLDER, 'select_count_notify_settings_statistics.sql'), 'r') as sql_file:
+        sql_script = sql_file.read()
+    marks = sql.execute(sql_script.format(row_name='marks')).fetchone()
+    news = sql.execute(sql_script.format(row_name='news')).fetchone()
+    discipline_sources = sql.execute(sql_script.format(row_name='discipline_sources')).fetchone()
+    homeworks = sql.execute(sql_script.format(row_name='homeworks')).fetchone()
+    requests = sql.execute(sql_script.format(row_name='requests')).fetchone()
+    db.close()
+    return {
+        'marks': marks[0],
+        'news': news[0],
+        'discipline_sources': discipline_sources[0],
+        'homeworks': homeworks[0],
+        'requests': requests[0],
+    }

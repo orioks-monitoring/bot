@@ -11,7 +11,7 @@ import handles_register
 import middlewares
 from checking import on_startup
 
-bot = Bot(token=config.TELEGRAM_BOT_API_TOKEN, parse_mode=types.ParseMode.MARKDOWN)
+bot = Bot(token=config.TELEGRAM_BOT_API_TOKEN, parse_mode=types.ParseMode.HTML)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
@@ -52,6 +52,7 @@ def main():
     handles_register.handles_register(dp)
     dp.middleware.setup(middlewares.UserAgreementMiddleware())
     dp.middleware.setup(middlewares.UserOrioksAttemptsMiddleware())
+    dp.middleware.setup(middlewares.AdminCommandsMiddleware())
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup.on_startup)
 
 

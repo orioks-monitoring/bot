@@ -1,5 +1,5 @@
 from forms import Form
-from handlers import commands, orioks_auth, notify_settings
+from handlers import commands, orioks_auth, notify_settings, admins
 
 
 def handles_register(dp):
@@ -31,3 +31,6 @@ def handles_register(dp):
     """notify settings"""
     dp.register_message_handler(notify_settings.user_settings, text=['Настройка уведомлений'])
     dp.register_message_handler(notify_settings.user_settings, commands=['notifysettings'])
+
+    """admins"""
+    dp.register_message_handler(admins.admin_get_statistics, commands=['stat'])

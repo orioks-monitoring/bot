@@ -1,1 +1,2 @@
 export TELEGRAM_BOT_API_TOKEN=
+export TELEGRAM_ADMIN_IDS_LIST='[id_a, id_b]'
