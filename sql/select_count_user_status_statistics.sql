@@ -1,0 +1,1 @@
+SELECT COUNT(*) FROM user_status WHERE {row_name} = :value;

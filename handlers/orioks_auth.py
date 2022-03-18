@@ -5,6 +5,7 @@ import aiogram.utils.markdown as md
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
+import config
 import db
 import keyboards
 import utils.exeptions
@@ -172,6 +173,6 @@ async def orioks_logout(message: types.Message):
         is_user_orioks_authenticated=False
     )
     try:
-        os.remove(f'users_data/cookies/{message.from_user.id}.pkl')
+        os.remove(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{message.from_user.id}.pkl'))
     except FileNotFoundError:
         pass  # todo: to logger

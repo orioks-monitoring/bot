@@ -162,6 +162,9 @@ def update_user_notify_settings(user_telegram_id: int, row_name: str, to_value: 
     db.close()
 
 
+"""Admins statistics"""
+
+
 def select_count_notify_settings_statistics() -> dict:
     """
     row_name must only be in (marks, news, discipline_sources, homeworks, requests)
@@ -182,4 +185,39 @@ def select_count_notify_settings_statistics() -> dict:
         'discipline_sources': discipline_sources[0],
         'homeworks': homeworks[0],
         'requests': requests[0],
+    }
+
+
+def select_count_user_status_statistics() -> dict:
+    db = sqlite3.connect('orioks-monitoring_bot.db')
+    sql = db.cursor()
+    with open(os.path.join(PATH_TO_SQL_FOLDER, 'select_count_user_status_statistics.sql'), 'r') as sql_file:
+        sql_script = sql_file.read()
+    users_agreement_accepted = sql.execute(
+        sql_script.format(row_name='is_user_agreement_accepted'), {
+            'value': True,
+        }
+    ).fetchone()
+    users_agreement_discarded = sql.execute(
+        sql_script.format(row_name='is_user_agreement_accepted'), {
+            'value': False,
+        }
+    ).fetchone()
+
+    users_orioks_authentication = sql.execute(
+        sql_script.format(row_name='is_user_orioks_authenticated'), {
+            'value': True,
+        }
+    ).fetchone()
+    users_orioks_no_authentication = sql.execute(
+        sql_script.format(row_name='is_user_orioks_authenticated'), {
+            'value': False,
+        }
+    ).fetchone()
+    db.close()
+    all_users = users_agreement_discarded[0] + users_agreement_accepted[0]
+    all_orioks_users = users_orioks_no_authentication[0] + users_orioks_authentication[0]
+    return {
+        'Приняли пользовательское соглашение': f'{users_agreement_accepted[0]} / {all_users}',
+        'Выполнили вход в ОРИОКС': f'{users_orioks_authentication[0]} / {all_orioks_users}',
     }
