@@ -108,7 +108,7 @@ async def process_password(message: types.Message, state: FSMContext):
     @dp.message_handler(state=Form.password)
     """
     db.update_inc_user_orioks_attempts(user_telegram_id=message.from_user.id)
-    if db.get_user_orioks_attempts(user_telegram_id=message.from_user.id) > 10:  # todo: to config
+    if db.get_user_orioks_attempts(user_telegram_id=message.from_user.id) > config.ORIOKS_MAX_LOGIN_TRIES:
         return await message.reply(
             md.text(
                 md.bold('Ошибка!'),
@@ -131,7 +131,7 @@ async def process_password(message: types.Message, state: FSMContext):
     await state.finish()
     sticker_message = await bot.send_sticker(
         message.chat.id,
-        "CAACAgIAAxkBAAEEIlpiLSwO28zurkSJGRj6J9SLBIAHYQACIwADKA9qFCdRJeeMIKQGIwQ",  # todo: to config
+        config.TELEGRAM_STICKER_LOADER,
     )
     try:
         await utils.orioks.orioks_login_save_cookies(user_login=data['login'],
@@ -159,7 +159,6 @@ async def process_password(message: types.Message, state: FSMContext):
 
 
 async def orioks_logout(message: types.Message):
-    # todo: delete cookies
     await message.reply(
         md.text(
             md.bold('Выход из аккаунта ОРИОКС выполнен'),

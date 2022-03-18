@@ -8,8 +8,6 @@ from bs4 import BeautifulSoup
 
 import config
 
-ORIOKS_DISCIPLINE_BALLS = 'https://orioks.miet.ru/student/student'
-
 
 def my_isdigit(x) -> bool:
     try:
@@ -58,6 +56,6 @@ async def get_orioks_marks(user_telegram_id: int):
     path_to_cookies = os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl')
     async with aiohttp.ClientSession() as session:
         cookies = pickle.load(open(path_to_cookies, 'rb'))
-        async with session.get(ORIOKS_DISCIPLINE_BALLS, cookies=cookies) as resp:
+        async with session.get(config.ORIOKS_PAGE_URLS['notify']['marks'], cookies=cookies) as resp:
             raw_html = await resp.text()
     return await _get_orioks_forang(raw_html)

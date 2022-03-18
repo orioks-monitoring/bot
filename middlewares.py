@@ -35,7 +35,7 @@ class UserOrioksAttemptsMiddleware(BaseMiddleware):
     аккаунт ОРИОКС"""
 
     async def on_process_message(self, message: types.Message, *args, **kwargs):
-        if db.get_user_orioks_attempts(user_telegram_id=message.from_user.id) > 10:  # todo: to config
+        if db.get_user_orioks_attempts(user_telegram_id=message.from_user.id) > config.ORIOKS_MAX_LOGIN_TRIES:
             await message.reply(
                 md.text(
                     md.bold('Вы совершили подозрительно много попыток авторизации ОРИОКС аккаунта'),

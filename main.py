@@ -37,7 +37,8 @@ async def callback_query_handler_notify_settings_btns(callback_query: types.Call
     if callback_query.data != config.notify_settings_btns[0]:
         return await bot.answer_callback_query(
             callback_query.id,
-            text='Эта категория ещё недоступна', show_alert=True)
+            text='Эта категория ещё недоступна', show_alert=True
+        )
     db.update_user_notify_settings(
         user_telegram_id=callback_query.from_user.id,
         row_name=_row_name,

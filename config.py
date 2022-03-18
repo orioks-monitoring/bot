@@ -16,3 +16,14 @@ notify_settings_btns = (
 )
 
 TELEGRAM_ADMIN_IDS_LIST = json.loads(os.environ['TELEGRAM_ADMIN_IDS_LIST'])
+
+ORIOKS_MAX_LOGIN_TRIES = 10
+
+TELEGRAM_STICKER_LOADER = 'CAACAgIAAxkBAAEEIlpiLSwO28zurkSJGRj6J9SLBIAHYQACIwADKA9qFCdRJeeMIKQGIwQ'
+
+ORIOKS_PAGE_URLS = {
+    'login': 'https://orioks.miet.ru/user/login',
+    'notify': {
+        'marks': 'https://orioks.miet.ru/student/student',
+    }
+}
