@@ -27,9 +27,20 @@ async def orioks_login_save_cookies(user_login: int, user_password: str, user_te
     pickle.dump(cookies, open(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'), 'wb'))
 
 
-def make_orioks_logout(user_telegram_id: int) -> None:
+def _safe_delete(path: str) -> None:
     try:
-        os.remove(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'))
+        os.remove(path)
     except FileNotFoundError:
         pass
+
+
+def make_orioks_logout(user_telegram_id: int) -> None:
+    _safe_delete(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'))
+    path_to_tracking_data = os.path.join(config.BASEDIR, 'users_data', 'tracking_data')
+    _safe_delete(os.path.join(path_to_tracking_data, 'discipline_sources', f'{user_telegram_id}.pkl'))
+    _safe_delete(os.path.join(path_to_tracking_data, 'news', f'{user_telegram_id}.pkl'))
+    _safe_delete(os.path.join(path_to_tracking_data, 'marks', f'{user_telegram_id}.pkl'))
+    _safe_delete(os.path.join(path_to_tracking_data, 'homeworks', f'{user_telegram_id}.pkl'))
+    _safe_delete(os.path.join(path_to_tracking_data, 'requests', f'{user_telegram_id}.pkl'))
+
     db.update_user_orioks_authenticated_status(user_telegram_id=user_telegram_id, is_user_orioks_authenticated=False)
