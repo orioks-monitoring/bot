@@ -5,6 +5,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 import config
+import db
 import utils.exeptions
 
 
@@ -24,3 +25,11 @@ async def orioks_login_save_cookies(user_login: int, user_password: str, user_te
                 raise utils.exeptions.OrioksInvalidLoginCredsError
         cookies = session.cookie_jar.filter_cookies(resp.url)
     pickle.dump(cookies, open(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'), 'wb'))
+
+
+def make_orioks_logout(user_telegram_id: int) -> None:
+    try:
+        os.remove(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'))
+    except FileNotFoundError:
+        pass
+    db.update_user_orioks_authenticated_status(user_telegram_id=user_telegram_id, is_user_orioks_authenticated=False)

@@ -23,7 +23,11 @@ TELEGRAM_STICKER_LOADER = 'CAACAgIAAxkBAAEEIlpiLSwO28zurkSJGRj6J9SLBIAHYQACIwADK
 
 ORIOKS_PAGE_URLS = {
     'login': 'https://orioks.miet.ru/user/login',
+    'masks': {
+        'news': 'https://orioks.miet.ru/main/view-news?id={id}',
+    },
     'notify': {
         'marks': 'https://orioks.miet.ru/student/student',
+        'news': 'https://orioks.miet.ru/',
     }
 }

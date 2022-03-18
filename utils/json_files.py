@@ -1,9 +1,10 @@
 import json
+from typing import Union
 
 
 class JsonFile:
     @staticmethod
-    def save(data: list, filename: str) -> None:
+    def save(data: Union[list, dict], filename: str) -> None:
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 

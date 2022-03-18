@@ -1,5 +1,4 @@
 import logging
-import os
 
 import aiogram.utils.markdown as md
 from aiogram import types
@@ -171,7 +170,4 @@ async def orioks_logout(message: types.Message):
         user_telegram_id=message.from_user.id,
         is_user_orioks_authenticated=False
     )
-    try:
-        os.remove(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{message.from_user.id}.pkl'))
-    except FileNotFoundError:
-        pass  # todo: to logger
+    utils.orioks.make_orioks_logout(user_telegram_id=message.from_user.id)

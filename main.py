@@ -10,6 +10,7 @@ import db
 import handles_register
 import middlewares
 from checking import on_startup
+import utils.makedirs
 
 bot = Bot(token=config.TELEGRAM_BOT_API_TOKEN, parse_mode=types.ParseMode.HTML)
 storage = MemoryStorage()
@@ -54,6 +55,7 @@ def main():
     dp.middleware.setup(middlewares.UserAgreementMiddleware())
     dp.middleware.setup(middlewares.UserOrioksAttemptsMiddleware())
     dp.middleware.setup(middlewares.AdminCommandsMiddleware())
+    utils.makedirs.make_dirs()
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup.on_startup)
 
 
