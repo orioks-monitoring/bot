@@ -23,7 +23,7 @@ async def msg_manual(message: types.Message):
     """
     await message.reply(
         md.text(
-            md.text('<manual url>'),
+            md.text('[manual url]'),
         ),
     )
 
@@ -35,6 +35,6 @@ async def msg_faq(message: types.Message):
     """
     await message.reply(
         md.text(
-            md.text('<faq url>'),
+            md.text('[faq url]'),
         ),
     )
