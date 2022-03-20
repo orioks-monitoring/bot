@@ -46,7 +46,7 @@ def file_compares(old_file: list, new_file: list) -> list:
 
 
 def get_msg_from_diff(diffs: list) -> str:
-    msg = ""
+    msg = ""  # TODO: изменить это безобразие на aiogram.utils.markdown
     for diff_subject in diffs:
         tmp_msg = ""
         for diff_task in diff_subject['tasks']:

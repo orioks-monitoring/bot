@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import config
 from utils import exeptions
 from utils.json_files import JsonFile
-from utils.notify_to_user import notify_admins, notify_user
+from utils.notify_to_user import notify_user
 import aiogram.utils.markdown as md
 
 
