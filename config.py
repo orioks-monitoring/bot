@@ -25,9 +25,11 @@ ORIOKS_PAGE_URLS = {
     'login': 'https://orioks.miet.ru/user/login',
     'masks': {
         'news': 'https://orioks.miet.ru/main/view-news?id={id}',
+        'homeworks': 'https://orioks.miet.ru/student/homework/view?id_thread={id}',
     },
     'notify': {
         'marks': 'https://orioks.miet.ru/student/student',
-        'news': 'https://orioks.miet.ru/',
+        'news': 'https://orioks.miet.ru',
+        'homeworks': 'https://orioks.miet.ru/student/homework/list',
     }
 }

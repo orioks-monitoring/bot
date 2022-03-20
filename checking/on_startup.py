@@ -4,6 +4,7 @@ import aioschedule
 import db
 from checking.marks.get_orioks_marks import user_marks_check
 from checking.news.get_orioks_news import user_news_check
+from checking.homeworks.get_orioks_homeworks import user_homeworks_check
 from utils.notify_to_user import notify_admins
 
 
@@ -20,7 +21,7 @@ async def do_checks():
         if user_notify_settings['discipline_sources']:
             pass  # user_discipline_sources_check(user_telegram_id=user_telegram_id)
         if user_notify_settings['homeworks']:
-            pass  # user_homeworks_check(user_telegram_id=user_telegram_id)
+            await user_homeworks_check(user_telegram_id=user_telegram_id)
         if user_notify_settings['requests']:
             pass  # user_requests_check(user_telegram_id=user_telegram_id)
     for user_telegram_id in users_to_one_more_check:

@@ -51,8 +51,16 @@ async def get_news_to_msg(news_id: int, user_telegram_id: int) -> str:
     )
 
     return md.text(
-        md.text('📰: ', md.hbold(news_name)),
-        md.text('Подробности по ссылке: ', md.text(config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id))),
+        md.text(
+            md.text('📰'),
+            md.hbold(news_name),
+            sep=' '
+        ),
+        md.text(
+            md.text('Подробности по ссылке:'),
+            md.text(config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id)),
+            sep=' ',
+        ),
         sep='\n',
     )  # TODO: сюда бы еще картиночку красивую типа такую, только с лого-глазом, газетой, заголовком новости, QR-кодом:
     #           https://techcrunch.com/wp-content/uploads/2022/01/silvergate-diem-meta-facebook.jpg

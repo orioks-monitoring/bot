@@ -35,7 +35,7 @@ async def callback_query_handler_user_agreement(callback_query: types.CallbackQu
 @dp.callback_query_handler(lambda c: c.data in config.notify_settings_btns)
 async def callback_query_handler_notify_settings_btns(callback_query: types.CallbackQuery):
     _row_name = callback_query.data.split('-')[1]
-    if callback_query.data in config.notify_settings_btns[2:]:
+    if callback_query.data in ('notify_settings-discipline_sources', 'requests'):
         return await bot.answer_callback_query(
             callback_query.id,
             text='Эта категория ещё недоступна', show_alert=True
