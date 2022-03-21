@@ -16,7 +16,7 @@ notify_settings_names_to_vars = {
 
 
 def _get_section_name_with_status(section_name: str, is_on_off: dict) -> str:
-    emoji = '🔔' if is_on_off[section_name] else '❌'  # or '🔕'?
+    emoji = '🔔' if is_on_off[section_name] else '🔕'
     return f'{emoji} {notify_settings_names_to_vars[section_name]}'
 
 

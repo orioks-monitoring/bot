@@ -21,7 +21,7 @@ class UserAgreementMiddleware(BaseMiddleware):
         if not db.get_user_agreement_status(user_telegram_id=message.from_user.id):
             await message.reply(
                 md.text(
-                    md.text('Для получения доступа к боту, необходимо принять пользовательское соглашение:'),
+                    md.text('Для получения доступа к боту, необходимо принять Пользовательское соглашение:'),
                     md.text('[url]'),
                     sep='\n',
                 ),
@@ -38,10 +38,10 @@ class UserOrioksAttemptsMiddleware(BaseMiddleware):
         if db.get_user_orioks_attempts(user_telegram_id=message.from_user.id) > config.ORIOKS_MAX_LOGIN_TRIES:
             await message.reply(
                 md.text(
-                    md.hbold('Вы совершили подозрительно много попыток авторизации ОРИОКС аккаунта'),
-                    md.text('Возможно, Вы нарушаете [правила]([user agreement url]), с которыми согласились'),
+                    md.hbold('Ты совершил подозрительно много попыток входа в аккаунт ОРИОКС.'),
+                    md.text('Возможно, ты нарушаешь [Пользовательское соглашение]([user agreement url]), с которым согласился.'),
                     md.text(),
-                    md.text('Связь с поддержкой Бота: [support url]'),
+                    md.text('Связаться с поддержкой Бота: [support url]'),
                     sep='\n',
                 ),
                 reply_markup=types.ReplyKeyboardRemove(),

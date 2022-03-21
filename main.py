@@ -22,7 +22,7 @@ async def callback_query_handler_user_agreement(callback_query: types.CallbackQu
     if db.get_user_agreement_status(user_telegram_id=callback_query.from_user.id):
         return await bot.answer_callback_query(
             callback_query.id,
-            text='Пользовательское соглашение уже принято', show_alert=True)
+            text='Пользовательское соглашение уже принято.', show_alert=True)
     db.update_user_agreement_status(
         user_telegram_id=callback_query.from_user.id,
         is_user_agreement_accepted=True
@@ -38,7 +38,7 @@ async def callback_query_handler_notify_settings_btns(callback_query: types.Call
     if callback_query.data in ('notify_settings-discipline_sources', 'requests'):
         return await bot.answer_callback_query(
             callback_query.id,
-            text='Эта категория ещё недоступна', show_alert=True
+            text='Эта категория ещё недоступна.', show_alert=True
         )
     db.update_user_notify_settings(
         user_telegram_id=callback_query.from_user.id,
