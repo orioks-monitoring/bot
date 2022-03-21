@@ -12,10 +12,11 @@ async def menu_command(chat_id: int, user_id: int):
             chat_id,
             md.text(
                 md.text('Привет!'),
-                md.text('Этот бот поможет тебе сразу узнавать о новых оценках в ориоксе.'),
+                md.text('Этот бот поможет тебе узнавать об изменениях в твоём ОРИОКС в режиме реального времени.'),
                 md.text(),
-                md.text('Ознакомься с инструкцией: /manual'),
-                md.text('Или выполни вход: /login'),
+                md.text('Ознакомиться с Информацией о проекте: /faq'),
+                md.text('Ознакомиться с Инструкцией: /manual'),
+                md.text('Выполнить вход в аккаунт ОРИОКС: /login'),
                 sep='\n',
             ),
             reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация')
@@ -24,11 +25,10 @@ async def menu_command(chat_id: int, user_id: int):
         await bot.send_message(
             chat_id,
             md.text(
-                md.text('Привет!'),
                 md.text('Настроить уведомления: /notifysettings'),
                 md.text(),
-                md.text('Ознакомиться с Инструкций: /manual'),
-                md.text('Выполнить выход из аккаунта ориокс: /logout'),
+                md.text('Ознакомиться с Инструкцией: /manual'),
+                md.text('Выполнить выход из аккаунта ОРИОКС: /logout'),
                 sep='\n',
             ),
             reply_markup=keyboards.main_menu_keyboard(first_btn_text='Настройка уведомлений')

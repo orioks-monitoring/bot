@@ -24,9 +24,9 @@ async def cmd_start(message: types.Message):
     if db.get_user_orioks_authenticated_status(user_telegram_id=message.from_user.id):
         return await message.reply(
             md.text(
-                md.hbold('Вы уже выполнили авторизацию аккаунта ОРИОКС'),
+                md.hbold('Ты уже выполнил вход в аккаунт ОРИОКС.'),
                 md.text(),
-                md.text('Выход из аккаунта ОРИОКС: /logout'),
+                md.text('Выполнить выход из аккаунта ОРИОКС: /logout'),
                 sep='\n',
             )
         )
@@ -34,8 +34,9 @@ async def cmd_start(message: types.Message):
     await bot.send_message(
         message.chat.id,
         md.text(
-            md.text('Я беспокоюсь, что мои данные будут перехвачены.'),
-            md.text('Отмена авторизации и получение дополнительной информации:', md.hbold('/cancel')),
+            md.text('Я беспокоюсь, мои данные могут быть перехвачены?'),
+            md.text(),
+            md.text('Отменить авторизацию и получить дополнительную информацию:', md.hbold('/cancel')),
         ),
     )
     await message.reply(
@@ -58,8 +59,8 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     await state.finish()
     await message.reply(
         md.text(
-            md.hbold('Авторизация отменена'),
-            md.text('Если боишься вводить свои данные, ознакомься с [faq #why is it secure url]'),
+            md.hbold('Авторизация отменена.'),
+            md.text('Если ты боишься вводить свои данные, ознакомься с [faq #why is it secure url]'),
             sep='\n',
         ),
         reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация'),
@@ -72,8 +73,8 @@ async def process_login_invalid(message: types.Message):
     """
     return await message.reply(
         md.text(
-            md.text('Логин должен состоять только из цифр'),
-            md.text('Введите логин (только цифры)'),
+            md.text('Логин должен состоять только из цифр.'),
+            md.text('Введи логин (только цифры):'),
             sep='\n'
         ),
     )
@@ -89,7 +90,7 @@ async def process_login(message: types.Message, state: FSMContext):
     await Form.next()
     await message.reply(
         md.text(
-            md.hbold('Введите пароль ориокс'),
+            md.hbold('Введи пароль:'),
             md.text(),
             md.text(
                 md.hitalic('🔒 Пароль используется только для однократной авторизации'),
@@ -110,8 +111,8 @@ async def process_password(message: types.Message, state: FSMContext):
     if db.get_user_orioks_attempts(user_telegram_id=message.from_user.id) > config.ORIOKS_MAX_LOGIN_TRIES:
         return await message.reply(
             md.text(
-                md.hbold('Ошибка!'),
-                md.text('Связь с поддержкой Бота: [support url]'),
+                md.hbold('Ошибка! Ты истратил все попытки входа в аккаунт ОРИОКС.'),
+                md.text('Связаться с поддержкой бота: [support url]'),
                 sep='\n',
             )
         )
@@ -133,7 +134,7 @@ async def process_password(message: types.Message, state: FSMContext):
             await bot.send_message(
                 message.chat.id,
                 md.text(
-                    md.text('Вход выполнен!')
+                    md.text('Вход в аккаунт ОРИОКС выполнен!')
                 )
             )
         except utils.exeptions.OrioksInvalidLoginCredsError:
@@ -153,8 +154,8 @@ async def process_password(message: types.Message, state: FSMContext):
 async def orioks_logout(message: types.Message):
     await message.reply(
         md.text(
-            md.hbold('Выход из аккаунта ОРИОКС выполнен'),
-            md.text('Теперь Вы НЕ будете получать уведомления от Бота'),
+            md.hbold('Выход из аккаунта ОРИОКС выполнен.'),
+            md.text('Теперь ты НЕ будешь получать уведомления от Бота.'),
             sep='\n',
         ),
         reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация'),
