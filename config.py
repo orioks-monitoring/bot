@@ -26,10 +26,20 @@ ORIOKS_PAGE_URLS = {
     'masks': {
         'news': 'https://orioks.miet.ru/main/view-news?id={id}',
         'homeworks': 'https://orioks.miet.ru/student/homework/view?id_thread={id}',
+        'requests': {
+            'questionnaire': 'https://orioks.miet.ru/request/questionnaire/view?id_thread={id}',  # not sure
+            'doc': 'https://orioks.miet.ru/request/doc/view?id_thread={id}',  # not sure
+            'reference': 'https://orioks.miet.ru/request/reference/view?id_thread={id}',
+        }
     },
     'notify': {
         'marks': 'https://orioks.miet.ru/student/student',
         'news': 'https://orioks.miet.ru',
         'homeworks': 'https://orioks.miet.ru/student/homework/list',
+        'requests': {
+            'questionnaire': 'https://orioks.miet.ru/request/questionnaire/list?AnketaTreadForm[status]=1,2,4,6,3,5,7&AnketaTreadForm[accept]=-1',
+            'doc': 'https://orioks.miet.ru/request/doc/list?DocThreadForm[status]=1,2,4,6,3,5,7&DocThreadForm[type]=0',
+            'reference': 'https://orioks.miet.ru/request/reference/list?ReferenceThreadForm[status]=1,2,4,6,3,5,7',
+        }
     }
 }

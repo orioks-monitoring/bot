@@ -81,7 +81,10 @@ async def user_news_check(user_telegram_id: int):
         raise Exception(f'[{user_telegram_id}] - old_json["last_id"] > last_news_id["last_id"]')
     difference = last_news_id['last_id'] - old_json['last_id']
     for news_id in range(old_json['last_id'] + 1, old_json['last_id'] + difference + 1):
-        msg_to_send = await get_news_to_msg(news_id=news_id, user_telegram_id=user_telegram_id)
-        await notify_user(user_telegram_id=user_telegram_id, message=msg_to_send)
+        try:
+            msg_to_send = await get_news_to_msg(news_id=news_id, user_telegram_id=user_telegram_id)
+            await notify_user(user_telegram_id=user_telegram_id, message=msg_to_send)
+        except IndexError:
+            pass  # id новостей могут быть не по порядку
     JsonFile.save(data=last_news_id, filename=path_users_to_file)
     return True
