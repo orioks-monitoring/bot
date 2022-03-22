@@ -41,7 +41,7 @@ async def cmd_start(message: types.Message):
     )
     await message.reply(
         md.text(
-            md.hbold('🔒 Введите логин ориокс'),
+            md.hbold('🔒 Введи логин ОРИОКС'),
         ),
         reply_markup=types.ReplyKeyboardRemove()
     )
@@ -60,7 +60,7 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     await message.reply(
         md.text(
             md.hbold('Авторизация отменена.'),
-            md.text('Если ты боишься вводить свои данные, ознакомься с [faq #why is it secure url]'),
+            md.text('Если ты боишься вводить свои данные, ознакомься с [информацией]((https://orioks-monitoring.github.io/bot/faq.html#почему-это-безопасно))'),
             sep='\n',
         ),
         reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация'),
@@ -90,12 +90,12 @@ async def process_login(message: types.Message, state: FSMContext):
     await Form.next()
     await message.reply(
         md.text(
-            md.hbold('Введи пароль:'),
+            md.hbold('Введи пароль ОРИОКС:'),
             md.text(),
             md.text(
                 md.hitalic('🔒 Пароль используется только для однократной авторизации'),
                 md.hitalic('Он не хранится на сервере'),
-                md.hitalic('Узнать подробнее: [faq #why is it secure url]'),
+                md.hitalic('Узнать подробнее [здесь](https://orioks-monitoring.github.io/bot/faq.html#почему-это-безопасно)'),
                 sep='. '
             ),
             sep='\n',
@@ -112,7 +112,7 @@ async def process_password(message: types.Message, state: FSMContext):
         return await message.reply(
             md.text(
                 md.hbold('Ошибка! Ты истратил все попытки входа в аккаунт ОРИОКС.'),
-                md.text('Связаться с поддержкой бота: [support url]'),
+                md.text('Связаться с поддержкой Бота: @orioks_monitoring_support'),
                 sep='\n',
             )
         )
