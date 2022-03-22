@@ -51,7 +51,7 @@ async def get_requests_to_msg(diffs: list) -> str:
                     sep=' '
                 ),
                 md.text(
-                    md.text('Статус заявки изменён на:'),
+                    md.text('Статус Заявки изменён на:'),
                     md.hcode(diff['current_status']),
                     sep=' ',
                 ),
