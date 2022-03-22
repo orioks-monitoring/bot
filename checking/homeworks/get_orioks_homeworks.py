@@ -46,14 +46,14 @@ async def get_homeworks_to_msg(diffs: list, user_telegram_id: int) -> str:
         if diff['type'] == 'new_status':
             message += md.text(
                 md.text(
-                    md.text('🎒'),
+                    md.text('📝'),
                     md.hbold(diff['about']['task']),
                     md.text('по'),
                     md.text(f"«{diff['about']['discipline']}»"),
                     sep=' '
                 ),
                 md.text(
-                    md.text('Изменён статус домашнего задания на:'),
+                    md.text('Cтатус домашнего задания изменён на:'),
                     md.hcode(diff['current_status']),
                     sep=' ',
                 ),
@@ -68,14 +68,14 @@ async def get_homeworks_to_msg(diffs: list, user_telegram_id: int) -> str:
         elif diff['type'] == 'new_message':
             message += md.text(
                 md.text(
-                    md.text('🎒'),
+                    md.text('📝'),
                     md.hbold(diff['about']['task']),
                     md.text('по'),
                     md.text(f"«{diff['about']['discipline']}»"),
                     sep=' '
                 ),
                 md.text(
-                    md.text('Получено личное сообщение от преподавателя'),
+                    md.text('Получено личное сообщение от преподавателя.'),
                     md.text(
                         md.text('Количество новых сообщений:'),
                         md.hcode(diff['current_messages']),
