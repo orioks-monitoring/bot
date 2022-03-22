@@ -21,8 +21,8 @@ class UserAgreementMiddleware(BaseMiddleware):
         if not db.get_user_agreement_status(user_telegram_id=message.from_user.id):
             await message.reply(
                 md.text(
-                    md.text('Для получения доступа к боту, необходимо принять Пользовательское соглашение:'),
-                    md.text('[url]'),
+                    md.text('Для получения доступа к Боту, необходимо принять Пользовательское соглашение:'),
+                    md.text('https://orioks-monitoring.github.io/bot/rules.html'),
                     sep='\n',
                 ),
                 reply_markup=inline_agreement_accept
@@ -39,9 +39,9 @@ class UserOrioksAttemptsMiddleware(BaseMiddleware):
             await message.reply(
                 md.text(
                     md.hbold('Ты совершил подозрительно много попыток входа в аккаунт ОРИОКС.'),
-                    md.text('Возможно, ты нарушаешь [Пользовательское соглашение]([user agreement url]), с которым согласился.'),
+                    md.text('Возможно, ты нарушаешь [Пользовательское соглашение](https://orioks-monitoring.github.io/bot/rules.html), с которым согласился.'),
                     md.text(),
-                    md.text('Связаться с поддержкой Бота: [support url]'),
+                    md.text('Связаться с поддержкой Бота: @orioks_monitoring_support'),
                     sep='\n',
                 ),
                 reply_markup=types.ReplyKeyboardRemove(),
