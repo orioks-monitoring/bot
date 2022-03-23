@@ -1,4 +1,5 @@
 from utils import exeptions
+import aiogram.utils.markdown as md
 
 
 def file_compares(old_file: list, new_file: list) -> list:
@@ -46,13 +47,57 @@ def file_compares(old_file: list, new_file: list) -> list:
 
 
 def get_msg_from_diff(diffs: list) -> str:
-    msg = ""  # TODO: изменить это безобразие на aiogram.utils.markdown
+    message = ''
     for diff_subject in diffs:
-        tmp_msg = ""
         for diff_task in diff_subject['tasks']:
-            tmp_msg += '🟢' if diff_task['ball']['is_new_bigger'] else '🔴'
-            tmp_msg += f" {diff_task['task']}: \n"
-            tmp_msg += f"{diff_task['ball']['old_ball']} -> {diff_task['ball']['current_ball']} (из {diff_task['ball']['max_grade']})"
-            tmp_msg += f" ({'+' if diff_task['ball']['is_new_bigger'] else '-'}{diff_task['ball']['abs_difference']})\n"
-        msg += f"{diff_subject['subject']} ({diff_subject['final_grade']['current_ball']} из {diff_subject['final_grade']['might_be']})\n{tmp_msg}\n"
-    return msg
+            message += md.text(
+                md.text(
+                    md.text('📗' if diff_task['ball']['is_new_bigger'] else '📕'),
+                    md.hbold(diff_task['task']),
+                    md.text('по'),
+                    md.text(f"«{diff_subject['subject']}»"),
+                    sep=' '
+                ),
+                md.text(
+                    md.text('Изменён балл за контрольное мероприятие:'),
+                    sep=' ',
+                ),
+                md.text(
+                    md.text(diff_task['ball']['old_ball']),
+                    md.text('—>'),
+                    md.text(diff_task['ball']['current_ball']),
+                    md.text(
+                        md.text('('),
+                        md.text('из'),
+                        md.text(' '),
+                        md.text(diff_task['ball']['max_grade']),
+                        md.text(')'),
+                        sep='',
+                    ),
+                    md.text(
+                        md.text('('),
+                        md.text('+' if diff_task['ball']['is_new_bigger'] else '-'),
+                        md.text(' '),
+                        md.text(diff_task['ball']['abs_difference']),
+                        md.text(')'),
+                        sep='',
+                    ),
+                    sep=' ',
+                ),
+                md.text(),
+                md.text(
+                    md.hitalic('Общая сумма баллов:'),
+                    md.hitalic(' '),
+                    md.hitalic(diff_subject['final_grade']['current_ball']),
+                    md.hitalic(' '),
+                    md.hitalic('из'),
+                    md.hitalic(' '),
+                    md.hitalic(diff_subject['final_grade']['might_be']),
+                    sep='',
+                ),
+                md.text(),
+                md.text(),
+                md.text(),
+                sep='\n',
+            )
+    return message

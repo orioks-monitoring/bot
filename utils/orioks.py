@@ -29,6 +29,7 @@ async def orioks_login_save_cookies(user_login: int, user_password: str, user_te
 
 def _safe_delete(path: str) -> None:
     try:
+        print(path)
         os.remove(path)
     except FileNotFoundError:
         pass
@@ -36,11 +37,19 @@ def _safe_delete(path: str) -> None:
 
 def make_orioks_logout(user_telegram_id: int) -> None:
     _safe_delete(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'))
+
     path_to_tracking_data = os.path.join(config.BASEDIR, 'users_data', 'tracking_data')
-    _safe_delete(os.path.join(path_to_tracking_data, 'discipline_sources', f'{user_telegram_id}.pkl'))
-    _safe_delete(os.path.join(path_to_tracking_data, 'news', f'{user_telegram_id}.pkl'))
-    _safe_delete(os.path.join(path_to_tracking_data, 'marks', f'{user_telegram_id}.pkl'))
-    _safe_delete(os.path.join(path_to_tracking_data, 'homeworks', f'{user_telegram_id}.pkl'))
-    _safe_delete(os.path.join(path_to_tracking_data, 'requests', f'{user_telegram_id}.pkl'))
+
+    _safe_delete(os.path.join(path_to_tracking_data, 'discipline_sources', f'{user_telegram_id}.json'))
+
+    _safe_delete(os.path.join(path_to_tracking_data, 'news', f'{user_telegram_id}.json'))
+
+    _safe_delete(os.path.join(path_to_tracking_data, 'marks', f'{user_telegram_id}.json'))
+
+    _safe_delete(os.path.join(path_to_tracking_data, 'homeworks', f'{user_telegram_id}.json'))
+
+    _safe_delete(os.path.join(path_to_tracking_data, 'requests', 'questionnaire', f'{user_telegram_id}.json'))
+    _safe_delete(os.path.join(path_to_tracking_data, 'requests', 'doc', f'{user_telegram_id}.json'))
+    _safe_delete(os.path.join(path_to_tracking_data, 'requests', 'reference', f'{user_telegram_id}.json'))
 
     db.update_user_orioks_authenticated_status(user_telegram_id=user_telegram_id, is_user_orioks_authenticated=False)

@@ -46,12 +46,12 @@ async def get_requests_to_msg(diffs: list) -> str:
             message += md.text(
                 md.text(
                     md.text('📄'),
-                    md.text('Новые изменения по Заявке'),
+                    md.text('Новые изменения по заявке'),
                     md.hbold(f"«{diff['about']['name']}»"),
                     sep=' '
                 ),
                 md.text(
-                    md.text('Статус Заявки изменён на:'),
+                    md.text('Статус заявки изменён на:'),
                     md.hcode(diff['current_status']),
                     sep=' ',
                 ),
@@ -67,7 +67,7 @@ async def get_requests_to_msg(diffs: list) -> str:
             message += md.text(
                 md.text(
                     md.text('📄'),
-                    md.text('Новые изменения по Заявке'),
+                    md.text('Новые изменения по заявке'),
                     md.hbold(f"«{diff['about']['name']}»"),
                     sep=' '
                 ),
@@ -88,7 +88,7 @@ async def get_requests_to_msg(diffs: list) -> str:
                 ),
                 sep='\n',
             )
-        message += '\n' * 2
+        message += '\n' * 3
     return message
 
 

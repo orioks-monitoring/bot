@@ -91,7 +91,7 @@ async def get_homeworks_to_msg(diffs: list, user_telegram_id: int) -> str:
                 ),
                 sep='\n',
             )
-        message += '\n' * 2
+        message += '\n' * 3
     return message
 
 

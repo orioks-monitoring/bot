@@ -56,8 +56,9 @@ async def get_news_to_msg(news_id: int, user_telegram_id: int) -> str:
             md.hbold(news_name),
             sep=' '
         ),
+        md.text(),
         md.text(
-            md.text('Подробности по ссылке:'),
+            md.text('Опубликована новость, подробности по ссылке:'),
             md.text(config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id)),
             sep=' ',
         ),
