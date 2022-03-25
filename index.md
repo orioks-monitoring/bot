@@ -4,4 +4,4 @@
 
 ## [Документация](./documentation.html) 
 
- ![](qr.jpg)
+ [![qr](qr.jpg)](https://t.me/orioks_monitoring_bot)
