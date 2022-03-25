@@ -1,4 +1,3 @@
-https://t.me/orioks_monitoring_bot
 
 ## [FAQ](./faq.html)
 
@@ -6,4 +5,7 @@ https://t.me/orioks_monitoring_bot
 
 ## [Документация](./documentation.html) 
 
-<img src="qr.jpg" alt="qr code to bot" heigth=100>
+<p align="center">
+	https://t.me/orioks_monitoring_bot
+	<img src="qr.jpg" alt="qr code to bot" heigth="300">
+</p>
