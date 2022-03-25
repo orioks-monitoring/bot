@@ -60,7 +60,7 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     await message.reply(
         md.text(
             md.hbold('Авторизация отменена.'),
-            md.text('Если ты боишься вводить свои данные, ознакомься с [информацией]((https://orioks-monitoring.github.io/bot/faq.html#почему-это-безопасно))'),
+            md.text('Если ты боишься вводить свои данные, ознакомься с <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">информацией</a>'),
             sep='\n',
         ),
         reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация'),
@@ -94,8 +94,8 @@ async def process_login(message: types.Message, state: FSMContext):
             md.text(),
             md.text(
                 md.hitalic('🔒 Пароль используется только для однократной авторизации'),
-                md.hitalic('Он не хранится на сервере'),
-                md.hitalic('Узнать подробнее [здесь](https://orioks-monitoring.github.io/bot/faq.html#почему-это-безопасно)'),
+                md.hitalic('Он не хранится на сервере и будет удалён из истории сообщений'),
+                md.text('Узнать подробнее <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">здесь</a>'),
                 sep='. '
             ),
             sep='\n',
@@ -112,6 +112,7 @@ async def process_password(message: types.Message, state: FSMContext):
         return await message.reply(
             md.text(
                 md.hbold('Ошибка! Ты истратил все попытки входа в аккаунт ОРИОКС.'),
+                md.text(),
                 md.text('Связаться с поддержкой Бота: @orioks_monitoring_support'),
                 sep='\n',
             )
@@ -131,6 +132,7 @@ async def process_password(message: types.Message, state: FSMContext):
                 user_telegram_id=message.from_user.id,
                 is_user_orioks_authenticated=True
             )
+            await menu.menu_command(chat_id=message.chat.id, user_id=message.from_user.id)
             await bot.send_message(
                 message.chat.id,
                 md.text(
@@ -138,17 +140,11 @@ async def process_password(message: types.Message, state: FSMContext):
                 )
             )
         except utils.exeptions.OrioksInvalidLoginCredsError:
-            await bot.send_message(
-                message.chat.id,
-                md.text(
-                    md.text('Ошибка входа в аккаунт ОРИОКС!')
-                )
-            )
+            await menu.menu_if_failed_login(chat_id=message.chat.id, user_id=message.from_user.id)
     await bot.delete_message(message.chat.id, message.message_id)
     await state.finish()
 
     await bot.delete_message(sticker_message.chat.id, sticker_message.message_id)
-    await menu.menu_command(chat_id=message.chat.id, user_id=message.from_user.id)
 
 
 async def orioks_logout(message: types.Message):

@@ -22,7 +22,7 @@ class UserAgreementMiddleware(BaseMiddleware):
             await message.reply(
                 md.text(
                     md.text('Для получения доступа к Боту, необходимо принять Пользовательское соглашение:'),
-                    md.text('https://orioks-monitoring.github.io/bot/rules.html'),
+                    md.text('https://orioks-monitoring.github.io/bot/rules'),
                     sep='\n',
                 ),
                 reply_markup=inline_agreement_accept
@@ -39,7 +39,7 @@ class UserOrioksAttemptsMiddleware(BaseMiddleware):
             await message.reply(
                 md.text(
                     md.hbold('Ты совершил подозрительно много попыток входа в аккаунт ОРИОКС.'),
-                    md.text('Возможно, ты нарушаешь [Пользовательское соглашение](https://orioks-monitoring.github.io/bot/rules.html), с которым согласился.'),
+                    md.text('Возможно, ты нарушаешь <a href="https://orioks-monitoring.github.io/bot/rules">Пользовательское соглашение</a>, с которым согласился.'),
                     md.text(),
                     md.text('Связаться с поддержкой Бота: @orioks_monitoring_support'),
                     sep='\n',

@@ -33,3 +33,16 @@ async def menu_command(chat_id: int, user_id: int):
             ),
             reply_markup=keyboards.main_menu_keyboard(first_btn_text='Настройка уведомлений')
         )
+
+
+async def menu_if_failed_login(chat_id: int, user_id: int):
+    if not db.get_user_orioks_authenticated_status(user_telegram_id=user_id):
+        await bot.send_message(
+            chat_id,
+            md.text(
+                md.hbold('Ошибка авторизации!'),
+                md.text('Попробуйте ещё раз: /login'),
+                sep='\n',
+            ),
+            reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация')
+        )

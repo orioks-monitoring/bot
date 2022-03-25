@@ -23,7 +23,7 @@ async def msg_manual(message: types.Message):
     """
     await message.reply(
         md.text(
-            md.text('https://orioks-monitoring.github.io/bot/documentation.html'),
+            md.text('https://orioks-monitoring.github.io/bot/documentation'),
         ),
     )
 
@@ -35,6 +35,6 @@ async def msg_faq(message: types.Message):
     """
     await message.reply(
         md.text(
-            md.text('https://orioks-monitoring.github.io/bot/faq.html'),
+            md.text('https://orioks-monitoring.github.io/bot/faq'),
         ),
     )
