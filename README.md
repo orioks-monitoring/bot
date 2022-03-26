@@ -12,14 +12,24 @@
 ## Какие функции есть у этого бота?
 На данный момент в Боте реализованы следующие функции оповещений по категориям:
 - раздел "Обучение": изменения баллов в накопительно-балльной системе (НБС)
-  ![](https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/grades.jpg)
+
+  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/grades.jpg" width="400">
+  
 - раздел "Новости": публикация общих новостей (новости по дисциплинам *(coming soon)*);
-  ![](https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/news.jpg)
+
+  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/news.jpg" width="400">
+  
 - раздел "Ресурсы": изменения и загрузка файлов по дисциплине *(coming soon)*;
 - раздел "Домашние задания": изменения статусов отправленных работ;
-  ![](https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework1.jpg) ![](https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework2.jpg)
+
+  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework2.jpg" width="400">
+  
+  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework1.jpg" width="400">
+  
 - раздел "Заявки": изменения статусов заявок на обходной лист, материальную помощь, социальную стипендию, копии документов, справки.
-  ![](https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/requests.jpg)
+
+  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework2.jpg" width="400">
+
 
 ## Почему это безопасно?
 Наш Бот - проект с открытым исходным кодом. Он создан действующими студентами МИЭТ для помощи нашему университетскому сообществу. Ваши личные данные:
