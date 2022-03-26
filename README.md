@@ -28,7 +28,7 @@
   
 - раздел "Заявки": изменения статусов заявок на обходной лист, материальную помощь, социальную стипендию, копии документов, справки.
 
-  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework2.png" width="400">
+  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/requests.png" width="400">
 
 
 ## Почему это безопасно?
