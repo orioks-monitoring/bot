@@ -1,2 +1,6 @@
 theme: jekyll-theme-minimal
-logo: <p align="center"><img src="logo.jpg" alt="logo" heigth="150"></p>
+title: "ОРИОКС Мониторинг Бот"
+lang: ru
+description: "Бот для отслеживания изменений в образовательной электронной среде (ОРИОКС) НИУ МИЭТ orioks.miet.ru на платформе Telegram"
+
+logo: img/logo.jpg
