@@ -13,22 +13,22 @@
 На данный момент в Боте реализованы следующие функции оповещений по категориям:
 - раздел "Обучение": изменения баллов в накопительно-балльной системе (НБС)
 
-  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/grades.jpg" width="400">
+  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/grades.png" width="400">
   
 - раздел "Новости": публикация общих новостей (новости по дисциплинам *(coming soon)*);
 
-  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/news.jpg" width="400">
+  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/news.png" width="400">
   
 - раздел "Ресурсы": изменения и загрузка файлов по дисциплине *(coming soon)*;
 - раздел "Домашние задания": изменения статусов отправленных работ;
 
-  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework2.jpg" width="400">
+  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework2.png" width="400">
   
-  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework1.jpg" width="400">
+  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework1.png" width="400">
   
 - раздел "Заявки": изменения статусов заявок на обходной лист, материальную помощь, социальную стипендию, копии документов, справки.
 
-  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework2.jpg" width="400">
+  <img src="https://github.com/orioks-monitoring/bot/blob/gh-pages/img/faq/homework2.png" width="400">
 
 
 ## Почему это безопасно?
