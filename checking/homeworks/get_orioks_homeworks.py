@@ -31,16 +31,13 @@ def _orioks_parse_homeworks(raw_html: str) -> list:
     return homeworks
 
 
-async def get_orioks_homeworks(user_telegram_id: int) -> list:
-    path_to_cookies = os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl')
-    async with aiohttp.ClientSession() as session:
-        cookies = pickle.load(open(path_to_cookies, 'rb'))
-        async with session.get(config.ORIOKS_PAGE_URLS['notify']['homeworks'], cookies=cookies) as resp:
-            raw_html = await resp.text()
+async def get_orioks_homeworks(session: aiohttp.ClientSession) -> list:
+    async with session.get(config.ORIOKS_PAGE_URLS['notify']['homeworks']) as resp:
+        raw_html = await resp.text()
     return _orioks_parse_homeworks(raw_html)
 
 
-async def get_homeworks_to_msg(diffs: list, user_telegram_id: int) -> str:
+async def get_homeworks_to_msg(diffs: list) -> str:
     message = ''
     for diff in diffs:
         if diff['type'] == 'new_status':
@@ -115,8 +112,8 @@ def compare(old_list: list, new_list: list) -> list:
     return diffs
 
 
-async def user_homeworks_check(user_telegram_id: int):
-    homeworks_list = await get_orioks_homeworks(user_telegram_id=user_telegram_id)
+async def user_homeworks_check(user_telegram_id: int, session: aiohttp.ClientSession):
+    homeworks_list = await get_orioks_homeworks(session=session)
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'homeworks', student_json_file)
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
@@ -134,7 +131,7 @@ async def user_homeworks_check(user_telegram_id: int):
         return False
 
     if len(diffs) > 0:
-        msg_to_send = await get_homeworks_to_msg(diffs=diffs, user_telegram_id=user_telegram_id)
+        msg_to_send = await get_homeworks_to_msg(diffs=diffs)
         await notify_user(user_telegram_id=user_telegram_id, message=msg_to_send)
     JsonFile.save(data=homeworks_list, filename=path_users_to_file)
     return True

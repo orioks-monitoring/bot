@@ -56,21 +56,18 @@ def _get_orioks_forang(raw_html: str):
     return json_to_save
 
 
-async def get_orioks_marks(user_telegram_id: int):
-    path_to_cookies = os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl')
-    async with aiohttp.ClientSession() as session:
-        cookies = pickle.load(open(path_to_cookies, 'rb'))
-        async with session.get(config.ORIOKS_PAGE_URLS['notify']['marks'], cookies=cookies) as resp:
-            raw_html = await resp.text()
+async def get_orioks_marks(session: aiohttp.ClientSession):
+    async with session.get(config.ORIOKS_PAGE_URLS['notify']['marks']) as resp:
+        raw_html = await resp.text()
     return _get_orioks_forang(raw_html)
 
 
-async def user_marks_check(user_telegram_id: int) -> bool:
+async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession) -> bool:
     """
     return is success, if not then check one more time
     """
     try:
-        detailed_info = await get_orioks_marks(user_telegram_id=user_telegram_id)
+        detailed_info = await get_orioks_marks(session=session)
     except FileNotFoundError:
         await notify_admins(message=f'FileNotFoundError - {user_telegram_id}')
         raise Exception(f'FileNotFoundError - {user_telegram_id}')
@@ -90,7 +87,7 @@ async def user_marks_check(user_telegram_id: int) -> bool:
             await notify_admins(message=f'Похоже, что начался новый семестр!')
             await notify_user(
                 user_telegram_id=user_telegram_id,
-                message='Поздравляем с началом нового семестра и желаем успехов в учёбе!'
+                message='🎉 Поздравляем с началом нового семестра и желаем успехов в учёбе!'
             )
         return False
 

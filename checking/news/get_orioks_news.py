@@ -21,12 +21,9 @@ def _orioks_parse_news(raw_html: str) -> dict:
     }
 
 
-async def get_orioks_news(user_telegram_id: int) -> dict:
-    path_to_cookies = os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl')
-    async with aiohttp.ClientSession() as session:
-        cookies = pickle.load(open(path_to_cookies, 'rb'))
-        async with session.get(config.ORIOKS_PAGE_URLS['notify']['news'], cookies=cookies) as resp:
-            raw_html = await resp.text()
+async def get_orioks_news(session: aiohttp.ClientSession) -> dict:
+    async with session.get(config.ORIOKS_PAGE_URLS['notify']['news']) as resp:
+        raw_html = await resp.text()
     return _orioks_parse_news(raw_html)
 
 
@@ -35,12 +32,9 @@ def _find_in_str_with_beginning_and_ending(string_to_find: str, beginning: str, 
     return regex_result.replace(beginning, '').replace(ending, '').strip()
 
 
-async def get_news_to_msg(news_id: int, user_telegram_id: int) -> str:
-    path_to_cookies = os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl')
-    async with aiohttp.ClientSession() as session:
-        cookies = pickle.load(open(path_to_cookies, 'rb'))
-        async with session.get(config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id), cookies=cookies) as resp:
-            raw_html = await resp.text()
+async def get_news_to_msg(news_id: int, session: aiohttp.ClientSession) -> str:
+    async with session.get(config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id)) as resp:
+        raw_html = await resp.text()
     bs_content = BeautifulSoup(raw_html, "html.parser")
     well_raw = bs_content.find_all('div', {'class': 'well'})[0]
 
@@ -67,8 +61,8 @@ async def get_news_to_msg(news_id: int, user_telegram_id: int) -> str:
     #           https://techcrunch.com/wp-content/uploads/2022/01/silvergate-diem-meta-facebook.jpg
 
 
-async def user_news_check(user_telegram_id: int):
-    last_news_id = await get_orioks_news(user_telegram_id=user_telegram_id)
+async def user_news_check(user_telegram_id: int, session: aiohttp.ClientSession):
+    last_news_id = await get_orioks_news(session=session)
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'news', student_json_file)
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
@@ -83,9 +77,9 @@ async def user_news_check(user_telegram_id: int):
     difference = last_news_id['last_id'] - old_json['last_id']
     for news_id in range(old_json['last_id'] + 1, old_json['last_id'] + difference + 1):
         try:
-            msg_to_send = await get_news_to_msg(news_id=news_id, user_telegram_id=user_telegram_id)
+            msg_to_send = await get_news_to_msg(news_id=news_id, session=session)
             await notify_user(user_telegram_id=user_telegram_id, message=msg_to_send)
         except IndexError:
-            pass  # id новостей могут быть не по порядку
+            pass  # id новостей могут идти не по порядку, поэтому надо игнорировать IndexError
     JsonFile.save(data=last_news_id, filename=path_users_to_file)
     return True

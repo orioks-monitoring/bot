@@ -30,12 +30,9 @@ def _orioks_parse_requests(raw_html: str, section: str) -> list:
     return requests
 
 
-async def get_orioks_requests(user_telegram_id: int, section: str) -> list:
-    path_to_cookies = os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl')
-    async with aiohttp.ClientSession() as session:
-        cookies = pickle.load(open(path_to_cookies, 'rb'))
-        async with session.get(config.ORIOKS_PAGE_URLS['notify']['requests'][section], cookies=cookies) as resp:
-            raw_html = await resp.text()
+async def get_orioks_requests(section: str, session: aiohttp.ClientSession) -> list:
+    async with session.get(config.ORIOKS_PAGE_URLS['notify']['requests'][section]) as resp:
+        raw_html = await resp.text()
     return _orioks_parse_requests(raw_html=raw_html, section=section)
 
 
@@ -112,8 +109,8 @@ def compare(old_list: list, new_list: list) -> list:
     return diffs
 
 
-async def _user_requests_check_with_subsection(user_telegram_id: int, section: str):
-    requests_list = await get_orioks_requests(user_telegram_id=user_telegram_id, section=section)
+async def _user_requests_check_with_subsection(user_telegram_id: int, section: str, session: aiohttp.ClientSession):
+    requests_list = await get_orioks_requests(section=section, session=session)
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data',
                                       'requests', section, student_json_file)
@@ -138,6 +135,6 @@ async def _user_requests_check_with_subsection(user_telegram_id: int, section: s
     return True
 
 
-async def user_requests_check(user_telegram_id: int):
+async def user_requests_check(user_telegram_id: int, session: aiohttp.ClientSession):
     for section in ('questionnaire', 'doc', 'reference'):
-        await _user_requests_check_with_subsection(user_telegram_id=user_telegram_id, section=section)
+        await _user_requests_check_with_subsection(user_telegram_id=user_telegram_id, section=section, session=session)
