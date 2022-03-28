@@ -1,5 +1,4 @@
 import os
-import pickle
 
 import re
 import aiohttp
@@ -7,6 +6,7 @@ from bs4 import BeautifulSoup
 
 import config
 from utils.json_files import JsonFile
+from utils.make_request import get_request
 from utils.notify_to_user import notify_admins, notify_user
 import aiogram.utils.markdown as md
 
@@ -22,8 +22,7 @@ def _orioks_parse_news(raw_html: str) -> dict:
 
 
 async def get_orioks_news(session: aiohttp.ClientSession) -> dict:
-    async with session.get(config.ORIOKS_PAGE_URLS['notify']['news']) as resp:
-        raw_html = await resp.text()
+    raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['notify']['news'], session=session)
     return _orioks_parse_news(raw_html)
 
 
@@ -33,8 +32,7 @@ def _find_in_str_with_beginning_and_ending(string_to_find: str, beginning: str, 
 
 
 async def get_news_to_msg(news_id: int, session: aiohttp.ClientSession) -> str:
-    async with session.get(config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id)) as resp:
-        raw_html = await resp.text()
+    raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id), session=session)
     bs_content = BeautifulSoup(raw_html, "html.parser")
     well_raw = bs_content.find_all('div', {'class': 'well'})[0]
 

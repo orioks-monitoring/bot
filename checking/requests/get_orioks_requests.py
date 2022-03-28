@@ -1,5 +1,4 @@
 import os
-import pickle
 
 import re
 import aiohttp
@@ -9,6 +8,7 @@ import config
 from utils import exeptions
 from utils.json_files import JsonFile
 from utils.notify_to_user import notify_user
+from utils.make_request import get_request
 import aiogram.utils.markdown as md
 
 
@@ -31,8 +31,7 @@ def _orioks_parse_requests(raw_html: str, section: str) -> list:
 
 
 async def get_orioks_requests(section: str, session: aiohttp.ClientSession) -> list:
-    async with session.get(config.ORIOKS_PAGE_URLS['notify']['requests'][section]) as resp:
-        raw_html = await resp.text()
+    raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['notify']['requests'][section], session=session)
     return _orioks_parse_requests(raw_html=raw_html, section=section)
 
 

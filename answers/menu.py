@@ -1,13 +1,14 @@
 import aiogram.utils.markdown as md
 
-import db
+import db.user_status
 import keyboards
 from main import bot
+import db.user_first_add
 
 
 async def menu_command(chat_id: int, user_id: int):
-    db.user_first_add_to_db(user_telegram_id=user_id)
-    if not db.get_user_orioks_authenticated_status(user_telegram_id=user_id):
+    db.user_first_add.user_first_add_to_db(user_telegram_id=user_id)
+    if not db.user_status.get_user_orioks_authenticated_status(user_telegram_id=user_id):
         await bot.send_message(
             chat_id,
             md.text(
@@ -36,7 +37,7 @@ async def menu_command(chat_id: int, user_id: int):
 
 
 async def menu_if_failed_login(chat_id: int, user_id: int):
-    if not db.get_user_orioks_authenticated_status(user_telegram_id=user_id):
+    if not db.user_status.get_user_orioks_authenticated_status(user_telegram_id=user_id):
         await bot.send_message(
             chat_id,
             md.text(

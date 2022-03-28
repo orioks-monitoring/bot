@@ -1,11 +1,7 @@
-import logging
-
 import aiogram.utils.markdown as md
 from aiogram import types
 
 from answers import menu
-
-logger = logging.getLogger(__name__)
 
 
 async def start_cmd_handler(message: types.Message):

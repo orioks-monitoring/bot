@@ -1,10 +1,7 @@
-import logging
-
 from aiogram import types
 
 from answers import settings
 
-logger = logging.getLogger(__name__)
 
 notify_settings_names_to_vars = {
     'marks': 'Оценки',

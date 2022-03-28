@@ -1,13 +1,13 @@
 import aiogram.utils.markdown as md
 from aiogram import types
 
-import db
+import db.notify_settings
 from handlers import notify_settings
 from main import bot
 
 
 async def send_user_settings(user_id: int) -> types.Message:
-    is_on_off_dict = db.get_user_notify_settings_to_dict(user_telegram_id=user_id)
+    is_on_off_dict = db.notify_settings.get_user_notify_settings_to_dict(user_telegram_id=user_id)
     return await bot.send_message(
         user_id,
         md.text(

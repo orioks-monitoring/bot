@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 import config
 from utils import exeptions
 from utils.json_files import JsonFile
+from utils.make_request import get_request
 from utils.notify_to_user import notify_user
 import aiogram.utils.markdown as md
 
@@ -32,8 +33,7 @@ def _orioks_parse_homeworks(raw_html: str) -> list:
 
 
 async def get_orioks_homeworks(session: aiohttp.ClientSession) -> list:
-    async with session.get(config.ORIOKS_PAGE_URLS['notify']['homeworks']) as resp:
-        raw_html = await resp.text()
+    raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['notify']['homeworks'], session=session)
     return _orioks_parse_homeworks(raw_html)
 
 

@@ -1,6 +1,5 @@
 import json
 import os
-import pickle
 from dataclasses import dataclass
 
 import aiohttp
@@ -11,6 +10,7 @@ from checking.marks.compares import file_compares, get_msg_from_diff
 import utils
 from utils.json_files import JsonFile
 from utils.notify_to_user import notify_admins, notify_user
+from utils.make_request import get_request
 
 
 def my_isdigit(x) -> bool:
@@ -57,8 +57,7 @@ def _get_orioks_forang(raw_html: str):
 
 
 async def get_orioks_marks(session: aiohttp.ClientSession):
-    async with session.get(config.ORIOKS_PAGE_URLS['notify']['marks']) as resp:
-        raw_html = await resp.text()
+    raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['notify']['marks'], session=session)
     return _get_orioks_forang(raw_html)
 
 

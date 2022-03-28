@@ -5,7 +5,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 import config
-import db
+import db.user_status
 import utils.exeptions
 
 
@@ -52,4 +52,7 @@ def make_orioks_logout(user_telegram_id: int) -> None:
     _safe_delete(os.path.join(path_to_tracking_data, 'requests', 'doc', f'{user_telegram_id}.json'))
     _safe_delete(os.path.join(path_to_tracking_data, 'requests', 'reference', f'{user_telegram_id}.json'))
 
-    db.update_user_orioks_authenticated_status(user_telegram_id=user_telegram_id, is_user_orioks_authenticated=False)
+    db.user_status.update_user_orioks_authenticated_status(
+        user_telegram_id=user_telegram_id,
+        is_user_orioks_authenticated=False
+    )

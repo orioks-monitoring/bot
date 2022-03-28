@@ -1,11 +1,10 @@
-import logging
-
 import aiogram.utils.markdown as md
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
 import config
-import db
+import db.user_status
+import db.admins_statistics
 import keyboards
 import utils.exeptions
 import utils.orioks
@@ -13,15 +12,13 @@ from answers import menu
 from forms import Form
 from main import bot
 
-logger = logging.getLogger(__name__)
-
 
 async def cmd_start(message: types.Message):
     """
     @dp.message_handler(text='Авторизация')
     @dp.message_handler(commands='login')
     """
-    if db.get_user_orioks_authenticated_status(user_telegram_id=message.from_user.id):
+    if db.user_status.get_user_orioks_authenticated_status(user_telegram_id=message.from_user.id):
         return await message.reply(
             md.text(
                 md.hbold('Ты уже выполнил вход в аккаунт ОРИОКС.'),
@@ -55,7 +52,6 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     if current_state is None:
         return
 
-    logging.info('Cancelling state %r', current_state)
     await state.finish()
     await message.reply(
         md.text(
@@ -107,8 +103,8 @@ async def process_password(message: types.Message, state: FSMContext):
     """
     @dp.message_handler(state=Form.password)
     """
-    db.update_inc_user_orioks_attempts(user_telegram_id=message.from_user.id)
-    if db.get_user_orioks_attempts(user_telegram_id=message.from_user.id) > config.ORIOKS_MAX_LOGIN_TRIES:
+    db.user_status.update_inc_user_orioks_attempts(user_telegram_id=message.from_user.id)
+    if db.user_status.get_user_orioks_attempts(user_telegram_id=message.from_user.id) > config.ORIOKS_MAX_LOGIN_TRIES:
         return await message.reply(
             md.text(
                 md.hbold('Ошибка! Ты истратил все попытки входа в аккаунт ОРИОКС.'),
@@ -128,7 +124,7 @@ async def process_password(message: types.Message, state: FSMContext):
             await utils.orioks.orioks_login_save_cookies(user_login=data['login'],
                                                          user_password=data['password'],
                                                          user_telegram_id=message.from_user.id)
-            db.update_user_orioks_authenticated_status(
+            db.user_status.update_user_orioks_authenticated_status(
                 user_telegram_id=message.from_user.id,
                 is_user_orioks_authenticated=True
             )
@@ -139,7 +135,13 @@ async def process_password(message: types.Message, state: FSMContext):
                     md.text('Вход в аккаунт ОРИОКС выполнен!')
                 )
             )
+            db.admins_statistics.update_inc_admins_statistics_row_name(
+                row_name=db.admins_statistics.AdminsStatisticsRowNames.orioks_success_logins
+            )
         except utils.exeptions.OrioksInvalidLoginCredsError:
+            db.admins_statistics.update_inc_admins_statistics_row_name(
+                row_name=db.admins_statistics.AdminsStatisticsRowNames.orioks_failed_logins
+            )
             await menu.menu_if_failed_login(chat_id=message.chat.id, user_id=message.from_user.id)
     await bot.delete_message(message.chat.id, message.message_id)
     await state.finish()
@@ -156,7 +158,7 @@ async def orioks_logout(message: types.Message):
         ),
         reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация'),
     )
-    db.update_user_orioks_authenticated_status(
+    db.user_status.update_user_orioks_authenticated_status(
         user_telegram_id=message.from_user.id,
         is_user_orioks_authenticated=False
     )

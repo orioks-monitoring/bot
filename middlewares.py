@@ -4,7 +4,8 @@ from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
 import config
-import db
+import db.user_first_add
+import db.user_status
 
 inline_btn_user_agreement_accept = types.InlineKeyboardButton(
     'Принять пользовательское соглашение',
@@ -17,8 +18,8 @@ class UserAgreementMiddleware(BaseMiddleware):
     """Middleware, блокирующее дальнейшее использование Бота, если не принято пользовательское соглашение"""
 
     async def on_process_message(self, message: types.Message, *args, **kwargs):
-        db.user_first_add_to_db(user_telegram_id=message.from_user.id)
-        if not db.get_user_agreement_status(user_telegram_id=message.from_user.id):
+        db.user_first_add.user_first_add_to_db(user_telegram_id=message.from_user.id)
+        if not db.user_status.get_user_agreement_status(user_telegram_id=message.from_user.id):
             await message.reply(
                 md.text(
                     md.text('Для получения доступа к Боту, необходимо принять Пользовательское соглашение:'),
@@ -35,7 +36,8 @@ class UserOrioksAttemptsMiddleware(BaseMiddleware):
     аккаунт ОРИОКС"""
 
     async def on_process_message(self, message: types.Message, *args, **kwargs):
-        if db.get_user_orioks_attempts(user_telegram_id=message.from_user.id) > config.ORIOKS_MAX_LOGIN_TRIES:
+        if db.user_status.get_user_orioks_attempts(
+                user_telegram_id=message.from_user.id) > config.ORIOKS_MAX_LOGIN_TRIES:
             await message.reply(
                 md.text(
                     md.hbold('Ты совершил подозрительно много попыток входа в аккаунт ОРИОКС.'),
