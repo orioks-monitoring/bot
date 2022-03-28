@@ -1,5 +1,4 @@
 import os
-import pickle
 
 import re
 import aiohttp
@@ -117,21 +116,21 @@ async def user_homeworks_check(user_telegram_id: int, session: aiohttp.ClientSes
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'homeworks', student_json_file)
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
-        JsonFile.save(data=homeworks_list, filename=path_users_to_file)
+        await JsonFile.save(data=homeworks_list, filename=path_users_to_file)
         return False
 
-    old_json = JsonFile.open(filename=path_users_to_file)
+    old_json = await JsonFile.open(filename=path_users_to_file)
     if len(homeworks_list) != len(old_json):
-        JsonFile.save(data=homeworks_list, filename=path_users_to_file)
+        await JsonFile.save(data=homeworks_list, filename=path_users_to_file)
         return False
     try:
         diffs = compare(old_list=old_json, new_list=homeworks_list)
     except exeptions.FileCompareError:
-        JsonFile.save(data=homeworks_list, filename=path_users_to_file)
+        await JsonFile.save(data=homeworks_list, filename=path_users_to_file)
         return False
 
     if len(diffs) > 0:
         msg_to_send = await get_homeworks_to_msg(diffs=diffs)
         await notify_user(user_telegram_id=user_telegram_id, message=msg_to_send)
-    JsonFile.save(data=homeworks_list, filename=path_users_to_file)
+    await JsonFile.save(data=homeworks_list, filename=path_users_to_file)
     return True

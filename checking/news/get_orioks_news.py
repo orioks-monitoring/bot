@@ -64,9 +64,9 @@ async def user_news_check(user_telegram_id: int, session: aiohttp.ClientSession)
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'news', student_json_file)
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
-        JsonFile.save(data=last_news_id, filename=path_users_to_file)
+        await JsonFile.save(data=last_news_id, filename=path_users_to_file)
         return False
-    old_json = JsonFile.open(filename=path_users_to_file)
+    old_json = await JsonFile.open(filename=path_users_to_file)
     if last_news_id['last_id'] == old_json['last_id']:
         return True
     if old_json['last_id'] > last_news_id['last_id']:
@@ -79,5 +79,5 @@ async def user_news_check(user_telegram_id: int, session: aiohttp.ClientSession)
             await notify_user(user_telegram_id=user_telegram_id, message=msg_to_send)
         except IndexError:
             pass  # id новостей могут идти не по порядку, поэтому надо игнорировать IndexError
-    JsonFile.save(data=last_news_id, filename=path_users_to_file)
+    await JsonFile.save(data=last_news_id, filename=path_users_to_file)
     return True

@@ -74,13 +74,13 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'marks', student_json_file)
 
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
-        JsonFile.save(data=detailed_info, filename=path_users_to_file)
+        await JsonFile.save(data=detailed_info, filename=path_users_to_file)
         return False
-    old_json = JsonFile.open(filename=path_users_to_file)
+    old_json = await JsonFile.open(filename=path_users_to_file)
     try:
         diffs = file_compares(old_file=old_json, new_file=detailed_info)
     except utils.exeptions.FileCompareError:
-        JsonFile.save(data=detailed_info, filename=path_users_to_file)
+        await JsonFile.save(data=detailed_info, filename=path_users_to_file)
         if old_json[0]['subject'] != detailed_info[0]['subject'] and \
                 old_json[-1]['subject'] != detailed_info[-1]['subject']:
             await notify_admins(message=f'Похоже, что начался новый семестр!')
@@ -96,5 +96,5 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
             user_telegram_id=user_telegram_id,
             message=msg
         )
-        JsonFile.save(data=detailed_info, filename=path_users_to_file)
+        await JsonFile.save(data=detailed_info, filename=path_users_to_file)
     return True

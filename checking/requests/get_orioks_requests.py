@@ -114,23 +114,23 @@ async def _user_requests_check_with_subsection(user_telegram_id: int, section: s
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data',
                                       'requests', section, student_json_file)
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
-        JsonFile.save(data=requests_list, filename=path_users_to_file)
+        await JsonFile.save(data=requests_list, filename=path_users_to_file)
         return False
 
-    old_json = JsonFile.open(filename=path_users_to_file)
+    old_json = await JsonFile.open(filename=path_users_to_file)
     if len(requests_list) != len(old_json):
-        JsonFile.save(data=requests_list, filename=path_users_to_file)
+        await JsonFile.save(data=requests_list, filename=path_users_to_file)
         return False
     try:
         diffs = compare(old_list=old_json, new_list=requests_list)
     except exeptions.FileCompareError:
-        JsonFile.save(data=requests_list, filename=path_users_to_file)
+        await JsonFile.save(data=requests_list, filename=path_users_to_file)
         return False
 
     if len(diffs) > 0:
         msg_to_send = await get_requests_to_msg(diffs=diffs)
         await notify_user(user_telegram_id=user_telegram_id, message=msg_to_send)
-    JsonFile.save(data=requests_list, filename=path_users_to_file)
+    await JsonFile.save(data=requests_list, filename=path_users_to_file)
     return True
 
 
