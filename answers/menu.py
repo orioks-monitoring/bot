@@ -20,7 +20,7 @@ async def menu_command(chat_id: int, user_id: int):
                 md.text('Выполнить вход в аккаунт ОРИОКС: /login'),
                 sep='\n',
             ),
-            reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация')
+            reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация'),
         )
     else:
         await bot.send_message(

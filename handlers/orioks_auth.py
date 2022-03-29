@@ -58,10 +58,11 @@ async def cancel_handler(message: types.Message, state: FSMContext):
     await message.reply(
         md.text(
             md.hbold('Авторизация отменена.'),
-            md.text('Если ты боишься вводить свои данные, ознакомься с <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">информацией</a>'),
+            md.text('Если ты боишься вводить свои данные, ознакомься со следующей <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">информацией</a>'),
             sep='\n',
         ),
         reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация'),
+        gi=True,
     )
 
 

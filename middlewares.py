@@ -26,7 +26,8 @@ class UserAgreementMiddleware(BaseMiddleware):
                     md.text('https://orioks-monitoring.github.io/bot/rules'),
                     sep='\n',
                 ),
-                reply_markup=inline_agreement_accept
+                reply_markup=inline_agreement_accept,
+                disable_web_page_preview=True,
             )
             raise CancelHandler()
 
@@ -47,6 +48,7 @@ class UserOrioksAttemptsMiddleware(BaseMiddleware):
                     sep='\n',
                 ),
                 reply_markup=types.ReplyKeyboardRemove(),
+                disable_web_page_preview=True,
             )
             raise CancelHandler()
 
