@@ -1,3 +1,5 @@
+import asyncio
+
 import aiogram.utils.markdown as md
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -142,6 +144,13 @@ async def process_password(message: types.Message, state: FSMContext):
             db.admins_statistics.update_inc_admins_statistics_row_name(
                 row_name=db.admins_statistics.AdminsStatisticsRowNames.orioks_failed_logins
             )
+            await menu.menu_if_failed_login(chat_id=message.chat.id, user_id=message.from_user.id)
+        except asyncio.TimeoutError:
+            await message.reply(md.text(
+                md.hbold('🔧 Сервер ОРИОКС в данный момент недоступен!'),
+                md.text('Пожалуйста, попробуйте ещё раз через 15 минут.'),
+                sep='\n',
+            ))
             await menu.menu_if_failed_login(chat_id=message.chat.id, user_id=message.from_user.id)
     await bot.delete_message(message.chat.id, message.message_id)
     await state.finish()

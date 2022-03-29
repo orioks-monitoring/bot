@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 import pickle
 
@@ -8,6 +9,7 @@ import aioschedule
 import config
 import db.notify_settings
 import db.user_status
+import utils.notify_to_user
 from checking.marks.get_orioks_marks import user_marks_check
 from checking.news.get_orioks_news import user_news_check
 from checking.homeworks.get_orioks_homeworks import user_homeworks_check
@@ -28,7 +30,7 @@ async def make_one_user_check(user_telegram_id: int, users_to_one_more_check: Co
     user_to_add = users_to_one_more_check.get()
     user_notify_settings = db.notify_settings.get_user_notify_settings_to_dict(user_telegram_id=user_telegram_id)
     cookies = _get_user_orioks_cookies_from_telegram_id(user_telegram_id=user_telegram_id)
-    async with aiohttp.ClientSession(cookies=cookies) as session:
+    async with aiohttp.ClientSession(cookies=cookies, timeout=config.REQUESTS_TIMEOUT) as session:
         if user_notify_settings['marks']:
             if not await user_marks_check(user_telegram_id=user_telegram_id, session=session):
                 user_to_add.add(user_telegram_id)
@@ -54,19 +56,26 @@ async def do_checks():
             user_telegram_id=user_telegram_id,
             users_to_one_more_check=users_to_one_more_check
         ))
-    await asyncio.gather(*tasks)
+    try:
+        await asyncio.gather(*tasks)
+    except asyncio.TimeoutError:
+        return await notify_admins(message='Сервер ОРИОКС не отвечает')
+
     tasks = []
     for user_telegram_id in users_to_one_more_check.get():
         tasks.append(make_one_user_check(
             user_telegram_id=user_telegram_id,
             users_to_one_more_check=users_to_one_more_check  # don't care about it
         ))
-    await asyncio.gather(*tasks)
+    try:
+        await asyncio.gather(*tasks)
+    except asyncio.TimeoutError:
+        return await notify_admins(message='Сервер ОРИОКС в данный момент недоступен!')
 
 
 async def scheduler():
     await notify_admins(message='Бот запущен!')
-    aioschedule.every(10).seconds.do(do_checks)
+    aioschedule.every(15).minutes.do(do_checks)
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)
