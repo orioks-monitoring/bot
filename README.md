@@ -40,17 +40,19 @@
 Вы можете просмотреть реализуемые скрипты и самостоятельно решить, пользоваться ли данным готовым Ботом, или выбрать вариант для продвинутых пользователей (см. пункт ["Какие возможности есть ещe?"](#какие-возможности-есть-еще-для-продвинутых-пользователей)) с реализацией на своем собственном сервере. 
 
 ## Какие возможности есть еще? *(для продвинутых пользователей)*
-Есть возможность запустить натоящего Бота на собственном сервере. Более того:
+Есть возможность запустить настоящего Бота на собственном сервере. Более того:
 
-Существуют два независимых скрипта, с помощью которых, имея опыт работы с [GitHub](https://github.com/) и API, можно реализовать работу скрипта на основе [GitHub Actions](https://docs.github.com/en/actions) с выбором платформы для оповещений ([API VK](https://dev.vk.com/) или [API Telegram](https://core.telegram.org/bots/api)) и хранением данных с помощью [API Yandex Disk](https://yandex.ru/dev/disk/rest/):
-- [ORIOKS MONITORING SELENIUM](https://github.com/orioks-monitoring/selenium) — работает, используя [Selenium WebDriver](https://www.selenium.dev/documentation/webdriver/),
-- [ORIOKS MONITORING API](https://github.com/orioks-monitoring/api) работает на основе [ORIOKS STUDENT API](https://orioks.gitlab.io/student-api/)[^2].
+Существуют два независимых скрипта[^2], с помощью которых, имея опыт работы с [GitHub](https://github.com/) и API, можно реализовать работу скрипта на основе [GitHub Actions](https://docs.github.com/en/actions) с выбором платформы для оповещений ([API VK](https://dev.vk.com/) или [API Telegram](https://core.telegram.org/bots/api)) и хранением данных с помощью [API Yandex Disk](https://yandex.ru/dev/disk/rest/):
+- [ORIOKS MONITORING SELENIUM](https://github.com/llirrikk/orioks-monitoring-selenium) — работает, используя [Selenium WebDriver](https://www.selenium.dev/documentation/webdriver/);
+- [ORIOKS MONITORING API](https://github.com/llirrikk/orioks-monitoring-api) работает на основе [ORIOKS STUDENT API](https://orioks.gitlab.io/student-api/)[^3].
 
 ## У меня есть предложение / Я нашел баг. С кем можно связаться?
-Вы можете написать в нашу поддержку — [@orioks_monitoring_support](https://t.me/orioks_monitoring_support).
+Вы можете написать в нашу поддержку — [@orioks_monitoring_support](https://t.me/orioks_monitoring_support), и мы обязательно ответим.
 
 
 
 [^1]: HTTP-клиент - это библиотека методов выполнения [HTTP-запросов](https://habr.com/ru/post/215117/)
 
-[^2]: [ORIOKS STUDENT API](https://orioks.gitlab.io/student-api/) имеет ряд весомых ограничений (не позволяет получить всю необходимую информацию (доступны оповещения только по разделу "Обучение") и имеет значительную задежку в считывании выставленных баллов в НБС) по сравнению с [AIOHTTP](https://docs.aiohttp.org/en/stable/).
+[^2]: В обоих скриптах, [ORIOKS MONITORING SELENIUM](https://github.com/llirrikk/orioks-monitoring-selenium) и [ORIOKS MONITORING API](https://github.com/llirrikk/orioks-monitoring-api), *реализована только функция оповещений по разделу "Обучение"*.
+
+[^3]: [ORIOKS STUDENT API](https://orioks.gitlab.io/student-api/) имеет ряд весомых ограничений (не позволяет получить всю необходимую информацию и имеет значительную задежку в считывании выставленных баллов в НБС) по сравнению с [Selenium WebDriver](https://www.selenium.dev/documentation/webdriver/).
