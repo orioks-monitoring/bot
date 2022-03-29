@@ -13,6 +13,7 @@ import utils.orioks
 from answers import menu
 from forms import Form
 from main import bot
+from utils import notify_to_user
 
 
 async def cmd_start(message: types.Message):
@@ -94,11 +95,12 @@ async def process_login(message: types.Message, state: FSMContext):
             md.text(
                 md.hitalic('🔒 Пароль используется только для однократной авторизации'),
                 md.hitalic('Он не хранится на сервере и будет удалён из истории сообщений'),
-                md.text('Узнать подробнее <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">здесь</a>'),
+                md.text('Узнать подробнее можно <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">здесь</a>'),
                 sep='. '
             ),
             sep='\n',
         ),
+        disable_web_page_preview=True,
     )
 
 
@@ -149,9 +151,10 @@ async def process_password(message: types.Message, state: FSMContext):
         except asyncio.TimeoutError:
             await message.reply(md.text(
                 md.hbold('🔧 Сервер ОРИОКС в данный момент недоступен!'),
-                md.text('Пожалуйста, попробуйте ещё раз через 15 минут.'),
+                md.text('Пожалуйста, попробуй ещё раз через 15 минут.'),
                 sep='\n',
             ))
+            await notify_to_user.notify_admins(message='Сервер ОРИОКС не отвечает')
             await menu.menu_if_failed_login(chat_id=message.chat.id, user_id=message.from_user.id)
     await bot.delete_message(message.chat.id, message.message_id)
     await state.finish()

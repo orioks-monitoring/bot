@@ -21,6 +21,7 @@ async def msg_manual(message: types.Message):
         md.text(
             md.text('https://orioks-monitoring.github.io/bot/documentation'),
         ),
+        disable_web_page_preview=True,
     )
 
 
@@ -33,4 +34,5 @@ async def msg_faq(message: types.Message):
         md.text(
             md.text('https://orioks-monitoring.github.io/bot/faq'),
         ),
+        disable_web_page_preview=True,
     )

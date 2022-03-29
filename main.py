@@ -47,7 +47,8 @@ async def callback_query_handler_notify_settings_btns(callback_query: types.Call
     db.notify_settings.update_user_notify_settings(
         user_telegram_id=callback_query.from_user.id,
         row_name=_row_name,
-        to_value=not db.notify_settings.get_user_notify_settings_to_dict(user_telegram_id=callback_query.from_user.id)[_row_name],
+        to_value=not db.notify_settings.get_user_notify_settings_to_dict(
+            user_telegram_id=callback_query.from_user.id)[_row_name],
     )
     sent = await answers.settings.send_user_settings(user_id=callback_query.from_user.id)
     await bot.delete_message(chat_id=sent.chat.id, message_id=sent.message_id - 1)
