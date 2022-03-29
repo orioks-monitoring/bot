@@ -23,7 +23,7 @@
 
 ## Почему это безопасно?
 Наш Бот - проект с открытым исходным кодом. Он создан действующими студентами МИЭТ для помощи нашему университетскому сообществу. Ваши личные данные:
-* обрабатываются обезличенно и единократно;
+* обрабатываются автоматически, обезличенно и единократно;
 * не хранятся на сервере ни в каком виде;
 * не передаются третьим лицам.
 
@@ -37,7 +37,7 @@
 - [ORIOKS MONITORING API](https://github.com/llirrikk/orioks-monitoring-api) работает на основе [ORIOKS STUDENT API](https://orioks.gitlab.io/student-api/)[^3].
 
 ## У меня есть предложение / Я нашел баг. С кем можно связаться?
-Вы можете написать в нашу поддержку — [@orioks_monitoring_support](https://t.me/orioks_monitoring_support), и мы обязательно ответим.
+Вы можете написать в нашу поддержку — [@orioks_monitoring_support](https://t.me/orioks_monitoring_support), а так же создать [Issues](https://github.com/orioks-monitoring/bot/issues) в репозитории.
 
 
 
