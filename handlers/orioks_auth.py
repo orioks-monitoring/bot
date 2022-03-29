@@ -62,7 +62,7 @@ async def cancel_handler(message: types.Message, state: FSMContext):
             sep='\n',
         ),
         reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация'),
-        gi=True,
+        disable_web_page_preview=True,
     )
 
 
