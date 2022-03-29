@@ -134,6 +134,12 @@ async def _user_requests_check_with_subsection(user_telegram_id: int, section: s
     return True
 
 
-async def user_requests_check(user_telegram_id: int, session: aiohttp.ClientSession):
+async def user_requests_check(user_telegram_id: int, session: aiohttp.ClientSession) -> bool:
+    is_need_one_more_check = False
     for section in ('questionnaire', 'doc', 'reference'):
-        await _user_requests_check_with_subsection(user_telegram_id=user_telegram_id, section=section, session=session)
+        is_need_one_more_check |= await _user_requests_check_with_subsection(
+            user_telegram_id=user_telegram_id,
+            section=section,
+            session=session
+        )
+    return is_need_one_more_check
