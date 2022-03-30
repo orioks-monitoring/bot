@@ -27,11 +27,7 @@ class DisciplineBall:
     might_be: float = 0
 
 
-def _get_orioks_forang(raw_html: str):
-    """return: [{'subject': s, 'tasks': [t], 'ball': {'current': c, 'might_be': m}, ...]"""
-    bs_content = BeautifulSoup(raw_html, "html.parser")
-    forang_raw = bs_content.find(id='forang').text
-    forang = json.loads(forang_raw)
+def _iterate_forang_version_with_list(forang: dict) -> list:
     json_to_save = []
     for discipline in forang['dises']:
         discipline_ball = DisciplineBall()
@@ -53,6 +49,45 @@ def _get_orioks_forang(raw_html: str):
                 'might_be': discipline_ball.might_be,
             }
         })
+    return json_to_save
+
+
+def _iterate_forang_version_with_keys(forang: dict) -> list:
+    json_to_save = []
+    for discipline_index in forang['dises'].keys():
+        discipline_ball = DisciplineBall()
+        one_discipline = []
+        for mark in forang['dises'][discipline_index]['segments'][0]['allKms']:
+            alias = mark['sh']
+
+            current_grade = mark['grade']['b']
+            max_grade = mark['max_ball']
+
+            one_discipline.append({'alias': alias, 'current_grade': current_grade, 'max_grade': max_grade})
+            discipline_ball.current += current_grade if my_isdigit(current_grade) else 0
+            discipline_ball.might_be += max_grade if my_isdigit(max_grade) and current_grade != '-' else 0
+        json_to_save.append({
+            'subject': forang['dises'][discipline_index]['name'],
+            'tasks': one_discipline,
+            'ball': {
+                'current': discipline_ball.current,
+                'might_be': discipline_ball.might_be,
+            }
+        })
+    return json_to_save
+
+
+def _get_orioks_forang(raw_html: str):
+    """return: [{'subject': s, 'tasks': [t], 'ball': {'current': c, 'might_be': m}, ...]"""
+    bs_content = BeautifulSoup(raw_html, "html.parser")
+    forang_raw = bs_content.find(id='forang').text
+    forang = json.loads(forang_raw)
+
+    try:
+        json_to_save = _iterate_forang_version_with_list(forang=forang)
+    except TypeError:
+        json_to_save = _iterate_forang_version_with_keys(forang=forang)
+
     return json_to_save
 
 
