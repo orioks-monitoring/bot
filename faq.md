@@ -38,52 +38,13 @@
 
 
 ## Какие возможности есть еще? *(для продвинутых пользователей)*
-Есть возможность запустить настоящего Бота на собственном сервере, используя [инструкцию](#настройка-на-собственном-сервере). 
+Есть возможность запустить настоящего Бота на собственном сервере, используя [инструкцию](https://github.com/orioks-monitoring/bot#настройка-на-собственном-сервере). 
 
 Более того:
 
 Существуют два независимых скрипта[^2], с помощью которых, имея опыт работы с [GitHub](https://github.com/) и API, можно реализовать работу скрипта на основе [GitHub Actions](https://docs.github.com/en/actions) с выбором платформы для оповещений ([API VK](https://dev.vk.com/) или [API Telegram](https://core.telegram.org/bots/api)) и хранением данных с помощью [API Yandex Disk](https://yandex.ru/dev/disk/rest/):
 - [ORIOKS MONITORING SELENIUM](https://github.com/llirrikk/orioks-monitoring-selenium) — работает, используя [Selenium WebDriver](https://www.selenium.dev/documentation/webdriver/);
 - [ORIOKS MONITORING API](https://github.com/llirrikk/orioks-monitoring-api) работает на основе [ORIOKS STUDENT API](https://orioks.gitlab.io/student-api/).[^3][^4]
-
-### Настройка на собственном сервере
-
-1. Клонирование репозитория и смена директории
-```bash
-git clone https://github.com/orioks-monitoring/bot.git && cd bot
-```
-
-2. Создание вируального окружения и его активация
-```bash
-python3 -m venv venv && source venv/bin/activate
-```
-
-3. Установка необходимых зависимостей в виртуальное окружение
-```bash
-pip install -r requirements.txt
-```
-
-4. Получение [API токена для Telegram бота](https://core.telegram.org/bots/api)
-    1. Пишем `/newbot` сюда: [@BotFather](https://t.me/botfather).
-    2. Запоминаем `TELEGRAM_BOT_API_TOKEN` токен Telegram бота.
-    3. Узнаём свой *Telegram ID*, например, так:
-        1. Пишем `/start` сюда: [@userinfobot](https://t.me/userinfobot).
-        2. Запоминаем свой *Telegram ID* (для использования в `TELEGRAM_ADMIN_IDS_LIST`).
-
-5. Копирование файла с примерами установки переменных окружения в файл `setenv.sh`. Замена примеров на реальные значения
-```bash
-cp setenv-example.sh setenv.sh && vim setenv.sh
-```
-
-6. Активация переменных окружения (будут сброшены после выхода из сессии вируального окружения)
-```bash
-source setenv.sh
-```
-
-7. Запуск Бота
-```bash
-python main.py
-```
 
 
 ## У меня есть предложение / Я нашел баг. С кем можно связаться?
