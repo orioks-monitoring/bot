@@ -44,4 +44,4 @@ def init_notify_settings_inline_btns(is_on_off: dict) -> types.InlineKeyboardMar
 
 
 async def user_settings(message: types.Message):
-    await settings.send_user_settings(user_id=message.from_user.id)
+    await settings.send_user_settings(user_id=message.from_user.id, callback_query=None)
