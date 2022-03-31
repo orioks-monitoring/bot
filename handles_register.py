@@ -1,6 +1,6 @@
 import config
 from forms import Form
-from handlers import commands, orioks_auth, notify_settings, admins, callback_queries
+from handlers import commands, orioks_auth, notify_settings, admins, callback_queries, errors
 
 
 def handles_register(dp):
@@ -46,3 +46,6 @@ def handles_register(dp):
         callback_queries.callback_query_handler_notify_settings_btns,
         lambda c: c.data in config.notify_settings_btns
     )
+
+    """errors"""
+    dp.register_errors_handler(errors.errors_handler, exception=Exception)

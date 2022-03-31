@@ -35,12 +35,7 @@ def _settings_before_start() -> None:
 def main():
     logging.basicConfig(level=logging.INFO)
     _settings_before_start()
-    try:
-        executor.start_polling(dp, skip_updates=True, on_startup=on_startup.on_startup)
-    except Exception as e:
-        time.sleep(10)
-        logging.error(f'{e}. Rebooting...')
-        main()
+    executor.start_polling(dp, skip_updates=True, on_startup=on_startup.on_startup)
 
 
 if __name__ == '__main__':
