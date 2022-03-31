@@ -1,4 +1,5 @@
 import logging
+import time
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -15,6 +16,7 @@ import handles_register
 import middlewares
 from checking import on_startup
 import utils.makedirs
+
 
 bot = Bot(token=config.TELEGRAM_BOT_API_TOKEN, parse_mode=types.ParseMode.HTML)
 storage = MemoryStorage()
@@ -66,7 +68,12 @@ def _settings_before_start() -> None:
 def main():
     logging.basicConfig(level=logging.INFO)
     _settings_before_start()
-    executor.start_polling(dp, skip_updates=True, on_startup=on_startup.on_startup)
+    try:
+        executor.start_polling(dp, skip_updates=True, on_startup=on_startup.on_startup)
+    except Exception as e:
+        time.sleep(10)
+        logging.error(f'{e}. Rebooting...')
+        main()
 
 
 if __name__ == '__main__':

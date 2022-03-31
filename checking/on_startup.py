@@ -2,14 +2,12 @@ import asyncio
 import logging
 import os
 import pickle
-
 import aiohttp
 import aioschedule
 
 import config
 import db.notify_settings
 import db.user_status
-import utils.notify_to_user
 from checking.marks.get_orioks_marks import user_marks_check
 from checking.news.get_orioks_news import user_news_check
 from checking.homeworks.get_orioks_homeworks import user_homeworks_check
@@ -60,6 +58,9 @@ async def do_checks():
         await asyncio.gather(*tasks)
     except asyncio.TimeoutError:
         return await notify_admins(message='Сервер ОРИОКС не отвечает')
+    except Exception as e:
+        logging.error(f'Ошибка в запросах ОРИОКС!\n{e}')
+        await notify_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')
 
     tasks = []
     for user_telegram_id in users_to_one_more_check.get():
@@ -71,6 +72,9 @@ async def do_checks():
         await asyncio.gather(*tasks)
     except asyncio.TimeoutError:
         return await notify_admins(message='Сервер ОРИОКС в данный момент недоступен!')
+    except Exception as e:
+        logging.error(f'Ошибка в запросах ОРИОКС!\n{e}')
+        await notify_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')
 
 
 async def scheduler():
