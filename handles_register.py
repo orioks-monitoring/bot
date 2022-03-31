@@ -1,5 +1,6 @@
+import config
 from forms import Form
-from handlers import commands, orioks_auth, notify_settings, admins
+from handlers import commands, orioks_auth, notify_settings, admins, callback_queries
 
 
 def handles_register(dp):
@@ -16,6 +17,7 @@ def handles_register(dp):
     """orioks_auth"""
     dp.register_message_handler(orioks_auth.cmd_start, text=['Авторизация'])
     dp.register_message_handler(orioks_auth.cmd_start, commands=['login'])
+
 
     dp.register_message_handler(orioks_auth.orioks_logout, commands=['logout'])
 
@@ -34,3 +36,13 @@ def handles_register(dp):
 
     """admins"""
     dp.register_message_handler(admins.admin_get_statistics, commands=['stat'])
+
+    """callback queries"""
+    dp.register_callback_query_handler(
+        callback_queries.callback_query_handler_user_agreement,
+        lambda c: c.data == 'button_user_agreement_accept'
+    )
+    dp.register_callback_query_handler(
+        callback_queries.callback_query_handler_notify_settings_btns,
+        lambda c: c.data in config.notify_settings_btns
+    )
