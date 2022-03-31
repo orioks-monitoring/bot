@@ -25,7 +25,7 @@ ORIOKS_MAX_LOGIN_TRIES = 10
 
 TELEGRAM_STICKER_LOADER = 'CAACAgIAAxkBAAEEIlpiLSwO28zurkSJGRj6J9SLBIAHYQACIwADKA9qFCdRJeeMIKQGIwQ'
 
-REQUESTS_TIMEOUT = aiohttp.ClientTimeout(total=15)
+REQUESTS_TIMEOUT = aiohttp.ClientTimeout(total=30)
 
 ORIOKS_PAGE_URLS = {
     'login': 'https://orioks.miet.ru/user/login',
