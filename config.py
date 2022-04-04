@@ -7,6 +7,7 @@ TELEGRAM_BOT_API_TOKEN = os.getenv('TELEGRAM_BOT_API_TOKEN')
 
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
 STUDENT_FILE_JSON_MASK = '{id}.json'
+PATH_TO_STUDENTS_TRACKING_DATA = os.path.join(BASEDIR, 'users_data', 'tracking_data')
 
 PATH_TO_DB = os.path.join(BASEDIR, 'orioks-monitoring_bot.db')
 PATH_TO_SQL_FOLDER = os.path.join(BASEDIR, 'db', 'sql')

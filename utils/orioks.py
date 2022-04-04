@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 import config
 import db.user_status
 import utils.exeptions
+from utils.delete_file import safe_delete
 
 
 async def orioks_login_save_cookies(user_login: int, user_password: str, user_telegram_id: int) -> None:
@@ -35,29 +36,22 @@ async def orioks_login_save_cookies(user_login: int, user_password: str, user_te
     pickle.dump(cookies, open(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'), 'wb'))
 
 
-def _safe_delete(path: str) -> None:
-    try:
-        os.remove(path)
-    except FileNotFoundError:
-        pass
-
-
 def make_orioks_logout(user_telegram_id: int) -> None:
-    _safe_delete(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'))
+    safe_delete(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'))
 
-    path_to_tracking_data = os.path.join(config.BASEDIR, 'users_data', 'tracking_data')
+    safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'discipline_sources', f'{user_telegram_id}.json'))
 
-    _safe_delete(os.path.join(path_to_tracking_data, 'discipline_sources', f'{user_telegram_id}.json'))
+    safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'news', f'{user_telegram_id}.json'))
 
-    _safe_delete(os.path.join(path_to_tracking_data, 'news', f'{user_telegram_id}.json'))
+    safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'marks', f'{user_telegram_id}.json'))
 
-    _safe_delete(os.path.join(path_to_tracking_data, 'marks', f'{user_telegram_id}.json'))
+    safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'homeworks', f'{user_telegram_id}.json'))
 
-    _safe_delete(os.path.join(path_to_tracking_data, 'homeworks', f'{user_telegram_id}.json'))
-
-    _safe_delete(os.path.join(path_to_tracking_data, 'requests', 'questionnaire', f'{user_telegram_id}.json'))
-    _safe_delete(os.path.join(path_to_tracking_data, 'requests', 'doc', f'{user_telegram_id}.json'))
-    _safe_delete(os.path.join(path_to_tracking_data, 'requests', 'reference', f'{user_telegram_id}.json'))
+    safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', 'questionnaire',
+                             f'{user_telegram_id}.json'))
+    safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', 'doc', f'{user_telegram_id}.json'))
+    safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', 'reference',
+                             f'{user_telegram_id}.json'))
 
     db.user_status.update_user_orioks_authenticated_status(
         user_telegram_id=user_telegram_id,
