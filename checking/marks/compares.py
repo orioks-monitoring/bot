@@ -52,17 +52,13 @@ def get_msg_from_diff(diffs: list) -> str:
         for diff_task in diff_subject['tasks']:
             message += md.text(
                 md.text(
-                    md.text('📗' if diff_task['ball']['is_new_bigger'] else '📕'),
+                    md.text('📓'),
                     md.hbold(diff_task['task']),
                     md.text('по'),
                     md.text(f"«{diff_subject['subject']}»"),
                     sep=' '
                 ),
-                md.text(
-                    md.text('Изменён балл за контрольное мероприятие:'),
-                    sep=' ',
-                ),
-                md.text(
+                md.hbold(
                     md.text(diff_task['ball']['old_ball']),
                     md.text('—>'),
                     md.text(diff_task['ball']['current_ball']),
@@ -81,8 +77,14 @@ def get_msg_from_diff(diffs: list) -> str:
                         md.text(diff_task['ball']['abs_difference']),
                         md.text(')'),
                         sep='',
-                    ),
+                    ) if diff_task['ball']['abs_difference'] != 0 else md.text(''),
                     sep=' ',
+                ),
+                md.text(
+                    md.hcode('🧯 Внимание: балл изменён на 0, возможно, преподаватель поставил временную '
+                             '«оценку-заглушку»\n') if diff_task['ball']['abs_difference'] == 0 else md.text(''),
+                    md.text('Изменён балл за контрольное мероприятие.'),
+                    sep='',
                 ),
                 md.text(),
                 md.text(

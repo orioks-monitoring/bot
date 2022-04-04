@@ -1,15 +1,11 @@
 import logging
-import time
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.utils import executor
 
-import answers
 import config
 
-import db.user_status
-import db.notify_settings
 import db.admins_statistics
 
 import handles_register
