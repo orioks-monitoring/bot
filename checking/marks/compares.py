@@ -1,5 +1,6 @@
 from utils import exeptions
 import aiogram.utils.markdown as md
+from utils.my_isdigit import my_isdigit
 
 
 def file_compares(old_file: list, new_file: list) -> list:
@@ -22,18 +23,34 @@ def file_compares(old_file: list, new_file: list) -> list:
             old_grade = old_task['current_grade']
             new_grade = new_task['current_grade']
             if old_grade != new_grade:
-                old_grade = 0 if old_grade == '-' or old_grade == 'н' else old_grade
-                new_grade = 0 if new_grade == '-' or new_grade == 'н' else new_grade
-                diffs_one_subject.append({
-                    'task': new_task['alias'],
-                    'ball': {
-                        'abs_difference': round(abs(old_grade - new_grade), 2),
-                        'is_new_bigger': new_grade - old_grade >= 0,
-                        'current_ball': new_grade,
-                        'old_ball': old_grade,
-                        'max_grade': new_task['max_grade'],
-                    }
-                })
+                old_grade = 0 if old_grade == '-' else old_grade
+                new_grade = 0 if new_grade == '-' else new_grade
+                if new_grade == 'н' or old_grade == 'н':
+                    new_grade_to_digit = new_grade if my_isdigit(new_grade) else 0
+                    old_grade_to_digit = old_grade if my_isdigit(old_grade) else 0
+                    diffs_one_subject.append({
+                        'type': 'missing_grade',
+                        'task': new_task['alias'],
+                        'ball': {
+                            'abs_difference': round(abs(old_grade_to_digit - new_grade_to_digit), 2),
+                            'is_new_bigger': new_grade_to_digit - old_grade_to_digit >= 0,
+                            'current_ball': new_grade,
+                            'old_ball': old_grade,
+                            'max_grade': new_task['max_grade'],
+                        }
+                    })
+                else:
+                    diffs_one_subject.append({
+                        'type': 'default',
+                        'task': new_task['alias'],
+                        'ball': {
+                            'abs_difference': round(abs(old_grade - new_grade), 2),
+                            'is_new_bigger': new_grade - old_grade >= 0,
+                            'current_ball': new_grade,
+                            'old_ball': old_grade,
+                            'max_grade': new_task['max_grade'],
+                        }
+                    })
         if len(diffs_one_subject) != 0:
             diffs.append({
                 'subject': new['subject'],
@@ -50,6 +67,7 @@ def get_msg_from_diff(diffs: list) -> str:
     message = ''
     for diff_subject in diffs:
         for diff_task in diff_subject['tasks']:
+            _is_warning_delta_zero_show = diff_task['ball']['abs_difference'] == 0 and diff_task['type'] == 'default'
             message += md.text(
                 md.text(
                     md.text('📓'),
@@ -82,7 +100,7 @@ def get_msg_from_diff(diffs: list) -> str:
                 ),
                 md.text(
                     md.hcode('🧯 Внимание: балл изменён на 0, возможно, преподаватель поставил временную '
-                             '«оценку-заглушку»\n') if diff_task['ball']['abs_difference'] == 0 else md.text(''),
+                             '«оценку-заглушку»\n') if _is_warning_delta_zero_show else md.text(''),
                     md.text('Изменён балл за контрольное мероприятие.'),
                     sep='',
                 ),

@@ -11,14 +11,7 @@ import utils
 from utils.json_files import JsonFile
 from utils.notify_to_user import notify_admins, notify_user
 from utils.make_request import get_request
-
-
-def my_isdigit(x) -> bool:
-    try:
-        float(x)
-        return True
-    except ValueError:
-        return False
+from utils.my_isdigit import my_isdigit
 
 
 @dataclass
