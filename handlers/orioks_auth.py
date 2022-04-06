@@ -148,7 +148,7 @@ async def process_password(message: types.Message, state: FSMContext):
                 row_name=db.admins_statistics.AdminsStatisticsRowNames.orioks_failed_logins
             )
             await menu.menu_if_failed_login(chat_id=message.chat.id, user_id=message.from_user.id)
-        except asyncio.TimeoutError:
+        except (asyncio.TimeoutError, TypeError) as e:
             await message.reply(md.text(
                 md.hbold('🔧 Сервер ОРИОКС в данный момент недоступен!'),
                 md.text('Пожалуйста, попробуй ещё раз через 15 минут.'),
