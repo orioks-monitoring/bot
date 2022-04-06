@@ -2,6 +2,8 @@ import asyncio
 import logging
 import os
 import pickle
+from datetime import datetime
+
 import aiohttp
 import aioschedule
 
@@ -74,6 +76,7 @@ async def make_one_user_check(user_telegram_id: int, users_to_one_more_check: Co
 
 
 async def do_checks():
+    logging.info(f'started: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
     users_to_check = db.user_status.select_all_orioks_authenticated_users()
     users_to_one_more_check = ContextVar('users_to_one_more_check', default=set())
     tasks = []
@@ -103,6 +106,7 @@ async def do_checks():
     except Exception as e:
         logging.error(f'Ошибка в запросах ОРИОКС!\n{e}')
         await notify_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')
+    logging.info(f'ended: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
 
 
 async def scheduler():
