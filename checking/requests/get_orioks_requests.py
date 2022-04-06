@@ -13,6 +13,9 @@ import aiogram.utils.markdown as md
 
 
 def _orioks_parse_requests(raw_html: str, section: str) -> list:
+    new_messages_td_list_index = 7
+    if section == questionnaire:
+        new_messages_td_list_index = 6
     bs_content = BeautifulSoup(raw_html, "html.parser")
     table_raw = bs_content.select('.table.table-condensed.table-thread tr:not(:first-child)')
     requests = []
@@ -21,7 +24,7 @@ def _orioks_parse_requests(raw_html: str, section: str) -> list:
         requests.append({
             'thread_id': _thread_id,
             'status': tr.find_all('td')[1].text,
-            'new_messages': int(tr.find_all('td')[7].select_one('b').text),
+            'new_messages': int(tr.find_all('td')[new_messages_td_list_index].select_one('b').text),
             'about': {
                 'name': tr.find_all('td')[3].text,
                 'url': config.ORIOKS_PAGE_URLS['masks']['requests'][section].format(id=_thread_id),
