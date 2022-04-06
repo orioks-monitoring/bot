@@ -14,7 +14,7 @@ import aiogram.utils.markdown as md
 
 def _orioks_parse_requests(raw_html: str, section: str) -> list:
     new_messages_td_list_index = 7
-    if section == questionnaire:
+    if section == 'questionnaire':
         new_messages_td_list_index = 6
     bs_content = BeautifulSoup(raw_html, "html.parser")
     table_raw = bs_content.select('.table.table-condensed.table-thread tr:not(:first-child)')
