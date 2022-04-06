@@ -10,7 +10,7 @@ _sem = asyncio.Semaphore(1)
 
 async def get_request(url: str, session: aiohttp.ClientSession) -> str:
     async with _sem:  # next coroutine(s) will stuck here until the previous is done
-        await asyncio.sleep(1)  # orioks dont die please
+        await asyncio.sleep(2)  # orioks dont die please
         logging.debug(f'get request to: {url}')
         async with session.get(str(url)) as resp:
             raw_html = await resp.text()

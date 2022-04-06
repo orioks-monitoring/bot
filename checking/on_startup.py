@@ -107,7 +107,7 @@ async def do_checks():
 
 async def scheduler():
     await notify_admins(message='Бот запущен!')
-    aioschedule.every(15).minutes.do(do_checks)
+    aioschedule.every(10).minutes.do(do_checks)
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)
