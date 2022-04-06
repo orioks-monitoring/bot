@@ -10,6 +10,7 @@ import db.admins_statistics
 import keyboards
 import utils.exeptions
 import utils.orioks
+import utils.handle_orioks_logout
 from answers import menu
 from forms import Form
 from main import bot
@@ -120,6 +121,13 @@ async def process_password(message: types.Message, state: FSMContext):
         )
     await Form.next()
     await state.update_data(password=message.text)
+    if db.user_status.get_user_orioks_authenticated_status(user_telegram_id=message.from_user.id):
+        await state.finish()
+        await bot.delete_message(message.chat.id, message.message_id)
+        return await bot.send_message(
+            chat_id=message.chat.id,
+            text=md.text('Авторизация уже выполнена')
+        )
     async with state.proxy() as data:
         sticker_message = await bot.send_sticker(
             message.chat.id,
@@ -149,11 +157,14 @@ async def process_password(message: types.Message, state: FSMContext):
             )
             await menu.menu_if_failed_login(chat_id=message.chat.id, user_id=message.from_user.id)
         except (asyncio.TimeoutError, TypeError) as e:
-            await message.reply(md.text(
-                md.hbold('🔧 Сервер ОРИОКС в данный момент недоступен!'),
-                md.text('Пожалуйста, попробуй ещё раз через 15 минут.'),
-                sep='\n',
-            ))
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text=md.text(
+                    md.hbold('🔧 Сервер ОРИОКС в данный момент недоступен!'),
+                    md.text('Пожалуйста, попробуй ещё раз через 15 минут.'),
+                    sep='\n',
+                )
+            )
             await notify_to_user.notify_admins(message='Сервер ОРИОКС не отвечает')
             await menu.menu_if_failed_login(chat_id=message.chat.id, user_id=message.from_user.id)
     await bot.delete_message(message.chat.id, message.message_id)
@@ -175,4 +186,4 @@ async def orioks_logout(message: types.Message):
         user_telegram_id=message.from_user.id,
         is_user_orioks_authenticated=False
     )
-    utils.orioks.make_orioks_logout(user_telegram_id=message.from_user.id)
+    utils.handle_orioks_logout.make_orioks_logout(user_telegram_id=message.from_user.id)
