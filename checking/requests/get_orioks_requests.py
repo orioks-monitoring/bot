@@ -5,7 +5,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 import config
-from utils import exeptions
+from utils import exceptions
 from utils.json_files import JsonFile
 from utils.notify_to_user import notify_user
 from utils.make_request import get_request
@@ -95,7 +95,7 @@ def compare(old_list: list, new_list: list) -> list:
     diffs = []
     for old, new in zip(old_list, new_list):
         if old['thread_id'] != new['thread_id']:
-            raise exeptions.FileCompareError
+            raise exceptions.FileCompareError
         if old['status'] != new['status']:
             diffs.append({
                 'type': 'new_status',  # or `new_message`
@@ -126,7 +126,7 @@ async def _user_requests_check_with_subsection(user_telegram_id: int, section: s
         return False
     try:
         diffs = compare(old_list=old_json, new_list=requests_list)
-    except exeptions.FileCompareError:
+    except exceptions.FileCompareError:
         await JsonFile.save(data=requests_list, filename=path_users_to_file)
         return False
 

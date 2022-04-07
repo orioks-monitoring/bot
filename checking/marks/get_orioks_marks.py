@@ -73,7 +73,10 @@ def _iterate_forang_version_with_keys(forang: dict) -> list:
 def _get_orioks_forang(raw_html: str):
     """return: [{'subject': s, 'tasks': [t], 'ball': {'current': c, 'might_be': m}, ...]"""
     bs_content = BeautifulSoup(raw_html, "html.parser")
-    forang_raw = bs_content.find(id='forang').text
+    try:
+        forang_raw = bs_content.find(id='forang').text
+    except AttributeError:
+        raise utils.exceptions.OrioksCantParseData
     forang = json.loads(forang_raw)
 
     try:
@@ -107,7 +110,7 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
     old_json = await JsonFile.open(filename=path_users_to_file)
     try:
         diffs = file_compares(old_file=old_json, new_file=detailed_info)
-    except utils.exeptions.FileCompareError:
+    except utils.exceptions.FileCompareError:
         await JsonFile.save(data=detailed_info, filename=path_users_to_file)
         if old_json[0]['subject'] != detailed_info[0]['subject'] and \
                 old_json[-1]['subject'] != detailed_info[-1]['subject']:

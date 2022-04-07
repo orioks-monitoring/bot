@@ -8,7 +8,7 @@ import config
 import db.user_status
 import db.admins_statistics
 import keyboards
-import utils.exeptions
+import utils.exceptions
 import utils.orioks
 import utils.handle_orioks_logout
 from answers import menu
@@ -151,7 +151,7 @@ async def process_password(message: types.Message, state: FSMContext):
             db.admins_statistics.update_inc_admins_statistics_row_name(
                 row_name=db.admins_statistics.AdminsStatisticsRowNames.orioks_success_logins
             )
-        except utils.exeptions.OrioksInvalidLoginCredsError:
+        except utils.exceptions.OrioksInvalidLoginCredsError:
             db.admins_statistics.update_inc_admins_statistics_row_name(
                 row_name=db.admins_statistics.AdminsStatisticsRowNames.orioks_failed_logins
             )

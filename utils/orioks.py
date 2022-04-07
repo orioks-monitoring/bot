@@ -7,7 +7,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 import config
-import utils.exeptions
+import utils.exceptions
 from datetime import datetime
 from utils.notify_to_user import notify_user
 
@@ -43,7 +43,7 @@ async def orioks_login_save_cookies(user_login: int, user_password: str, user_te
             try:
                 async with session.post(config.ORIOKS_PAGE_URLS['login'], data=login_data) as resp:
                     if str(resp.url) == config.ORIOKS_PAGE_URLS['login']:
-                        raise utils.exeptions.OrioksInvalidLoginCredsError
+                        raise utils.exceptions.OrioksInvalidLoginCredsError
             except asyncio.TimeoutError as e:
                 raise e
 

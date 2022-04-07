@@ -14,6 +14,7 @@ from checking.marks.get_orioks_marks import user_marks_check
 from checking.news.get_orioks_news import user_news_check
 from checking.homeworks.get_orioks_homeworks import user_homeworks_check
 from checking.requests.get_orioks_requests import user_requests_check
+import utils
 from utils.notify_to_user import notify_admins
 from contextvars import ContextVar
 import utils.delete_file
@@ -75,6 +76,18 @@ async def make_one_user_check(user_telegram_id: int, users_to_one_more_check: Co
     )
 
 
+async def run_requests(tasks: list) -> None:
+    try:
+        await asyncio.gather(*tasks)
+    except asyncio.TimeoutError:
+        return await notify_admins(message='Сервер ОРИОКС не отвечает')
+    except utils.exceptions.OrioksCantParseData:
+        logging.info('exception: utils.exceptions.OrioksCantParseData')
+    except Exception as e:
+        logging.error(f'Ошибка в запросах ОРИОКС!\n{e}')
+        await notify_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')
+
+
 async def do_checks():
     logging.info(f'started: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
     users_to_check = db.user_status.select_all_orioks_authenticated_users()
@@ -85,13 +98,7 @@ async def do_checks():
             user_telegram_id=user_telegram_id,
             users_to_one_more_check=users_to_one_more_check
         ))
-    try:
-        await asyncio.gather(*tasks)
-    except asyncio.TimeoutError:
-        return await notify_admins(message='Сервер ОРИОКС не отвечает')
-    except Exception as e:
-        logging.error(f'Ошибка в запросах ОРИОКС!\n{e}')
-        await notify_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')
+    await run_requests(tasks=tasks)
 
     tasks = []
     for user_telegram_id in users_to_one_more_check.get():
@@ -99,13 +106,7 @@ async def do_checks():
             user_telegram_id=user_telegram_id,
             users_to_one_more_check=users_to_one_more_check  # don't care about it
         ))
-    try:
-        await asyncio.gather(*tasks)
-    except asyncio.TimeoutError:
-        return await notify_admins(message='Сервер ОРИОКС в данный момент недоступен!')
-    except Exception as e:
-        logging.error(f'Ошибка в запросах ОРИОКС!\n{e}')
-        await notify_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')
+    await run_requests(tasks=tasks)
     logging.info(f'ended: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
 
 
