@@ -1,6 +1,15 @@
 from utils import exceptions
 import aiogram.utils.markdown as md
 from utils.my_isdigit import my_isdigit
+from typing import NamedTuple
+
+
+class DisciplineObject(NamedTuple):
+    title_text: str
+    mark_change_text: str
+    current_grade: float
+    max_grade: float
+    caption: str
 
 
 def file_compares(old_file: list, new_file: list) -> list:
@@ -63,12 +72,12 @@ def file_compares(old_file: list, new_file: list) -> list:
     return diffs
 
 
-def get_msg_from_diff(diffs: list) -> str:
-    message = ''
+def get_discipline_objs_from_diff(diffs: list) -> list:
+    objs = []
     for diff_subject in diffs:
         for diff_task in diff_subject['tasks']:
             _is_warning_delta_zero_show = diff_task['ball']['abs_difference'] == 0 and diff_task['type'] == 'default'
-            message += md.text(
+            _caption = md.text(
                 md.text(
                     md.text('📓'),
                     md.hbold(diff_task['task']),
@@ -120,4 +129,39 @@ def get_msg_from_diff(diffs: list) -> str:
                 md.text(),
                 sep='\n',
             )
-    return message
+            objs.append(  # TODO: заменить как-то это повторяющееся безобразие
+                DisciplineObject(
+                    title_text=md.text(
+                        md.text(diff_task['task']),
+                        md.text('по'),
+                        md.text(f"«{diff_subject['subject']}»"),
+                        sep=' '
+                    ),
+                    mark_change_text=md.text(
+                        md.text(diff_task['ball']['old_ball']),
+                        md.text('—>'),
+                        md.text(diff_task['ball']['current_ball']),
+                        md.text(
+                            md.text('('),
+                            md.text('из'),
+                            md.text(' '),
+                            md.text(diff_task['ball']['max_grade']),
+                            md.text(')'),
+                            sep='',
+                        ),
+                        md.text(
+                            md.text('('),
+                            md.text('+' if diff_task['ball']['is_new_bigger'] else '-'),
+                            md.text(' '),
+                            md.text(diff_task['ball']['abs_difference']),
+                            md.text(')'),
+                            sep='',
+                        ) if diff_task['ball']['abs_difference'] != 0 else md.text(''),
+                        sep=' ',
+                    ),
+                    current_grade=diff_task['ball']['current_ball'],
+                    max_grade=diff_task['ball']['max_grade'],
+                    caption=_caption
+                )
+            )
+    return objs

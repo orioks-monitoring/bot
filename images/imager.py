@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import NamedTuple
 import pathlib
 import config
+import secrets
 
 
 class PathToImages(NamedTuple):
@@ -41,7 +42,6 @@ class Imager:
 
     def _get_image_by_grade(self, current_grade, max_grade):
         if current_grade / max_grade < 0.5:
-
             self.image = Image.open(self._background_paths.two)
             self.draw_text = ImageDraw.Draw(self.image)
         elif current_grade / max_grade < 0.7:
@@ -179,7 +179,7 @@ class Imager:
         self._calculate_font_size_and_text_width(title_text, side_text)
         self._calculate_container(title_text, side_text, mark_change_text=mark_change_text)
         self._draw_text_marks(title_text, mark_change_text, side_text)
-        path_to_result_image = pathlib.Path(os.path.join(config.BASEDIR, 'temp.png'))
+        path_to_result_image = pathlib.Path(os.path.join(config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
         self.image.save(path_to_result_image)
         return path_to_result_image
 
@@ -194,6 +194,6 @@ class Imager:
             return self.image
         self._calculate_font_size_and_text_width(title_text, side_text)
         self._draw_text_news(title_text, side_text, url)
-        path_to_result_image = pathlib.Path(os.path.join(config.BASEDIR, 'temp.png'))
+        path_to_result_image = pathlib.Path(os.path.join(config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
         self.image.save(path_to_result_image)
         return path_to_result_image

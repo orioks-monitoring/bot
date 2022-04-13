@@ -6,12 +6,14 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 import config
-from checking.marks.compares import file_compares, get_msg_from_diff
+from checking.marks.compares import file_compares, get_discipline_objs_from_diff
 import utils
 from utils.json_files import JsonFile
 from utils.notify_to_user import SendToTelegram
 from utils.make_request import get_request
 from utils.my_isdigit import my_isdigit
+from images.imager import Imager
+from utils.delete_file import safe_delete
 
 
 @dataclass
@@ -122,10 +124,19 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
         return False
 
     if len(diffs) > 0:
-        msg = get_msg_from_diff(diffs)
-        await SendToTelegram.text_message_to_user(
-            user_telegram_id=user_telegram_id,
-            message=msg
-        )
+        for discipline_obj in get_discipline_objs_from_diff(diffs=diffs):
+            photo_path = Imager().get_image_marks(
+                current_grade=discipline_obj.current_grade,
+                max_grade=discipline_obj.max_grade,
+                title_text=discipline_obj.title_text,
+                mark_change_text=discipline_obj.mark_change_text,
+                side_text='Изменён балл за контрольное мероприятие'
+            )
+            await SendToTelegram.photo_message_to_user(
+                user_telegram_id=user_telegram_id,
+                photo_path=photo_path,
+                caption=discipline_obj.caption
+            )
+            safe_delete(path=photo_path)
         await JsonFile.save(data=detailed_info, filename=path_users_to_file)
     return True
