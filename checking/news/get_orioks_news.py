@@ -7,8 +7,16 @@ from bs4 import BeautifulSoup
 import config
 from utils.json_files import JsonFile
 from utils.make_request import get_request
-from utils.notify_to_user import notify_admins, notify_user
+from utils.notify_to_user import SendToTelegram
 import aiogram.utils.markdown as md
+from images.imager import Imager
+from utils.delete_file import safe_delete
+from typing import NamedTuple
+
+
+class NewsObject(NamedTuple):
+    headline_news: str
+    url: str
 
 
 def _orioks_parse_news(raw_html: str) -> dict:
@@ -31,32 +39,34 @@ def _find_in_str_with_beginning_and_ending(string_to_find: str, beginning: str, 
     return regex_result.replace(beginning, '').replace(ending, '').strip()
 
 
-async def get_news_to_msg(news_id: int, session: aiohttp.ClientSession) -> str:
+async def get_news_by_news_id(news_id: int, session: aiohttp.ClientSession) -> NewsObject:
     raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id), session=session)
     bs_content = BeautifulSoup(raw_html, "html.parser")
     well_raw = bs_content.find_all('div', {'class': 'well'})[0]
-
-    news_name = _find_in_str_with_beginning_and_ending(
-        string_to_find=well_raw.text,
-        beginning='Заголовок:',
-        ending='Тело новости:'
+    return NewsObject(
+        headline_news=_find_in_str_with_beginning_and_ending(
+            string_to_find=well_raw.text,
+            beginning='Заголовок:',
+            ending='Тело новости:'),
+        url=config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id)
     )
 
+
+def transform_news_to_msg(news_obj: NewsObject) -> str:
     return md.text(
         md.text(
             md.text('📰'),
-            md.hbold(news_name),
+            md.hbold(news_obj.headline_news),
             sep=' '
         ),
         md.text(),
         md.text(
             md.text('Опубликована новость, подробности по ссылке:'),
-            md.text(config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id)),
+            md.text(news_obj.url),
             sep=' ',
         ),
         sep='\n',
-    )  # TODO: сюда бы еще картиночку красивую типа такую, только с лого-глазом, газетой, заголовком новости, QR-кодом:
-    #           https://techcrunch.com/wp-content/uploads/2022/01/silvergate-diem-meta-facebook.jpg
+    )
 
 
 async def user_news_check(user_telegram_id: int, session: aiohttp.ClientSession):
@@ -70,13 +80,26 @@ async def user_news_check(user_telegram_id: int, session: aiohttp.ClientSession)
     if last_news_id['last_id'] == old_json['last_id']:
         return True
     if old_json['last_id'] > last_news_id['last_id']:
-        await notify_admins(message=f'[{user_telegram_id}] - old_json["last_id"] > last_news_id["last_id"]')
+        await SendToTelegram.message_to_admins(
+            message=f'[{user_telegram_id}] - old_json["last_id"] > last_news_id["last_id"]'
+        )
         raise Exception(f'[{user_telegram_id}] - old_json["last_id"] > last_news_id["last_id"]')
     difference = last_news_id['last_id'] - old_json['last_id']
     for news_id in range(old_json['last_id'] + 1, old_json['last_id'] + difference + 1):
         try:
-            msg_to_send = await get_news_to_msg(news_id=news_id, session=session)
-            await notify_user(user_telegram_id=user_telegram_id, message=msg_to_send)
+            news_obj = await get_news_by_news_id(news_id=news_id, session=session)
+            path_to_img = Imager().get_image_news(
+                title_text=news_obj.headline_news,
+                side_text='Опубликована новость',
+                url=news_obj.url
+            )
+
+            await SendToTelegram.photo_message_to_user(
+                user_telegram_id=user_telegram_id,
+                photo_path=path_to_img,
+                caption=transform_news_to_msg(news_obj=news_obj)
+            )
+            safe_delete(path=path_to_img)
         except IndexError:
             pass  # id новостей могут идти не по порядку, поэтому надо игнорировать IndexError
     await JsonFile.save(data=last_news_id, filename=path_users_to_file)

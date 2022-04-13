@@ -9,7 +9,7 @@ import config
 from checking.marks.compares import file_compares, get_msg_from_diff
 import utils
 from utils.json_files import JsonFile
-from utils.notify_to_user import notify_admins, notify_user
+from utils.notify_to_user import SendToTelegram
 from utils.make_request import get_request
 from utils.my_isdigit import my_isdigit
 
@@ -99,7 +99,7 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
     try:
         detailed_info = await get_orioks_marks(session=session)
     except FileNotFoundError:
-        await notify_admins(message=f'FileNotFoundError - {user_telegram_id}')
+        await SendToTelegram.message_to_admins(message=f'FileNotFoundError - {user_telegram_id}')
         raise Exception(f'FileNotFoundError - {user_telegram_id}')
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'marks', student_json_file)
@@ -114,8 +114,8 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
         await JsonFile.save(data=detailed_info, filename=path_users_to_file)
         if old_json[0]['subject'] != detailed_info[0]['subject'] and \
                 old_json[-1]['subject'] != detailed_info[-1]['subject']:
-            await notify_admins(message=f'Похоже, что начался новый семестр!')
-            await notify_user(
+            await SendToTelegram.message_to_admins(message=f'Похоже, что начался новый семестр!')
+            await SendToTelegram.text_message_to_user(
                 user_telegram_id=user_telegram_id,
                 message='🎉 Поздравляем с началом нового семестра и желаем успехов в учёбе!'
             )
@@ -123,7 +123,7 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
 
     if len(diffs) > 0:
         msg = get_msg_from_diff(diffs)
-        await notify_user(
+        await SendToTelegram.text_message_to_user(
             user_telegram_id=user_telegram_id,
             message=msg
         )

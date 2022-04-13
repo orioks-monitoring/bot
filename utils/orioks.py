@@ -9,7 +9,8 @@ from bs4 import BeautifulSoup
 import config
 import utils.exceptions
 from datetime import datetime
-from utils.notify_to_user import notify_user
+from utils.notify_to_user import SendToTelegram
+import aiogram.utils.markdown as md
 
 
 _sem = asyncio.Semaphore(1)
@@ -20,11 +21,19 @@ async def orioks_login_save_cookies(user_login: int, user_password: str, user_te
     if user_queue - 2 > 0:
         logging.info(f'login: {user_queue=}')
         _cats_queue_emoji = f'{"🐈" * (user_queue - 1)}🐈‍⬛'
-        await notify_user(user_telegram_id=user_telegram_id, message=f'{_cats_queue_emoji}\nТвой номер в '
-                                                                     f'очереди на авторизацию: {user_queue}. Ты '
-                                                                     f'получишь уведомление, когда она будет выполнена.'
-                                                                     f'\nЭто предотвращает слишком большую нагрузку на '
-                                                                     f'ОРИОКС')
+        await SendToTelegram.text_message_to_user(
+            user_telegram_id=user_telegram_id,
+            message=md.text(
+                md.text(_cats_queue_emoji),
+                md.text(
+                    md.text(f'Твой номер в очереди на авторизацию: {user_queue}.'),
+                    md.text('Ты получишь уведомление, когда она будет выполнена.'),
+                    sep=' ',
+                ),
+                md.text('Это предотвращает слишком большую нагрузку на ОРИОКС'),
+                sep='\n',
+            )
+        )
     async with _sem:  # orioks dont die please
         async with aiohttp.ClientSession(timeout=config.REQUESTS_TIMEOUT) as session:
             try:

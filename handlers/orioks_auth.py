@@ -14,7 +14,7 @@ import utils.handle_orioks_logout
 from answers import menu
 from forms import Form
 from main import bot
-from utils import notify_to_user
+from utils.notify_to_user import SendToTelegram
 
 
 async def cmd_start(message: types.Message):
@@ -165,7 +165,7 @@ async def process_password(message: types.Message, state: FSMContext):
                     sep='\n',
                 )
             )
-            await notify_to_user.notify_admins(message='Сервер ОРИОКС не отвечает')
+            await SendToTelegram.message_to_admins(message='Сервер ОРИОКС не отвечает')
             await menu.menu_if_failed_login(chat_id=message.chat.id, user_id=message.from_user.id)
     await bot.delete_message(message.chat.id, message.message_id)
     await state.finish()
