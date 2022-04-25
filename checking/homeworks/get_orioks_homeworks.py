@@ -8,7 +8,7 @@ import config
 from utils import exceptions
 from utils.json_files import JsonFile
 from utils.make_request import get_request
-from utils.notify_to_user import notify_user
+from utils.notify_to_user import SendToTelegram
 import aiogram.utils.markdown as md
 
 
@@ -131,6 +131,6 @@ async def user_homeworks_check(user_telegram_id: int, session: aiohttp.ClientSes
 
     if len(diffs) > 0:
         msg_to_send = await get_homeworks_to_msg(diffs=diffs)
-        await notify_user(user_telegram_id=user_telegram_id, message=msg_to_send)
+        await SendToTelegram.text_message_to_user(user_telegram_id=user_telegram_id, message=msg_to_send)
     await JsonFile.save(data=homeworks_list, filename=path_users_to_file)
     return True

@@ -15,7 +15,7 @@ from checking.news.get_orioks_news import user_news_check
 from checking.homeworks.get_orioks_homeworks import user_homeworks_check
 from checking.requests.get_orioks_requests import user_requests_check
 import utils
-from utils.notify_to_user import notify_admins
+from utils.notify_to_user import SendToTelegram
 from contextvars import ContextVar
 import utils.delete_file
 
@@ -80,14 +80,14 @@ async def run_requests(tasks: list) -> None:
     try:
         await asyncio.gather(*tasks)
     except asyncio.TimeoutError:
-        return await notify_admins(message='Сервер ОРИОКС не отвечает')
+        return await SendToTelegram.message_to_admins(message='Сервер ОРИОКС не отвечает')
     except utils.exceptions.OrioksCantParseData:
         logging.info('exception: utils.exceptions.OrioksCantParseData')
     except utils.exceptions.OrioksEmptyForang:
         logging.info('exception: utils.exceptions.OrioksEmptyForang')
     except Exception as e:
         logging.error(f'Ошибка в запросах ОРИОКС!\n{e}')
-        await notify_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')
+        await SendToTelegram.message_to_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')
 
 
 async def do_checks():
@@ -113,7 +113,7 @@ async def do_checks():
 
 
 async def scheduler():
-    await notify_admins(message='Бот запущен!')
+    await SendToTelegram.message_to_admins(message='Бот запущен!')
     aioschedule.every(10).minutes.do(do_checks)
     while True:
         await aioschedule.run_pending()
