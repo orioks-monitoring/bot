@@ -6,12 +6,14 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 import config
-from checking.marks.compares import file_compares, get_msg_from_diff
+from checking.marks.compares import file_compares, get_discipline_objs_from_diff
 import utils
 from utils.json_files import JsonFile
-from utils.notify_to_user import notify_admins, notify_user
+from utils.notify_to_user import SendToTelegram
 from utils.make_request import get_request
 from utils.my_isdigit import my_isdigit
+from images.imager import Imager
+from utils.delete_file import safe_delete
 
 
 @dataclass
@@ -27,6 +29,8 @@ def _iterate_forang_version_with_list(forang: dict) -> list:
         one_discipline = []
         for mark in discipline['segments'][0]['allKms']:
             alias = mark['sh']
+            if mark['sh'] in ('-', None, ' ', '') and mark['id'] == discipline['segments'][0]['allKms'][-1]['id']:
+                alias = discipline['formControl']['name']  # issue 19: если нет алиаса на последнем КМ
 
             current_grade = mark['grade']['b']
             max_grade = mark['max_ball']
@@ -51,7 +55,10 @@ def _iterate_forang_version_with_keys(forang: dict) -> list:
         discipline_ball = DisciplineBall()
         one_discipline = []
         for mark in forang['dises'][discipline_index]['segments'][0]['allKms']:
-            alias = mark['sh']
+            alias = mark['sh']  # issue 19: если нет алиаса на последнем КМ
+            if mark['sh'] in ('-', None, ' ', '') and \
+                    mark['id'] == forang['dises'][discipline_index]['segments'][0]['allKms'][-1]['id']:
+                alias = forang['dises'][discipline_index]['formControl']['name']
 
             current_grade = mark['grade']['b']
             max_grade = mark['max_ball']
@@ -99,7 +106,7 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
     try:
         detailed_info = await get_orioks_marks(session=session)
     except FileNotFoundError:
-        await notify_admins(message=f'FileNotFoundError - {user_telegram_id}')
+        await SendToTelegram.message_to_admins(message=f'FileNotFoundError - {user_telegram_id}')
         raise Exception(f'FileNotFoundError - {user_telegram_id}')
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'marks', student_json_file)
@@ -114,18 +121,27 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
         await JsonFile.save(data=detailed_info, filename=path_users_to_file)
         if old_json[0]['subject'] != detailed_info[0]['subject'] and \
                 old_json[-1]['subject'] != detailed_info[-1]['subject']:
-            await notify_admins(message=f'Похоже, что начался новый семестр!')
-            await notify_user(
+            await SendToTelegram.message_to_admins(message=f'Похоже, что начался новый семестр!')
+            await SendToTelegram.text_message_to_user(
                 user_telegram_id=user_telegram_id,
                 message='🎉 Поздравляем с началом нового семестра и желаем успехов в учёбе!'
             )
         return False
 
     if len(diffs) > 0:
-        msg = get_msg_from_diff(diffs)
-        await notify_user(
-            user_telegram_id=user_telegram_id,
-            message=msg
-        )
+        for discipline_obj in get_discipline_objs_from_diff(diffs=diffs):
+            photo_path = Imager().get_image_marks(
+                current_grade=discipline_obj.current_grade,
+                max_grade=discipline_obj.max_grade,
+                title_text=discipline_obj.title_text,
+                mark_change_text=discipline_obj.mark_change_text,
+                side_text='Изменён балл за контрольное мероприятие'
+            )
+            await SendToTelegram.photo_message_to_user(
+                user_telegram_id=user_telegram_id,
+                photo_path=photo_path,
+                caption=discipline_obj.caption
+            )
+            safe_delete(path=photo_path)
         await JsonFile.save(data=detailed_info, filename=path_users_to_file)
     return True
