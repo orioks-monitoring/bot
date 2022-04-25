@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import config
 from utils import exceptions
 from utils.json_files import JsonFile
-from utils.notify_to_user import notify_user
+from utils.notify_to_user import SendToTelegram
 from utils.make_request import get_request
 import aiogram.utils.markdown as md
 
@@ -132,7 +132,7 @@ async def _user_requests_check_with_subsection(user_telegram_id: int, section: s
 
     if len(diffs) > 0:
         msg_to_send = await get_requests_to_msg(diffs=diffs)
-        await notify_user(user_telegram_id=user_telegram_id, message=msg_to_send)
+        await SendToTelegram.text_message_to_user(user_telegram_id=user_telegram_id, message=msg_to_send)
     await JsonFile.save(data=requests_list, filename=path_users_to_file)
     return True
 
