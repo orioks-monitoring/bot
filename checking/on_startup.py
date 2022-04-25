@@ -83,6 +83,8 @@ async def run_requests(tasks: list) -> None:
         return await notify_admins(message='Сервер ОРИОКС не отвечает')
     except utils.exceptions.OrioksCantParseData:
         logging.info('exception: utils.exceptions.OrioksCantParseData')
+    except utils.exceptions.OrioksEmptyForang:
+        logging.info('exception: utils.exceptions.OrioksEmptyForang')
     except Exception as e:
         logging.error(f'Ошибка в запросах ОРИОКС!\n{e}')
         await notify_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')

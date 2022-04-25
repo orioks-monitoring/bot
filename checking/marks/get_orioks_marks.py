@@ -86,6 +86,9 @@ def _get_orioks_forang(raw_html: str):
         raise utils.exceptions.OrioksCantParseData
     forang = json.loads(forang_raw)
 
+    if len(forang) == 0:
+        raise utils.exceptions.OrioksEmptyForang
+
     try:
         json_to_save = _iterate_forang_version_with_list(forang=forang)
     except TypeError:

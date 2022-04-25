@@ -8,3 +8,7 @@ class OrioksCantParseData(Exception):
 
 class FileCompareError(Exception):
     pass
+
+
+class OrioksEmptyForang(Exception):
+    pass
