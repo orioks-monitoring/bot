@@ -132,14 +132,9 @@ class Imager:
         offset = 0
         offset = self._draw_text(title_text, self._font_upper, self._fill_upper, offset)
         offset += self._font_upper.getsize(title_text)[1] / 4
-        if self._calculate_count_of_lines_by_width_line(title_text) > 1:
-            offset = self._draw_text(side_text, self._font_downer, self._fill_downer, offset)
-        else:
-            offset += self._draw_text(side_text, self._font_downer, self._fill_downer, offset)
+        offset = self._draw_text(side_text, self._font_downer, self._fill_downer, offset)
         offset += self._font_upper.getsize(title_text)[1] / 4
-        offset += self._font_upper.getsize(title_text)[1] / 1
-        offset += self._font_upper.getsize(title_text)[1] / 2
-        self._draw_qr(url, offset)
+        self._draw_qr(url, 750 - (750 - offset) / 2 - 75)
 
     def _draw_text_marks(
             self,
