@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import aiohttp
 from bs4 import BeautifulSoup
-
+import logging
 import config
 from checking.marks.compares import file_compares, get_discipline_objs_from_diff
 import utils
@@ -111,6 +111,9 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
     except FileNotFoundError:
         await SendToTelegram.message_to_admins(message=f'FileNotFoundError - {user_telegram_id}')
         raise Exception(f'FileNotFoundError - {user_telegram_id}')
+    except utils.exceptions.OrioksEmptyForang:
+        logging.info('exception: utils.exceptions.OrioksEmptyForang')
+        return True
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'marks', student_json_file)
 
