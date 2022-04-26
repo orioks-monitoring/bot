@@ -99,6 +99,7 @@ async def user_news_check(user_telegram_id: int, session: aiohttp.ClientSession)
                 photo_path=path_to_img,
                 caption=transform_news_to_msg(news_obj=news_obj)
             )
+            await JsonFile.save(data={"last_id": news_id}, filename=path_users_to_file)
             safe_delete(path=path_to_img)
         except IndexError:
             pass  # id новостей могут идти не по порядку, поэтому надо игнорировать IndexError
