@@ -43,17 +43,13 @@ class Imager:
     def _get_image_by_grade(self, current_grade, max_grade):
         if current_grade / max_grade < 0.5:
             self.image = Image.open(self._background_paths.two)
-            self.draw_text = ImageDraw.Draw(self.image)
         elif current_grade / max_grade < 0.7:
             self.image = Image.open(self._background_paths.three)
-            self.draw_text = ImageDraw.Draw(self.image)
         elif current_grade / max_grade < 0.85:
             self.image = Image.open(self._background_paths.four)
-            self.draw_text = ImageDraw.Draw(self.image)
         elif current_grade / max_grade >= 0.85:
             self.image = Image.open(self._background_paths.five)
-            self.draw_text = ImageDraw.Draw(self.image)
-
+        self.draw_text = ImageDraw.Draw(self.image)
         self.image_weight, self.image_height = self.image.size
 
     def _get_news_image(self):
@@ -170,6 +166,8 @@ class Imager:
             mark_change_text: str,
             side_text: str,
     ) -> pathlib.Path:
+        current_grade = 0 if current_grade == 'н' else current_grade
+        max_grade = 1 if max_grade == 0 else max_grade
         self._get_image_by_grade(current_grade, max_grade)
         self._calculate_font_size_and_text_width(title_text, side_text)
         self._calculate_container(title_text, side_text, mark_change_text=mark_change_text)
