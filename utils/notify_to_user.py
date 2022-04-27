@@ -12,7 +12,6 @@ class SendToTelegram:
     @staticmethod
     async def text_message_to_user(user_telegram_id: int, message: str) -> None:
         try:
-            main.bot.send_media_group()
             await main.bot.send_message(user_telegram_id, message)
         except (BotBlocked, ChatNotFound) as e:
             utils.handle_orioks_logout.make_orioks_logout(user_telegram_id=user_telegram_id)
