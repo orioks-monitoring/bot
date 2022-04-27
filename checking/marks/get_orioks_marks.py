@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import logging
 import config
 from checking.marks.compares import file_compares, get_discipline_objs_from_diff
-import utils
+from utils import exceptions
 from utils.json_files import JsonFile
 from utils.notify_to_user import SendToTelegram
 from utils.make_request import get_request
@@ -83,11 +83,11 @@ def _get_orioks_forang(raw_html: str):
     try:
         forang_raw = bs_content.find(id='forang').text
     except AttributeError:
-        raise utils.exceptions.OrioksCantParseData
+        raise exceptions.OrioksCantParseData
     forang = json.loads(forang_raw)
 
     if len(forang) == 0:
-        raise utils.exceptions.OrioksEmptyForang
+        raise exceptions.OrioksCantParseData
 
     try:
         json_to_save = _iterate_forang_version_with_list(forang=forang)
@@ -106,16 +106,17 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
     """
     return is success, if not then check one more time
     """
+    student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
+    path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'marks', student_json_file)
     try:
         detailed_info = await get_orioks_marks(session=session)
     except FileNotFoundError:
         await SendToTelegram.message_to_admins(message=f'FileNotFoundError - {user_telegram_id}')
         raise Exception(f'FileNotFoundError - {user_telegram_id}')
-    except utils.exceptions.OrioksEmptyForang:
-        logging.info('exception: utils.exceptions.OrioksEmptyForang')
+    except exceptions.OrioksCantParseData:
+        logging.info('(MARKS) exception: utils.exceptions.OrioksCantParseData')
+        safe_delete(path=path_users_to_file)
         return True
-    student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
-    path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'marks', student_json_file)
 
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
         await JsonFile.save(data=detailed_info, filename=path_users_to_file)
@@ -123,7 +124,7 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
     old_json = await JsonFile.open(filename=path_users_to_file)
     try:
         diffs = file_compares(old_file=old_json, new_file=detailed_info)
-    except utils.exceptions.FileCompareError:
+    except exceptions.FileCompareError:
         await JsonFile.save(data=detailed_info, filename=path_users_to_file)
         if old_json[0]['subject'] != detailed_info[0]['subject'] and \
                 old_json[-1]['subject'] != detailed_info[-1]['subject']:

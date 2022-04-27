@@ -81,8 +81,6 @@ async def run_requests(tasks: list) -> None:
         await asyncio.gather(*tasks)
     except asyncio.TimeoutError:
         return await SendToTelegram.message_to_admins(message='Сервер ОРИОКС не отвечает')
-    except utils.exceptions.OrioksCantParseData:
-        logging.info('exception: utils.exceptions.OrioksCantParseData')
     except Exception as e:
         logging.error(f'Ошибка в запросах ОРИОКС!\n{e}')
         await SendToTelegram.message_to_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')

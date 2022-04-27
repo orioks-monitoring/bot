@@ -1,3 +1,4 @@
+import logging
 import os
 
 import re
@@ -6,6 +7,7 @@ from bs4 import BeautifulSoup
 
 import config
 from utils import exceptions
+from utils.delete_file import safe_delete
 from utils.json_files import JsonFile
 from utils.notify_to_user import SendToTelegram
 from utils.make_request import get_request
@@ -17,6 +19,8 @@ def _orioks_parse_requests(raw_html: str, section: str) -> list:
     if section == 'questionnaire':
         new_messages_td_list_index = 6
     bs_content = BeautifulSoup(raw_html, "html.parser")
+    if bs_content.select_one('.table.table-condensed.table-thread') is None:
+        raise exceptions.OrioksCantParseData
     table_raw = bs_content.select('.table.table-condensed.table-thread tr:not(:first-child)')
     requests = []
     for tr in table_raw:
@@ -112,10 +116,15 @@ def compare(old_list: list, new_list: list) -> list:
 
 
 async def _user_requests_check_with_subsection(user_telegram_id: int, section: str, session: aiohttp.ClientSession):
-    requests_list = await get_orioks_requests(section=section, session=session)
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data',
                                       'requests', section, student_json_file)
+    try:
+        requests_list = await get_orioks_requests(section=section, session=session)
+    except exceptions.OrioksCantParseData:
+        logging.info('(REQUESTS) exception: utils.exceptions.OrioksCantParseData')
+        safe_delete(path=path_users_to_file)
+        return True
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
         await JsonFile.save(data=requests_list, filename=path_users_to_file)
         return False

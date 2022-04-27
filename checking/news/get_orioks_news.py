@@ -1,3 +1,4 @@
+import logging
 import os
 
 import re
@@ -5,6 +6,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 import config
+from utils import exceptions
 from utils.json_files import JsonFile
 from utils.make_request import get_request
 from utils.notify_to_user import SendToTelegram
@@ -22,6 +24,8 @@ class NewsObject(NamedTuple):
 def _orioks_parse_news(raw_html: str) -> dict:
     bs_content = BeautifulSoup(raw_html, "html.parser")
     news_raw = bs_content.find(id='news')
+    if news_raw is None:
+        raise exceptions.OrioksCantParseData
     last_news_line = news_raw.select_one('#news tr:nth-child(2) a')['href']
     last_news_id = int(re.findall(r'\d+$', last_news_line)[0])
     return {
@@ -70,9 +74,14 @@ def transform_news_to_msg(news_obj: NewsObject) -> str:
 
 
 async def user_news_check(user_telegram_id: int, session: aiohttp.ClientSession):
-    last_news_id = await get_orioks_news(session=session)
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'news', student_json_file)
+    try:
+        last_news_id = await get_orioks_news(session=session)
+    except exceptions.OrioksCantParseData:
+        logging.info('(NEWS) exception: utils.exceptions.OrioksCantParseData')
+        safe_delete(path=path_users_to_file)
+        return True
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
         await JsonFile.save(data=last_news_id, filename=path_users_to_file)
         return False

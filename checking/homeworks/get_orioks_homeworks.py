@@ -1,3 +1,4 @@
+import logging
 import os
 
 import re
@@ -6,6 +7,7 @@ from bs4 import BeautifulSoup
 
 import config
 from utils import exceptions
+from utils.delete_file import safe_delete
 from utils.json_files import JsonFile
 from utils.make_request import get_request
 from utils.notify_to_user import SendToTelegram
@@ -14,6 +16,8 @@ import aiogram.utils.markdown as md
 
 def _orioks_parse_homeworks(raw_html: str) -> list:
     bs_content = BeautifulSoup(raw_html, "html.parser")
+    if bs_content.select_one('.table.table-condensed.table-thread') is None:
+        raise exceptions.OrioksCantParseData
     table_raw = bs_content.select('.table.table-condensed.table-thread tr:not(:first-child)')
     homeworks = []
     for tr in table_raw:
@@ -112,9 +116,14 @@ def compare(old_list: list, new_list: list) -> list:
 
 
 async def user_homeworks_check(user_telegram_id: int, session: aiohttp.ClientSession):
-    homeworks_list = await get_orioks_homeworks(session=session)
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'homeworks', student_json_file)
+    try:
+        homeworks_list = await get_orioks_homeworks(session=session)
+    except exceptions.OrioksCantParseData:
+        logging.info('(HOMEWORKS) exception: utils.exceptions.OrioksCantParseData')
+        safe_delete(path=path_users_to_file)
+        return True
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
         await JsonFile.save(data=homeworks_list, filename=path_users_to_file)
         return False
