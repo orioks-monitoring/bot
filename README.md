@@ -97,7 +97,7 @@ python main.py
 
 
 ## У меня есть предложение / Я нашел баг. С кем можно связаться?
-Вы можете написать в нашу поддержку — [@orioks_monitoring_support](https://t.me/orioks_monitoring_support), а так же создать [Issues](https://github.com/orioks-monitoring/bot/issues) в репозитории.
+Вы можете написать в нашу поддержку — [@orioks_monitoring_support](https://t.me/orioks_monitoring_support), а также создать [Issues](https://github.com/orioks-monitoring/bot/issues) в репозитории.
 
 ## Как мне узнать актуальные новости о работе Бота?
 Для новостей Бота существует [канал](https://t.me/orioks_monitoring). Не забудьте подписаться!
