@@ -1,5 +1,6 @@
 import os
 import db.user_status
+import db.notify_settings
 import config
 from utils.delete_file import safe_delete
 
@@ -25,3 +26,4 @@ def make_orioks_logout(user_telegram_id: int) -> None:
         user_telegram_id=user_telegram_id,
         is_user_orioks_authenticated=False
     )
+    db.notify_settings.update_user_notify_settings_reset_to_default(user_telegram_id=user_telegram_id)

@@ -35,25 +35,18 @@ def update_user_notify_settings(user_telegram_id: int, row_name: str, to_value: 
     db.close()
 
 
-def select_count_notify_settings_statistics() -> dict:  # TODO: to admins_statistics file
-    """
-    row_name must only be in (marks, news, discipline_sources, homeworks, requests)
-    """
+def update_user_notify_settings_reset_to_default(user_telegram_id: int) -> None:
     db = sqlite3.connect(config.PATH_TO_DB)
     sql = db.cursor()
-    with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'select_count_notify_settings_statistics.sql'), 'r') as sql_file:
+    with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'update_user_notify_settings_reset_to_default.sql'), 'r') as sql_file:
         sql_script = sql_file.read()
-    marks = sql.execute(sql_script.format(row_name='marks')).fetchone()
-    news = sql.execute(sql_script.format(row_name='news')).fetchone()
-    discipline_sources = sql.execute(sql_script.format(row_name='discipline_sources')).fetchone()
-    homeworks = sql.execute(sql_script.format(row_name='homeworks')).fetchone()
-    requests = sql.execute(sql_script.format(row_name='requests')).fetchone()
+    sql.execute(sql_script, {
+        'user_telegram_id': user_telegram_id,
+        'marks': True,
+        'news': False,
+        'discipline_sources': False,
+        'homeworks': False,
+        'requests': False,
+    })
+    db.commit()
     db.close()
-    # TODO: SELECT COUNT(*) FROM user_notify_settings INNER JOIN user_status on user_notify_settings.user_telegram_id = user_status.user_telegram_id WHERE user_notify_settings.{category} = 1 AND user_status.is_user_orioks_authenticated = 1;
-    return {
-        'marks': marks[0],
-        'news': news[0],
-        'discipline_sources': discipline_sources[0],
-        'homeworks': homeworks[0],
-        'requests': requests[0],
-    }

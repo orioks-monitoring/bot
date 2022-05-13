@@ -16,19 +16,12 @@ async def admin_get_statistics(message: types.Message):
         ) + '\n'
     msg += '\n'
 
-    for key, value in db.notify_settings.select_count_notify_settings_statistics().items():
-        if key == 'marks':
-            msg += md.text(
-                md.text(handlers.notify_settings.notify_settings_names_to_vars[key]),
-                md.text(db.admins_statistics.select_count_notify_settings_marks()),
-                sep=': ',
-            ) + '\n'
-        else:
-            msg += md.text(
-                md.text(handlers.notify_settings.notify_settings_names_to_vars[key]),
-                md.text(value),
-                sep=': ',
-            ) + '\n'
+    for key, value in db.admins_statistics.select_count_notify_settings_statistics().items():
+        msg += md.text(
+            md.text(handlers.notify_settings.notify_settings_names_to_vars[key]),
+            md.text(db.admins_statistics.select_count_notify_settings_row_name(row_name=key)),
+            sep=': ',
+        ) + '\n'
     msg += '\n'
 
     for key, value in db.admins_statistics.select_all_from_admins_statistics().items():
