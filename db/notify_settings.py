@@ -23,6 +23,9 @@ def update_user_notify_settings(user_telegram_id: int, row_name: str, to_value: 
     """
     row_name must only be in (marks, news, discipline_sources, homeworks, requests)
     """
+    if row_name not in ('marks', 'news', 'discipline_sources', 'homeworks', 'requests'):
+        raise Exception('update_user_notify_settings() -> row_name must only be in ('
+                        'marks, news, discipline_sources, homeworks, requests)')
     db = sqlite3.connect(config.PATH_TO_DB)
     sql = db.cursor()
     with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'update_user_notify_settings_set_row_name.sql'), 'r') as sql_file:
