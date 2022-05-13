@@ -116,10 +116,6 @@ def compare(old_dict: dict, new_dict: dict) -> list:
     return diffs
 
 
-def convert_dict_keys_to_int(dictionary: dict) -> dict:
-    return {int(k): v for k, v in dictionary.items()}
-
-
 async def user_homeworks_check(user_telegram_id: int, session: aiohttp.ClientSession):
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'homeworks', student_json_file)
@@ -133,8 +129,8 @@ async def user_homeworks_check(user_telegram_id: int, session: aiohttp.ClientSes
         await JsonFile.save(data=homeworks_dict, filename=path_users_to_file)
         return False
 
-    old_dict = await JsonFile.open(filename=path_users_to_file)
-    old_dict = convert_dict_keys_to_int(old_dict)
+    _old_json = await JsonFile.open(filename=path_users_to_file)
+    old_dict = JsonFile.convert_dict_keys_to_int(_old_json)
     try:
         diffs = compare(old_dict=old_dict, new_dict=homeworks_dict)
     except exceptions.FileCompareError:

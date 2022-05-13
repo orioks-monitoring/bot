@@ -14,7 +14,7 @@ from utils.make_request import get_request
 import aiogram.utils.markdown as md
 
 
-def _orioks_parse_requests(raw_html: str, section: str) -> list:
+def _orioks_parse_requests(raw_html: str, section: str) -> dict:
     new_messages_td_list_index = 7
     if section == 'questionnaire':
         new_messages_td_list_index = 6
@@ -22,22 +22,21 @@ def _orioks_parse_requests(raw_html: str, section: str) -> list:
     if bs_content.select_one('.table.table-condensed.table-thread') is None:
         raise exceptions.OrioksCantParseData
     table_raw = bs_content.select('.table.table-condensed.table-thread tr:not(:first-child)')
-    requests = []
+    requests = dict()
     for tr in table_raw:
         _thread_id = int(re.findall(r'\d+$', tr.find_all('td')[2].select_one('a')['href'])[0])
-        requests.append({
-            'thread_id': _thread_id,
+        requests[_thread_id] = {
             'status': tr.find_all('td')[1].text,
             'new_messages': int(tr.find_all('td')[new_messages_td_list_index].select_one('b').text),
             'about': {
                 'name': tr.find_all('td')[3].text,
                 'url': config.ORIOKS_PAGE_URLS['masks']['requests'][section].format(id=_thread_id),
             },
-        })
+        }
     return requests
 
 
-async def get_orioks_requests(section: str, session: aiohttp.ClientSession) -> list:
+async def get_orioks_requests(section: str, session: aiohttp.ClientSession) -> dict:
     raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['notify']['requests'][section], session=session)
     return _orioks_parse_requests(raw_html=raw_html, section=section)
 
@@ -95,22 +94,24 @@ async def get_requests_to_msg(diffs: list) -> str:
     return message
 
 
-def compare(old_list: list, new_list: list) -> list:
+def compare(old_dict: dict, new_dict: dict) -> list:
     diffs = []
-    for old, new in zip(old_list, new_list):
-        if old['thread_id'] != new['thread_id']:
+    for thread_id_old in old_dict:
+        try:
+            _ = new_dict[thread_id_old]
+        except KeyError:
             raise exceptions.FileCompareError
-        if old['status'] != new['status']:
+        if old_dict[thread_id_old]['status'] != new_dict[thread_id_old]['status']:
             diffs.append({
                 'type': 'new_status',  # or `new_message`
-                'current_status': new['status'],
-                'about': new['about'],
+                'current_status': new_dict[thread_id_old]['status'],
+                'about': new_dict[thread_id_old]['about'],
             })
-        elif new['new_messages'] > old['new_messages']:
+        elif new_dict[thread_id_old]['new_messages'] > old_dict[thread_id_old]['new_messages']:
             diffs.append({
                 'type': 'new_message',  # or `new_status`
-                'current_messages': new['new_messages'],
-                'about': new['about'],
+                'current_messages': new_dict[thread_id_old]['new_messages'],
+                'about': new_dict[thread_id_old]['about'],
             })
     return diffs
 
@@ -120,29 +121,27 @@ async def _user_requests_check_with_subsection(user_telegram_id: int, section: s
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data',
                                       'requests', section, student_json_file)
     try:
-        requests_list = await get_orioks_requests(section=section, session=session)
+        requests_dict = await get_orioks_requests(section=section, session=session)
     except exceptions.OrioksCantParseData:
         logging.info('(REQUESTS) exception: utils.exceptions.OrioksCantParseData')
         safe_delete(path=path_users_to_file)
         return True
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
-        await JsonFile.save(data=requests_list, filename=path_users_to_file)
+        await JsonFile.save(data=requests_dict, filename=path_users_to_file)
         return False
 
-    old_json = await JsonFile.open(filename=path_users_to_file)
-    if len(requests_list) != len(old_json):
-        await JsonFile.save(data=requests_list, filename=path_users_to_file)
-        return False
+    _old_json = await JsonFile.open(filename=path_users_to_file)
+    old_dict = JsonFile.convert_dict_keys_to_int(_old_json)
     try:
-        diffs = compare(old_list=old_json, new_list=requests_list)
+        diffs = compare(old_dict=old_dict, new_dict=requests_dict)
     except exceptions.FileCompareError:
-        await JsonFile.save(data=requests_list, filename=path_users_to_file)
+        await JsonFile.save(data=requests_dict, filename=path_users_to_file)
         return False
 
     if len(diffs) > 0:
         msg_to_send = await get_requests_to_msg(diffs=diffs)
         await SendToTelegram.text_message_to_user(user_telegram_id=user_telegram_id, message=msg_to_send)
-    await JsonFile.save(data=requests_list, filename=path_users_to_file)
+    await JsonFile.save(data=requests_dict, filename=path_users_to_file)
     return True
 
 
