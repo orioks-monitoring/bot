@@ -119,7 +119,7 @@ async def do_checks():
 
 async def scheduler():
     await SendToTelegram.message_to_admins(message='Бот запущен!')
-    aioschedule.every(10).minutes.do(do_checks)
+    aioschedule.every(config.ORIOKS_SECONDS_BETWEEN_WAVES).seconds.do(do_checks)
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)

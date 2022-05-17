@@ -13,7 +13,7 @@ from utils.notify_to_user import SendToTelegram
 import aiogram.utils.markdown as md
 
 
-_sem = asyncio.Semaphore(1)
+_sem = asyncio.Semaphore(config.ORIOKS_LOGIN_QUEUE_SEMAPHORE_VALUE)
 
 
 async def orioks_login_save_cookies(user_login: int, user_password: str, user_telegram_id: int) -> None:
