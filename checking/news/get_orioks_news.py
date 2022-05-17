@@ -84,9 +84,6 @@ async def get_current_new(user_telegram_id: int, session: aiohttp.ClientSession)
         logging.info('(NEWS) exception: utils.exceptions.OrioksCantParseData')
         safe_delete(path=path_users_to_file)
         raise exceptions.OrioksCantParseData
-    if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
-        await JsonFile.save(data=last_news_id, filename=path_users_to_file)
-        raise exceptions.OrioksCantParseData
     return await get_news_by_news_id(news_id=last_news_id['last_id'], session=session)
 
 

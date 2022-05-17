@@ -16,6 +16,7 @@ from checking.news.get_orioks_news import get_current_new, user_news_check_from_
 from checking.homeworks.get_orioks_homeworks import user_homeworks_check
 from checking.requests.get_orioks_requests import user_requests_check
 import utils
+from utils import exceptions
 from utils.notify_to_user import SendToTelegram
 import utils.delete_file
 
@@ -66,13 +67,18 @@ async def make_one_user_check(user_telegram_id: int) -> None:
     )
 
 
-async def make_all_users_news_check() -> list:
+async def make_all_users_news_check(tries_counter: int = 0) -> list:
     tasks = []
     users_to_check_news = db.notify_settings.select_all_news_enabled_users()
     picked_user_to_check_news = random.choice(list(users_to_check_news))
+    if tries_counter > 10:
+        return []
     cookies = _get_user_orioks_cookies_from_telegram_id(user_telegram_id=picked_user_to_check_news)
-    async with aiohttp.ClientSession(cookies=cookies, timeout=config.REQUESTS_TIMEOUT) as session:
-        current_new = await get_current_new(user_telegram_id=picked_user_to_check_news, session=session)
+    try:
+        async with aiohttp.ClientSession(cookies=cookies, timeout=config.REQUESTS_TIMEOUT) as session:
+            current_new = await get_current_new(user_telegram_id=picked_user_to_check_news, session=session)
+    except exceptions.OrioksCantParseData:
+        return await make_all_users_news_check(tries_counter=tries_counter + 1)
     for user_telegram_id in users_to_check_news:
         try:
             cookies = _get_user_orioks_cookies_from_telegram_id(user_telegram_id=user_telegram_id)
