@@ -16,7 +16,6 @@ from checking.homeworks.get_orioks_homeworks import user_homeworks_check
 from checking.requests.get_orioks_requests import user_requests_check
 import utils
 from utils.notify_to_user import SendToTelegram
-from contextvars import ContextVar
 import utils.delete_file
 
 
@@ -48,28 +47,20 @@ def _delete_users_tracking_data_in_notify_settings_off(user_telegram_id: int, us
         )
 
 
-async def make_one_user_check(user_telegram_id: int, users_to_one_more_check: ContextVar):
-    """
-    return is user need to check one more time
-    """
-    user_to_add = users_to_one_more_check.get()
+async def make_one_user_check(user_telegram_id: int) -> None:
     user_notify_settings = db.notify_settings.get_user_notify_settings_to_dict(user_telegram_id=user_telegram_id)
     cookies = _get_user_orioks_cookies_from_telegram_id(user_telegram_id=user_telegram_id)
     async with aiohttp.ClientSession(cookies=cookies, timeout=config.REQUESTS_TIMEOUT) as session:
         if user_notify_settings['marks']:
-            if not await user_marks_check(user_telegram_id=user_telegram_id, session=session):
-                user_to_add.add(user_telegram_id)
+            await user_marks_check(user_telegram_id=user_telegram_id, session=session)
         if user_notify_settings['news']:
             await user_news_check(user_telegram_id=user_telegram_id, session=session)
         if user_notify_settings['discipline_sources']:
             pass  # TODO: user_discipline_sources_check(user_telegram_id=user_telegram_id, session=session)
         if user_notify_settings['homeworks']:
-            if not await user_homeworks_check(user_telegram_id=user_telegram_id, session=session):
-                user_to_add.add(user_telegram_id)
+            await user_homeworks_check(user_telegram_id=user_telegram_id, session=session)
         if user_notify_settings['requests']:
-            if not await user_requests_check(user_telegram_id=user_telegram_id, session=session):
-                user_to_add.add(user_telegram_id)
-    users_to_one_more_check.set(user_to_add)
+            await user_requests_check(user_telegram_id=user_telegram_id, session=session)
     _delete_users_tracking_data_in_notify_settings_off(
         user_telegram_id=user_telegram_id,
         user_notify_settings=user_notify_settings
@@ -89,20 +80,10 @@ async def run_requests(tasks: list) -> None:
 async def do_checks():
     logging.info(f'started: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
     users_to_check = db.user_status.select_all_orioks_authenticated_users()
-    users_to_one_more_check = ContextVar('users_to_one_more_check', default=set())
     tasks = []
     for user_telegram_id in users_to_check:
         tasks.append(make_one_user_check(
-            user_telegram_id=user_telegram_id,
-            users_to_one_more_check=users_to_one_more_check
-        ))
-    await run_requests(tasks=tasks)
-
-    tasks = []
-    for user_telegram_id in users_to_one_more_check.get():
-        tasks.append(make_one_user_check(
-            user_telegram_id=user_telegram_id,
-            users_to_one_more_check=users_to_one_more_check  # don't care about it
+            user_telegram_id=user_telegram_id
         ))
     await run_requests(tasks=tasks)
     logging.info(f'ended: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')

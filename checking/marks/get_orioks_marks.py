@@ -102,10 +102,7 @@ async def get_orioks_marks(session: aiohttp.ClientSession):
     return _get_orioks_forang(raw_html)
 
 
-async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession) -> bool:
-    """
-    return is success, if not then check one more time
-    """
+async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession) -> None:
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
     path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'marks', student_json_file)
     try:
@@ -116,11 +113,11 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
     except exceptions.OrioksCantParseData:
         logging.info('(MARKS) exception: utils.exceptions.OrioksCantParseData')
         safe_delete(path=path_users_to_file)
-        return True
+        return None
 
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
         await JsonFile.save(data=detailed_info, filename=path_users_to_file)
-        return False
+        return None
     old_json = await JsonFile.open(filename=path_users_to_file)
     try:
         diffs = file_compares(old_file=old_json, new_file=detailed_info)
@@ -133,7 +130,7 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
                 message='🎉 Поздравляем с началом нового семестра и желаем успехов в учёбе!\n'
                         'Новости Бота в канале @orioks_monitoring'
             )
-        return False
+        return None
 
     if len(diffs) > 0:
         for discipline_obj in get_discipline_objs_from_diff(diffs=diffs):
@@ -151,4 +148,3 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
             )
             safe_delete(path=photo_path)
         await JsonFile.save(data=detailed_info, filename=path_users_to_file)
-    return True
