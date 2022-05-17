@@ -44,7 +44,7 @@ class Imager:
 
     def _get_image_by_grade(self, current_grade, max_grade):
         if current_grade == 0:
-            self.image = Image.open(self._background_paths.two)
+            self.image = Image.open(self._background_paths.one)
         elif current_grade / max_grade < 0.5:
             self.image = Image.open(self._background_paths.two)
         elif current_grade / max_grade < 0.7:
