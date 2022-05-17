@@ -9,6 +9,7 @@ import secrets
 
 
 class PathToImages(NamedTuple):
+    one: pathlib.Path
     two: pathlib.Path
     three: pathlib.Path
     four: pathlib.Path
@@ -33,7 +34,8 @@ class Imager:
         self._width_line = 27
 
         self._background_paths = PathToImages(
-            two=pathlib.Path(os.path.join(self._base_dir, 'red.png')),
+            one=pathlib.Path(os.path.join(self._base_dir, 'red.png')),
+            two=pathlib.Path(os.path.join(self._base_dir, 'orange.png')),
             three=pathlib.Path(os.path.join(self._base_dir, 'yellow.png')),
             four=pathlib.Path(os.path.join(self._base_dir, 'salt.png')),
             five=pathlib.Path(os.path.join(self._base_dir, 'green.png')),
@@ -41,7 +43,9 @@ class Imager:
         )
 
     def _get_image_by_grade(self, current_grade, max_grade):
-        if current_grade / max_grade < 0.5:
+        if current_grade == 0:
+            self.image = Image.open(self._background_paths.two)
+        elif current_grade / max_grade < 0.5:
             self.image = Image.open(self._background_paths.two)
         elif current_grade / max_grade < 0.7:
             self.image = Image.open(self._background_paths.three)
