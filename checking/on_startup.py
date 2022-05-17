@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 import pickle
+import random
 from datetime import datetime
 
 import aiohttp
@@ -11,7 +12,7 @@ import config
 import db.notify_settings
 import db.user_status
 from checking.marks.get_orioks_marks import user_marks_check
-from checking.news.get_orioks_news import user_news_check
+from checking.news.get_orioks_news import get_current_new, user_news_check_from_news_id
 from checking.homeworks.get_orioks_homeworks import user_homeworks_check
 from checking.requests.get_orioks_requests import user_requests_check
 import utils
@@ -53,8 +54,6 @@ async def make_one_user_check(user_telegram_id: int) -> None:
     async with aiohttp.ClientSession(cookies=cookies, timeout=config.REQUESTS_TIMEOUT) as session:
         if user_notify_settings['marks']:
             await user_marks_check(user_telegram_id=user_telegram_id, session=session)
-        if user_notify_settings['news']:
-            await user_news_check(user_telegram_id=user_telegram_id, session=session)
         if user_notify_settings['discipline_sources']:
             pass  # TODO: user_discipline_sources_check(user_telegram_id=user_telegram_id, session=session)
         if user_notify_settings['homeworks']:
@@ -65,6 +64,28 @@ async def make_one_user_check(user_telegram_id: int) -> None:
         user_telegram_id=user_telegram_id,
         user_notify_settings=user_notify_settings
     )
+
+
+async def make_all_users_news_check() -> list:
+    tasks = []
+    users_to_check_news = db.notify_settings.select_all_news_enabled_users()
+    picked_user_to_check_news = random.choice(list(users_to_check_news))
+    cookies = _get_user_orioks_cookies_from_telegram_id(user_telegram_id=picked_user_to_check_news)
+    async with aiohttp.ClientSession(cookies=cookies, timeout=config.REQUESTS_TIMEOUT) as session:
+        current_new = await get_current_new(user_telegram_id=picked_user_to_check_news, session=session)
+    for user_telegram_id in users_to_check_news:
+        try:
+            cookies = _get_user_orioks_cookies_from_telegram_id(user_telegram_id=user_telegram_id)
+        except FileNotFoundError:
+            logging.error(f'(COOKIES) FileNotFoundError: {user_telegram_id}')
+            continue
+        user_session = aiohttp.ClientSession(cookies=cookies, timeout=config.REQUESTS_TIMEOUT)
+        tasks.append(user_news_check_from_news_id(
+            user_telegram_id=user_telegram_id,
+            session=user_session,
+            current_new=current_new
+        ))
+    return tasks
 
 
 async def run_requests(tasks: list) -> None:
@@ -80,7 +101,8 @@ async def run_requests(tasks: list) -> None:
 async def do_checks():
     logging.info(f'started: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
     users_to_check = db.user_status.select_all_orioks_authenticated_users()
-    tasks = []
+
+    tasks = [] + await make_all_users_news_check()
     for user_telegram_id in users_to_check:
         tasks.append(make_one_user_check(
             user_telegram_id=user_telegram_id

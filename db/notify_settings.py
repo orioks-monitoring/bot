@@ -53,3 +53,15 @@ def update_user_notify_settings_reset_to_default(user_telegram_id: int) -> None:
     })
     db.commit()
     db.close()
+
+
+def select_all_news_enabled_users() -> set:
+    db = sqlite3.connect(config.PATH_TO_DB)
+    sql = db.cursor()
+    with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'select_all_news_enabled_users.sql'), 'r') as sql_file:
+        sql_script = sql_file.read()
+    result = set()
+    for user in sql.execute(sql_script).fetchall():
+        result.add(user[0])
+    db.close()
+    return result
