@@ -42,8 +42,8 @@ def _iterate_forang_version_with_list(forang: dict) -> list:
             'subject': discipline['name'],
             'tasks': one_discipline,
             'ball': {
-                'current': discipline_ball.current,
-                'might_be': discipline_ball.might_be,
+                'current': round(discipline_ball.current, 2),
+                'might_be': round(discipline_ball.might_be, 2),
             }
         })
     return json_to_save
@@ -70,8 +70,8 @@ def _iterate_forang_version_with_keys(forang: dict) -> list:
             'subject': forang['dises'][discipline_index]['name'],
             'tasks': one_discipline,
             'ball': {
-                'current': discipline_ball.current,
-                'might_be': discipline_ball.might_be,
+                'current': round(discipline_ball.current, 2),
+                'might_be': round(discipline_ball.might_be, 2),
             }
         })
     return json_to_save
