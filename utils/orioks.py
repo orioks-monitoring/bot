@@ -35,7 +35,10 @@ async def orioks_login_save_cookies(user_login: int, user_password: str, user_te
             )
         )
     async with _sem:  # orioks dont die please
-        async with aiohttp.ClientSession(timeout=config.REQUESTS_TIMEOUT) as session:
+        async with aiohttp.ClientSession(
+                timeout=config.REQUESTS_TIMEOUT,
+                headers=config.ORIOKS_REQUESTS_HEADERS
+        ) as session:
             try:
                 logging.info(f'request to login: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
                 async with session.get(config.ORIOKS_PAGE_URLS['login']) as resp:

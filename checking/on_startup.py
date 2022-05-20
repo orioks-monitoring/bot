@@ -52,7 +52,11 @@ def _delete_users_tracking_data_in_notify_settings_off(user_telegram_id: int, us
 async def make_one_user_check(user_telegram_id: int) -> None:
     user_notify_settings = db.notify_settings.get_user_notify_settings_to_dict(user_telegram_id=user_telegram_id)
     cookies = _get_user_orioks_cookies_from_telegram_id(user_telegram_id=user_telegram_id)
-    async with aiohttp.ClientSession(cookies=cookies, timeout=config.REQUESTS_TIMEOUT) as session:
+    async with aiohttp.ClientSession(
+            cookies=cookies,
+            timeout=config.REQUESTS_TIMEOUT,
+            headers=config.ORIOKS_REQUESTS_HEADERS
+    ) as session:
         if user_notify_settings['marks']:
             await user_marks_check(user_telegram_id=user_telegram_id, session=session)
         if user_notify_settings['discipline_sources']:
@@ -75,7 +79,11 @@ async def make_all_users_news_check(tries_counter: int = 0) -> list:
         return []
     cookies = _get_user_orioks_cookies_from_telegram_id(user_telegram_id=picked_user_to_check_news)
     try:
-        async with aiohttp.ClientSession(cookies=cookies, timeout=config.REQUESTS_TIMEOUT) as session:
+        async with aiohttp.ClientSession(
+                cookies=cookies,
+                timeout=config.REQUESTS_TIMEOUT,
+                headers=config.ORIOKS_REQUESTS_HEADERS
+        ) as session:
             current_new = await get_current_new(user_telegram_id=picked_user_to_check_news, session=session)
     except exceptions.OrioksCantParseData:
         return await make_all_users_news_check(tries_counter=tries_counter + 1)
