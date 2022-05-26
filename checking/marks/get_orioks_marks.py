@@ -130,6 +130,7 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
                 message='🎉 Поздравляем с началом нового семестра и желаем успехов в учёбе!\n'
                         'Новости Бота в канале @orioks_monitoring'
             )
+            logging.info('У кого-то начался новый семестр!..')
         return None
 
     if len(diffs) > 0:
