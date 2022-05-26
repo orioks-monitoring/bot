@@ -74,6 +74,8 @@ async def make_one_user_check(user_telegram_id: int) -> None:
 async def make_all_users_news_check(tries_counter: int = 0) -> list:
     tasks = []
     users_to_check_news = db.notify_settings.select_all_news_enabled_users()
+    if len(users_to_check_news) == 0:
+        return []
     picked_user_to_check_news = random.choice(list(users_to_check_news))
     if tries_counter > 10:
         return []
