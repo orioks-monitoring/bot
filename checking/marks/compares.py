@@ -122,6 +122,7 @@ def get_discipline_objs_from_diff(diffs: list) -> list:
                     md.hitalic('из'),
                     md.hitalic(' '),
                     md.hitalic(diff_subject['final_grade']['might_be']),
+                    md.hitalic(' 🎉' if diff_subject['final_grade']['current_ball'] >= 100 else ''),
                     sep='',
                 ),
                 md.text(),
