@@ -11,7 +11,7 @@ def get_user_agreement_status(user_telegram_id: int) -> bool:
     with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'select_is_user_agreement_accepted_from_user_status.sql'),
               'r') as sql_file:
         sql_script = sql_file.read()
-    is_user_agreement_accepted = sql.execute(sql_script, {'user_telegram_id': user_telegram_id}).fetchone()[0]
+    is_user_agreement_accepted = bool(sql.execute(sql_script, {'user_telegram_id': user_telegram_id}).fetchone()[0])
     db.close()
     return is_user_agreement_accepted
 
@@ -22,7 +22,7 @@ def get_user_orioks_authenticated_status(user_telegram_id: int) -> bool:
     with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'select_is_user_orioks_authenticated_from_user_status.sql'),
               'r') as sql_file:
         sql_script = sql_file.read()
-    is_user_orioks_authenticated = sql.execute(sql_script, {'user_telegram_id': user_telegram_id}).fetchone()[0]
+    is_user_orioks_authenticated = bool(sql.execute(sql_script, {'user_telegram_id': user_telegram_id}).fetchone()[0])
     db.close()
     return is_user_orioks_authenticated
 
@@ -73,7 +73,7 @@ def get_user_orioks_attempts(user_telegram_id: int) -> int:
     with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'select_user_orioks_attempts_from_user_status.sql'),
               'r') as sql_file:
         sql_script = sql_file.read()
-    attempts = sql.execute(sql_script, {'user_telegram_id': user_telegram_id}).fetchone()[0]
+    attempts = int(sql.execute(sql_script, {'user_telegram_id': user_telegram_id}).fetchone()[0])
     db.close()
     return attempts
 

@@ -41,7 +41,7 @@ async def get_orioks_news(session: aiohttp.ClientSession) -> dict:
 
 def _find_in_str_with_beginning_and_ending(string_to_find: str, beginning: str, ending: str) -> str:
     regex_result = re.findall(rf'{beginning}[\S\s]+{ending}', string_to_find)[0]
-    return regex_result.replace(beginning, '').replace(ending, '').strip()
+    return str(regex_result.replace(beginning, '').replace(ending, '').strip())
 
 
 async def get_news_by_news_id(news_id: int, session: aiohttp.ClientSession) -> NewsObject:
@@ -59,7 +59,7 @@ async def get_news_by_news_id(news_id: int, session: aiohttp.ClientSession) -> N
 
 
 def transform_news_to_msg(news_obj: NewsObject) -> str:
-    return md.text(
+    return str(md.text(
         md.text(
             md.text('📰'),
             md.hbold(news_obj.headline_news),
@@ -72,7 +72,7 @@ def transform_news_to_msg(news_obj: NewsObject) -> str:
             sep=' ',
         ),
         sep='\n',
-    )
+    ))
 
 
 async def get_current_new(user_telegram_id: int, session: aiohttp.ClientSession) -> NewsObject:

@@ -15,15 +15,16 @@ from checking.marks.get_orioks_marks import user_marks_check
 from checking.news.get_orioks_news import get_current_new, user_news_check_from_news_id
 from checking.homeworks.get_orioks_homeworks import user_homeworks_check
 from checking.requests.get_orioks_requests import user_requests_check
+from http.cookies import SimpleCookie
 import utils
 from utils import exceptions
 from utils.notify_to_user import SendToTelegram
 import utils.delete_file
 
 
-def _get_user_orioks_cookies_from_telegram_id(user_telegram_id: int) -> aiohttp.CookieJar:
+def _get_user_orioks_cookies_from_telegram_id(user_telegram_id: int) -> SimpleCookie:
     path_to_cookies = os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl')
-    return pickle.load(open(path_to_cookies, 'rb'))
+    return SimpleCookie(pickle.load(open(path_to_cookies, 'rb')))
 
 
 def _delete_users_tracking_data_in_notify_settings_off(user_telegram_id: int, user_notify_settings: dict) -> None:
@@ -108,7 +109,8 @@ async def run_requests(tasks: list) -> None:
     try:
         await asyncio.gather(*tasks)
     except asyncio.TimeoutError:
-        return await SendToTelegram.message_to_admins(message='Сервер ОРИОКС не отвечает')
+        await SendToTelegram.message_to_admins(message='Сервер ОРИОКС не отвечает')
+        return
     except Exception as e:
         logging.error(f'Ошибка в запросах ОРИОКС!\n{e}')
         await SendToTelegram.message_to_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')

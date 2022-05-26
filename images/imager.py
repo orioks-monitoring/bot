@@ -194,11 +194,12 @@ class Imager:
             side_text: str,
             url: str
     ) -> pathlib.Path:
+        path_to_result_image = pathlib.Path(os.path.join(config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
         self._get_news_image()
         if title_text == '':
-            return self.image
+            self.image.save(path_to_result_image)
+            return path_to_result_image
         self._calculate_font_size_and_text_width(title_text, side_text, need_qr=True)
         self._draw_text_news(title_text, side_text, url)
-        path_to_result_image = pathlib.Path(os.path.join(config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
         self.image.save(path_to_result_image)
         return path_to_result_image
