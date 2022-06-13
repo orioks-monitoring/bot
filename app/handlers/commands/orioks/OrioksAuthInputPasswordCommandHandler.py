@@ -4,17 +4,15 @@ from aiogram import types
 from aiogram.utils import markdown
 
 import app
+from app.exceptions import OrioksInvalidLoginCredentialsException
 from app.forms import OrioksAuthForm
 from app.handlers import AbstractCommandHandler
 import db.user_status
 import db.admins_statistics
-import utils.exceptions
-import utils.orioks
-import utils.handle_orioks_logout
+from app.helpers import OrioksHelper, TelegramMessageHelper
 from app.menus.orioks import OrioksAuthFailedMenu
 from app.menus.start import StartMenu
 from config import Config
-from utils.notify_to_user import SendToTelegram
 
 
 class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
@@ -48,7 +46,7 @@ class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
                 Config.TELEGRAM_STICKER_LOADER,
             )
             try:
-                await utils.orioks.orioks_login_save_cookies(user_login=data['login'],
+                await OrioksHelper.orioks_login_save_cookies(user_login=data['login'],
                                                              user_password=data['password'],
                                                              user_telegram_id=message.from_user.id)
                 db.user_status.update_user_orioks_authenticated_status(
@@ -65,7 +63,7 @@ class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
                 db.admins_statistics.update_inc_admins_statistics_row_name(
                     row_name=db.admins_statistics.AdminsStatisticsRowNames.orioks_success_logins
                 )
-            except utils.exceptions.OrioksInvalidLoginCredsError:
+            except OrioksInvalidLoginCredentialsException:
                 db.admins_statistics.update_inc_admins_statistics_row_name(
                     row_name=db.admins_statistics.AdminsStatisticsRowNames.orioks_failed_logins
                 )
@@ -79,7 +77,7 @@ class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
                         sep='\n',
                     )
                 )
-                await SendToTelegram.message_to_admins(message='Сервер ОРИОКС не отвечает')
+                await TelegramMessageHelper.message_to_admins(message='Сервер ОРИОКС не отвечает')
                 await OrioksAuthFailedMenu.show(chat_id=message.chat.id, telegram_user_id=message.from_user.id)
         await app.bot.delete_message(message.chat.id, message.message_id)
         await state.finish()

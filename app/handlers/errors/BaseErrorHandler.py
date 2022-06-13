@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.utils.exceptions import MessageNotModified, CantParseEntities, TelegramAPIError
 
 from app.handlers.AbstractErrorHandler import AbstractErrorHandler
-from utils.notify_to_user import SendToTelegram
+from app.helpers import TelegramMessageHelper
 
 
 class BaseErrorHandler(AbstractErrorHandler):
@@ -20,5 +20,5 @@ class BaseErrorHandler(AbstractErrorHandler):
         if isinstance(exception, TelegramAPIError):
             pass
 
-        await SendToTelegram.message_to_admins(message=f'Update: {update} \n{exception}')
-        logging.exception(f'Update: {update} \n{exception}')
+        await TelegramMessageHelper.message_to_admins(message=f'Update: {update} \n{exception}')
+        logging.exception(f'Update: %s \n %s', (update, exception, ))

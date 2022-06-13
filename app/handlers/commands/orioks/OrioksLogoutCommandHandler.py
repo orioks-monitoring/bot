@@ -5,7 +5,7 @@ import keyboards
 from app.handlers import AbstractCommandHandler
 
 import db.user_status
-import utils.handle_orioks_logout
+from app.helpers import OrioksHelper
 
 
 class OrioksLogoutCommandHandler(AbstractCommandHandler):
@@ -24,4 +24,4 @@ class OrioksLogoutCommandHandler(AbstractCommandHandler):
             user_telegram_id=message.from_user.id,
             is_user_orioks_authenticated=False
         )
-        utils.handle_orioks_logout.make_orioks_logout(user_telegram_id=message.from_user.id)
+        OrioksHelper.make_orioks_logout(user_telegram_id=message.from_user.id)

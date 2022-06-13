@@ -16,6 +16,7 @@ class UserOrioksAttemptsMiddleware(BaseMiddleware):
         аккаунт ОРИОКС
     """
 
+    # pylint: disable=unused-argument
     async def on_process_message(self, message: types.Message, *args, **kwargs):
         if db.user_status.get_user_orioks_attempts(
                 user_telegram_id=message.from_user.id) > Config.ORIOKS_MAX_LOGIN_TRIES:

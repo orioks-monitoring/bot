@@ -10,16 +10,14 @@ import aioschedule
 
 import db.notify_settings
 import db.user_status
+from app.exceptions import OrioksParseDataException
+from app.helpers import CommonHelper, TelegramMessageHelper
 from checking.marks.get_orioks_marks import user_marks_check
 from checking.news.get_orioks_news import get_current_new, user_news_check_from_news_id
 from checking.homeworks.get_orioks_homeworks import user_homeworks_check
 from checking.requests.get_orioks_requests import user_requests_check
 from http.cookies import SimpleCookie
-import utils
 from config import Config
-from utils import exceptions
-from utils.notify_to_user import SendToTelegram
-import utils.delete_file
 
 
 def _get_user_orioks_cookies_from_telegram_id(user_telegram_id: int) -> SimpleCookie:
@@ -29,23 +27,23 @@ def _get_user_orioks_cookies_from_telegram_id(user_telegram_id: int) -> SimpleCo
 
 def _delete_users_tracking_data_in_notify_settings_off(user_telegram_id: int, user_notify_settings: dict) -> None:
     if not user_notify_settings['marks']:
-        utils.delete_file.safe_delete(
+        CommonHelper.safe_delete(
             os.path.join(Config.PATH_TO_STUDENTS_TRACKING_DATA, 'marks', f'{user_telegram_id}.json')
         )
     if not user_notify_settings['news']:
-        utils.delete_file.safe_delete(
+        CommonHelper.safe_delete(
             os.path.join(Config.PATH_TO_STUDENTS_TRACKING_DATA, 'news', f'{user_telegram_id}.json')
         )
     if not user_notify_settings['discipline_sources']:
-        utils.delete_file.safe_delete(os.path.join(
+        CommonHelper.safe_delete(os.path.join(
             Config.PATH_TO_STUDENTS_TRACKING_DATA, 'discipline_sources', f'{user_telegram_id}.json')
         )
     if not user_notify_settings['homeworks']:
-        utils.delete_file.safe_delete(os.path.join(
+        CommonHelper.safe_delete(os.path.join(
             Config.PATH_TO_STUDENTS_TRACKING_DATA, 'homeworks', f'{user_telegram_id}.json')
         )
     if not user_notify_settings['requests']:
-        utils.delete_file.safe_delete(os.path.join(
+        CommonHelper.safe_delete(os.path.join(
             Config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', f'{user_telegram_id}.json')
         )
 
@@ -88,13 +86,13 @@ async def make_all_users_news_check(tries_counter: int = 0) -> list:
                 headers=Config.ORIOKS_REQUESTS_HEADERS
         ) as session:
             current_new = await get_current_new(user_telegram_id=picked_user_to_check_news, session=session)
-    except exceptions.OrioksCantParseData:
+    except OrioksParseDataException:
         return await make_all_users_news_check(tries_counter=tries_counter + 1)
     for user_telegram_id in users_to_check_news:
         try:
             cookies = _get_user_orioks_cookies_from_telegram_id(user_telegram_id=user_telegram_id)
         except FileNotFoundError:
-            logging.error(f'(COOKIES) FileNotFoundError: {user_telegram_id}')
+            logging.error('(COOKIES) FileNotFoundError: %s' % (user_telegram_id, ))
             continue
         user_session = aiohttp.ClientSession(cookies=cookies, timeout=Config.REQUESTS_TIMEOUT)
         tasks.append(user_news_check_from_news_id(
@@ -109,15 +107,15 @@ async def run_requests(tasks: list) -> None:
     try:
         await asyncio.gather(*tasks)
     except asyncio.TimeoutError:
-        await SendToTelegram.message_to_admins(message='Сервер ОРИОКС не отвечает')
+        await TelegramMessageHelper.message_to_admins(message='Сервер ОРИОКС не отвечает')
         return
     except Exception as e:
-        logging.error(f'Ошибка в запросах ОРИОКС!\n{e}')
-        await SendToTelegram.message_to_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')
+        logging.error('Ошибка в запросах ОРИОКС!\n %s' % (e, ))
+        await TelegramMessageHelper.message_to_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')
 
 
 async def do_checks():
-    logging.info(f'started: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
+    logging.info('started: %s' % (datetime.now().strftime("%H:%M:%S %d.%m.%Y"),))
     users_to_check = db.user_status.select_all_orioks_authenticated_users()
 
     tasks = [] + await make_all_users_news_check()
@@ -126,11 +124,11 @@ async def do_checks():
             user_telegram_id=user_telegram_id
         ))
     await run_requests(tasks=tasks)
-    logging.info(f'ended: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
+    logging.info('ended: %s' % (datetime.now().strftime("%H:%M:%S %d.%m.%Y"),))
 
 
 async def scheduler():
-    await SendToTelegram.message_to_admins(message='Бот запущен!')
+    await TelegramMessageHelper.message_to_admins(message='Бот запущен!')
     aioschedule.every(Config.ORIOKS_SECONDS_BETWEEN_WAVES).seconds.do(do_checks)
     while True:
         await aioschedule.run_pending()

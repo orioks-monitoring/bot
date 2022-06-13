@@ -5,19 +5,16 @@ import re
 import aiohttp
 from bs4 import BeautifulSoup
 
+from app.exceptions import OrioksParseDataException, FileCompareException
+from app.helpers import JsonFileHelper, TelegramMessageHelper, CommonHelper, RequestHelper
 from config import Config
-from utils import exceptions
-from utils.delete_file import safe_delete
-from utils.json_files import JsonFile
-from utils.make_request import get_request
-from utils.notify_to_user import SendToTelegram
 import aiogram.utils.markdown as md
 
 
 def _orioks_parse_homeworks(raw_html: str) -> dict:
     bs_content = BeautifulSoup(raw_html, "html.parser")
     if bs_content.select_one('.table.table-condensed.table-thread') is None:
-        raise exceptions.OrioksCantParseData
+        raise OrioksParseDataException
     table_raw = bs_content.select('.table.table-condensed.table-thread tr:not(:first-child)')
     homeworks = dict()
     for tr in table_raw:
@@ -35,7 +32,7 @@ def _orioks_parse_homeworks(raw_html: str) -> dict:
 
 
 async def get_orioks_homeworks(session: aiohttp.ClientSession) -> dict:
-    raw_html = await get_request(url=Config.ORIOKS_PAGE_URLS['notify']['homeworks'], session=session)
+    raw_html = await RequestHelper.get_request(url=Config.ORIOKS_PAGE_URLS['notify']['homeworks'], session=session)
     return _orioks_parse_homeworks(raw_html)
 
 
@@ -99,8 +96,9 @@ def compare(old_dict: dict, new_dict: dict) -> list:
     for thread_id_old in old_dict:
         try:
             _ = new_dict[thread_id_old]
-        except KeyError:
-            raise exceptions.FileCompareError
+        except KeyError as exception:
+            raise FileCompareException from exception
+
         if old_dict[thread_id_old]['status'] != new_dict[thread_id_old]['status']:
             diffs.append({
                 'type': 'new_status',  # or `new_message`
@@ -121,23 +119,23 @@ async def user_homeworks_check(user_telegram_id: int, session: aiohttp.ClientSes
     path_users_to_file = os.path.join(Config.BASEDIR, 'users_data', 'tracking_data', 'homeworks', student_json_file)
     try:
         homeworks_dict = await get_orioks_homeworks(session=session)
-    except exceptions.OrioksCantParseData:
+    except OrioksParseDataException:
         logging.info('(HOMEWORKS) exception: utils.exceptions.OrioksCantParseData')
-        safe_delete(path=path_users_to_file)
+        CommonHelper.safe_delete(path=path_users_to_file)
         return None
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
-        await JsonFile.save(data=homeworks_dict, filename=path_users_to_file)
+        await JsonFileHelper.save(data=homeworks_dict, filename=path_users_to_file)
         return None
 
-    _old_json = await JsonFile.open(filename=path_users_to_file)
-    old_dict = JsonFile.convert_dict_keys_to_int(_old_json)
+    _old_json = await JsonFileHelper.open(filename=path_users_to_file)
+    old_dict = JsonFileHelper.convert_dict_keys_to_int(_old_json)
     try:
         diffs = compare(old_dict=old_dict, new_dict=homeworks_dict)
-    except exceptions.FileCompareError:
-        await JsonFile.save(data=homeworks_dict, filename=path_users_to_file)
+    except FileCompareException:
+        await JsonFileHelper.save(data=homeworks_dict, filename=path_users_to_file)
         return None
 
     if len(diffs) > 0:
         msg_to_send = await get_homeworks_to_msg(diffs=diffs)
-        await SendToTelegram.text_message_to_user(user_telegram_id=user_telegram_id, message=msg_to_send)
-    await JsonFile.save(data=homeworks_dict, filename=path_users_to_file)
+        await TelegramMessageHelper.text_message_to_user(user_telegram_id=user_telegram_id, message=msg_to_send)
+    await JsonFileHelper.save(data=homeworks_dict, filename=path_users_to_file)

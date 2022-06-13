@@ -6,9 +6,8 @@ from aiogram.utils import executor
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-import utils.makedirs
-
 from app.handlers import register_handlers
+from app.helpers import CommonHelper
 from app.middlewares import UserAgreementMiddleware, UserOrioksAttemptsMiddleware, AdminCommandsMiddleware
 from checking import on_startup
 
@@ -30,8 +29,7 @@ def _settings_before_start() -> None:
     dispatcher.middleware.setup(UserAgreementMiddleware())
     dispatcher.middleware.setup(UserOrioksAttemptsMiddleware())
     dispatcher.middleware.setup(AdminCommandsMiddleware())
-    utils.makedirs.make_dirs()
-    pass
+    CommonHelper.make_dirs()
 
 
 def run():

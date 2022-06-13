@@ -19,6 +19,7 @@ class UserAgreementMiddleware(BaseMiddleware):
     )
     inline_agreement_accept = types.InlineKeyboardMarkup().add(inline_btn_user_agreement_accept)
 
+    # pylint: disable=unused-argument
     async def on_process_message(self, message: types.Message, *args, **kwargs):
         db.user_first_add.user_first_add_to_db(user_telegram_id=message.from_user.id)
         if not db.user_status.get_user_agreement_status(user_telegram_id=message.from_user.id):
