@@ -5,7 +5,7 @@ import re
 import aiohttp
 from bs4 import BeautifulSoup
 
-import config
+from config import Config
 from utils import exceptions
 from utils.delete_file import safe_delete
 from utils.json_files import JsonFile
@@ -30,14 +30,14 @@ def _orioks_parse_requests(raw_html: str, section: str) -> dict:
             'new_messages': int(tr.find_all('td')[new_messages_td_list_index].select_one('b').text),
             'about': {
                 'name': tr.find_all('td')[3].text,
-                'url': config.ORIOKS_PAGE_URLS['masks']['requests'][section].format(id=_thread_id),
+                'url': Config.ORIOKS_PAGE_URLS['masks']['requests'][section].format(id=_thread_id),
             },
         }
     return requests
 
 
 async def get_orioks_requests(section: str, session: aiohttp.ClientSession) -> dict:
-    raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['notify']['requests'][section], session=session)
+    raw_html = await get_request(url=Config.ORIOKS_PAGE_URLS['notify']['requests'][section], session=session)
     return _orioks_parse_requests(raw_html=raw_html, section=section)
 
 
@@ -118,8 +118,8 @@ def compare(old_dict: dict, new_dict: dict) -> list:
 
 async def _user_requests_check_with_subsection(user_telegram_id: int, section: str,
                                                session: aiohttp.ClientSession) -> None:
-    student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
-    path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data',
+    student_json_file = Config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
+    path_users_to_file = os.path.join(Config.BASEDIR, 'users_data', 'tracking_data',
                                       'requests', section, student_json_file)
     try:
         requests_dict = await get_orioks_requests(section=section, session=session)

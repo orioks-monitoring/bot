@@ -8,7 +8,6 @@ from datetime import datetime
 import aiohttp
 import aioschedule
 
-import config
 import db.notify_settings
 import db.user_status
 from checking.marks.get_orioks_marks import user_marks_check
@@ -17,36 +16,37 @@ from checking.homeworks.get_orioks_homeworks import user_homeworks_check
 from checking.requests.get_orioks_requests import user_requests_check
 from http.cookies import SimpleCookie
 import utils
+from config import Config
 from utils import exceptions
 from utils.notify_to_user import SendToTelegram
 import utils.delete_file
 
 
 def _get_user_orioks_cookies_from_telegram_id(user_telegram_id: int) -> SimpleCookie:
-    path_to_cookies = os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl')
+    path_to_cookies = os.path.join(Config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl')
     return SimpleCookie(pickle.load(open(path_to_cookies, 'rb')))
 
 
 def _delete_users_tracking_data_in_notify_settings_off(user_telegram_id: int, user_notify_settings: dict) -> None:
     if not user_notify_settings['marks']:
         utils.delete_file.safe_delete(
-            os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'marks', f'{user_telegram_id}.json')
+            os.path.join(Config.PATH_TO_STUDENTS_TRACKING_DATA, 'marks', f'{user_telegram_id}.json')
         )
     if not user_notify_settings['news']:
         utils.delete_file.safe_delete(
-            os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'news', f'{user_telegram_id}.json')
+            os.path.join(Config.PATH_TO_STUDENTS_TRACKING_DATA, 'news', f'{user_telegram_id}.json')
         )
     if not user_notify_settings['discipline_sources']:
         utils.delete_file.safe_delete(os.path.join(
-            config.PATH_TO_STUDENTS_TRACKING_DATA, 'discipline_sources', f'{user_telegram_id}.json')
+            Config.PATH_TO_STUDENTS_TRACKING_DATA, 'discipline_sources', f'{user_telegram_id}.json')
         )
     if not user_notify_settings['homeworks']:
         utils.delete_file.safe_delete(os.path.join(
-            config.PATH_TO_STUDENTS_TRACKING_DATA, 'homeworks', f'{user_telegram_id}.json')
+            Config.PATH_TO_STUDENTS_TRACKING_DATA, 'homeworks', f'{user_telegram_id}.json')
         )
     if not user_notify_settings['requests']:
         utils.delete_file.safe_delete(os.path.join(
-            config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', f'{user_telegram_id}.json')
+            Config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', f'{user_telegram_id}.json')
         )
 
 
@@ -55,8 +55,8 @@ async def make_one_user_check(user_telegram_id: int) -> None:
     cookies = _get_user_orioks_cookies_from_telegram_id(user_telegram_id=user_telegram_id)
     async with aiohttp.ClientSession(
             cookies=cookies,
-            timeout=config.REQUESTS_TIMEOUT,
-            headers=config.ORIOKS_REQUESTS_HEADERS
+            timeout=Config.REQUESTS_TIMEOUT,
+            headers=Config.ORIOKS_REQUESTS_HEADERS
     ) as session:
         if user_notify_settings['marks']:
             await user_marks_check(user_telegram_id=user_telegram_id, session=session)
@@ -84,8 +84,8 @@ async def make_all_users_news_check(tries_counter: int = 0) -> list:
     try:
         async with aiohttp.ClientSession(
                 cookies=cookies,
-                timeout=config.REQUESTS_TIMEOUT,
-                headers=config.ORIOKS_REQUESTS_HEADERS
+                timeout=Config.REQUESTS_TIMEOUT,
+                headers=Config.ORIOKS_REQUESTS_HEADERS
         ) as session:
             current_new = await get_current_new(user_telegram_id=picked_user_to_check_news, session=session)
     except exceptions.OrioksCantParseData:
@@ -96,7 +96,7 @@ async def make_all_users_news_check(tries_counter: int = 0) -> list:
         except FileNotFoundError:
             logging.error(f'(COOKIES) FileNotFoundError: {user_telegram_id}')
             continue
-        user_session = aiohttp.ClientSession(cookies=cookies, timeout=config.REQUESTS_TIMEOUT)
+        user_session = aiohttp.ClientSession(cookies=cookies, timeout=Config.REQUESTS_TIMEOUT)
         tasks.append(user_news_check_from_news_id(
             user_telegram_id=user_telegram_id,
             session=user_session,
@@ -131,7 +131,7 @@ async def do_checks():
 
 async def scheduler():
     await SendToTelegram.message_to_admins(message='Бот запущен!')
-    aioschedule.every(config.ORIOKS_SECONDS_BETWEEN_WAVES).seconds.do(do_checks)
+    aioschedule.every(Config.ORIOKS_SECONDS_BETWEEN_WAVES).seconds.do(do_checks)
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)

@@ -5,7 +5,7 @@ import re
 import aiohttp
 from bs4 import BeautifulSoup
 
-import config
+from config import Config
 from utils import exceptions
 from utils.json_files import JsonFile
 from utils.make_request import get_request
@@ -35,7 +35,7 @@ def _orioks_parse_news(raw_html: str) -> dict:
 
 
 async def get_orioks_news(session: aiohttp.ClientSession) -> dict:
-    raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['notify']['news'], session=session)
+    raw_html = await get_request(url=Config.ORIOKS_PAGE_URLS['notify']['news'], session=session)
     return _orioks_parse_news(raw_html)
 
 
@@ -45,7 +45,7 @@ def _find_in_str_with_beginning_and_ending(string_to_find: str, beginning: str, 
 
 
 async def get_news_by_news_id(news_id: int, session: aiohttp.ClientSession) -> NewsObject:
-    raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id), session=session)
+    raw_html = await get_request(url=Config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id), session=session)
     bs_content = BeautifulSoup(raw_html, "html.parser")
     well_raw = bs_content.find_all('div', {'class': 'well'})[0]
     return NewsObject(
@@ -53,7 +53,7 @@ async def get_news_by_news_id(news_id: int, session: aiohttp.ClientSession) -> N
             string_to_find=well_raw.text,
             beginning='Заголовок:',
             ending='Тело новости:'),
-        url=config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id),
+        url=Config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id),
         id=news_id
     )
 
@@ -76,8 +76,8 @@ def transform_news_to_msg(news_obj: NewsObject) -> str:
 
 
 async def get_current_new(user_telegram_id: int, session: aiohttp.ClientSession) -> NewsObject:
-    student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
-    path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'news', student_json_file)
+    student_json_file = Config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
+    path_users_to_file = os.path.join(Config.BASEDIR, 'users_data', 'tracking_data', 'news', student_json_file)
     try:
         last_news_id = await get_orioks_news(session=session)
     except exceptions.OrioksCantParseData:
@@ -89,8 +89,8 @@ async def get_current_new(user_telegram_id: int, session: aiohttp.ClientSession)
 
 async def user_news_check_from_news_id(user_telegram_id: int, session: aiohttp.ClientSession,
                                        current_new: NewsObject) -> None:
-    student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
-    path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'news', student_json_file)
+    student_json_file = Config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
+    path_users_to_file = os.path.join(Config.BASEDIR, 'users_data', 'tracking_data', 'news', student_json_file)
     last_news_id = {'last_id': current_new.id}
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
         await JsonFile.save(data=last_news_id, filename=path_users_to_file)

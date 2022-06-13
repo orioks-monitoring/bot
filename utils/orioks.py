@@ -6,14 +6,15 @@ import pickle
 import aiohttp
 from bs4 import BeautifulSoup
 
-import config
 import utils.exceptions
 from datetime import datetime
+
+from config import Config
 from utils.notify_to_user import SendToTelegram
 import aiogram.utils.markdown as md
 
 
-_sem = asyncio.Semaphore(config.ORIOKS_LOGIN_QUEUE_SEMAPHORE_VALUE)
+_sem = asyncio.Semaphore(Config.ORIOKS_LOGIN_QUEUE_SEMAPHORE_VALUE)
 
 
 async def orioks_login_save_cookies(user_login: int, user_password: str, user_telegram_id: int) -> None:
@@ -36,12 +37,12 @@ async def orioks_login_save_cookies(user_login: int, user_password: str, user_te
         )
     async with _sem:  # orioks dont die please
         async with aiohttp.ClientSession(
-                timeout=config.REQUESTS_TIMEOUT,
-                headers=config.ORIOKS_REQUESTS_HEADERS
+                timeout=Config.REQUESTS_TIMEOUT,
+                headers=Config.ORIOKS_REQUESTS_HEADERS
         ) as session:
             try:
                 logging.info(f'request to login: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
-                async with session.get(str(config.ORIOKS_PAGE_URLS['login'])) as resp:
+                async with session.get(str(Config.ORIOKS_PAGE_URLS['login'])) as resp:
                     bs_content = BeautifulSoup(await resp.text(), "html.parser")
                 _csrf_token = bs_content.find('input', {'name': '_csrf'})['value']
                 login_data = {
@@ -53,12 +54,12 @@ async def orioks_login_save_cookies(user_login: int, user_password: str, user_te
             except asyncio.TimeoutError as e:
                 raise e
             try:
-                async with session.post(str(config.ORIOKS_PAGE_URLS['login']), data=login_data) as resp:
-                    if str(resp.url) == config.ORIOKS_PAGE_URLS['login']:
+                async with session.post(str(Config.ORIOKS_PAGE_URLS['login']), data=login_data) as resp:
+                    if str(resp.url) == Config.ORIOKS_PAGE_URLS['login']:
                         raise utils.exceptions.OrioksInvalidLoginCredsError
             except asyncio.TimeoutError as e:
                 raise e
 
             cookies = session.cookie_jar.filter_cookies(resp.url)
-        pickle.dump(cookies, open(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'), 'wb'))
+        pickle.dump(cookies, open(os.path.join(Config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'), 'wb'))
         await asyncio.sleep(1)

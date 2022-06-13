@@ -5,8 +5,8 @@ from dataclasses import dataclass
 import aiohttp
 from bs4 import BeautifulSoup
 import logging
-import config
 from checking.marks.compares import file_compares, get_discipline_objs_from_diff
+from config import Config
 from utils import exceptions
 from utils.json_files import JsonFile
 from utils.notify_to_user import SendToTelegram
@@ -98,13 +98,13 @@ def _get_orioks_forang(raw_html: str):
 
 
 async def get_orioks_marks(session: aiohttp.ClientSession):
-    raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['notify']['marks'], session=session)
+    raw_html = await get_request(url=Config.ORIOKS_PAGE_URLS['notify']['marks'], session=session)
     return _get_orioks_forang(raw_html)
 
 
 async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession) -> None:
-    student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
-    path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'marks', student_json_file)
+    student_json_file = Config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
+    path_users_to_file = os.path.join(Config.BASEDIR, 'users_data', 'tracking_data', 'marks', student_json_file)
     try:
         detailed_info = await get_orioks_marks(session=session)
     except FileNotFoundError:

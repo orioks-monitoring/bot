@@ -1,6 +1,7 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
-class Form(StatesGroup):
+class OrioksAuthForm(StatesGroup):
     login = State()
     password = State()
+

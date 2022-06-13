@@ -5,7 +5,7 @@ import re
 import aiohttp
 from bs4 import BeautifulSoup
 
-import config
+from config import Config
 from utils import exceptions
 from utils.delete_file import safe_delete
 from utils.json_files import JsonFile
@@ -28,14 +28,14 @@ def _orioks_parse_homeworks(raw_html: str) -> dict:
             'about': {
                 'discipline': tr.find_all('td')[3].text,
                 'task': tr.find_all('td')[4].text,
-                'url': config.ORIOKS_PAGE_URLS['masks']['homeworks'].format(id=_thread_id),
+                'url': Config.ORIOKS_PAGE_URLS['masks']['homeworks'].format(id=_thread_id),
             },
         }
     return homeworks
 
 
 async def get_orioks_homeworks(session: aiohttp.ClientSession) -> dict:
-    raw_html = await get_request(url=config.ORIOKS_PAGE_URLS['notify']['homeworks'], session=session)
+    raw_html = await get_request(url=Config.ORIOKS_PAGE_URLS['notify']['homeworks'], session=session)
     return _orioks_parse_homeworks(raw_html)
 
 
@@ -117,8 +117,8 @@ def compare(old_dict: dict, new_dict: dict) -> list:
 
 
 async def user_homeworks_check(user_telegram_id: int, session: aiohttp.ClientSession) -> None:
-    student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
-    path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data', 'homeworks', student_json_file)
+    student_json_file = Config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
+    path_users_to_file = os.path.join(Config.BASEDIR, 'users_data', 'tracking_data', 'homeworks', student_json_file)
     try:
         homeworks_dict = await get_orioks_homeworks(session=session)
     except exceptions.OrioksCantParseData:

@@ -4,8 +4,9 @@ import qrcode as qrcode
 from PIL import Image, ImageDraw, ImageFont
 from typing import NamedTuple
 import pathlib
-import config
 import secrets
+
+from config import Config
 
 
 class PathToImages(NamedTuple):
@@ -19,7 +20,7 @@ class PathToImages(NamedTuple):
 
 class Imager:
     def __init__(self):
-        self._base_dir = os.path.join(config.BASEDIR, 'images', 'source')
+        self._base_dir = os.path.join(Config.BASEDIR, 'images', 'source')
         self._font_path = os.path.join(self._base_dir, 'PTSansCaption-Bold.ttf')
 
         self._font_upper_size = 64
@@ -184,7 +185,7 @@ class Imager:
         self._get_image_by_grade(current_grade, max_grade)
         self._calculate_font_size_and_text_width(title_text, side_text, mark_change_text=mark_change_text)
         self._draw_text_marks(title_text, mark_change_text, side_text)
-        path_to_result_image = pathlib.Path(os.path.join(config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
+        path_to_result_image = pathlib.Path(os.path.join(Config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
         self.image.save(path_to_result_image)
         return path_to_result_image
 
@@ -194,7 +195,7 @@ class Imager:
             side_text: str,
             url: str
     ) -> pathlib.Path:
-        path_to_result_image = pathlib.Path(os.path.join(config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
+        path_to_result_image = pathlib.Path(os.path.join(Config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
         self._get_news_image()
         if title_text == '':
             self.image.save(path_to_result_image)
