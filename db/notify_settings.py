@@ -1,6 +1,7 @@
 import sqlite3
-import config
 import os
+
+from config import config
 
 
 def get_user_notify_settings_to_dict(user_telegram_id: int) -> dict:

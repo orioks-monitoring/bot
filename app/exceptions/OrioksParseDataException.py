@@ -1,0 +1,4 @@
+
+
+class OrioksParseDataException(Exception):
+    pass

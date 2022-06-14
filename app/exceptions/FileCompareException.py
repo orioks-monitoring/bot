@@ -1,0 +1,4 @@
+
+
+class FileCompareException(Exception):
+    pass

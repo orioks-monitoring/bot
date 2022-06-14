@@ -1,6 +1,6 @@
-from utils import exceptions
+from app.exceptions import FileCompareException
+from app.helpers import CommonHelper
 import aiogram.utils.markdown as md
-from utils.my_isdigit import my_isdigit
 from typing import NamedTuple
 
 
@@ -14,20 +14,20 @@ class DisciplineObject(NamedTuple):
 
 def file_compares(old_file: list, new_file: list) -> list:
     if len(old_file) != len(new_file):
-        raise exceptions.FileCompareError
+        raise FileCompareException
 
     diffs = []
     for old, new in zip(old_file, new_file):
         if old['subject'] != new['subject']:
-            raise exceptions.FileCompareError
+            raise FileCompareException
         if len(old['tasks']) != len(new['tasks']):
-            raise exceptions.FileCompareError
+            raise FileCompareException
         diffs_one_subject = []
         for old_task, new_task in zip(old['tasks'], new['tasks']):
             if old_task['max_grade'] != new_task['max_grade']:
-                raise exceptions.FileCompareError
+                raise FileCompareException
             if old_task['alias'] != new_task['alias']:
-                raise exceptions.FileCompareError
+                raise FileCompareException
 
             old_grade = old_task['current_grade']
             new_grade = new_task['current_grade']
@@ -35,8 +35,8 @@ def file_compares(old_file: list, new_file: list) -> list:
                 old_grade = 0 if old_grade == '-' else old_grade
                 new_grade = 0 if new_grade == '-' else new_grade
                 if new_grade == 'н' or old_grade == 'н':
-                    new_grade_to_digit = new_grade if my_isdigit(new_grade) else 0
-                    old_grade_to_digit = old_grade if my_isdigit(old_grade) else 0
+                    new_grade_to_digit = new_grade if CommonHelper.is_correct_convert_to_float(new_grade) else 0
+                    old_grade_to_digit = old_grade if CommonHelper.is_correct_convert_to_float(old_grade) else 0
                     diffs_one_subject.append({
                         'type': 'missing_grade',
                         'task': new_task['alias'],
