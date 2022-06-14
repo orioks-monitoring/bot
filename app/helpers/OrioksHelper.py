@@ -8,16 +8,15 @@ from bs4 import BeautifulSoup
 
 from datetime import datetime
 
-from app import CommonHelper
 from app.exceptions import OrioksInvalidLoginCredentialsException
-from app.helpers import TelegramMessageHelper
-from config import Config
+from app.helpers import TelegramMessageHelper, CommonHelper
 import aiogram.utils.markdown as md
 
 import db.user_status
 import db.notify_settings
+from config import config
 
-_sem = asyncio.Semaphore(Config.ORIOKS_LOGIN_QUEUE_SEMAPHORE_VALUE)
+_sem = asyncio.Semaphore(config.ORIOKS_LOGIN_QUEUE_SEMAPHORE_VALUE)
 
 
 class OrioksHelper:
@@ -44,12 +43,12 @@ class OrioksHelper:
             )
         async with _sem:  # orioks dont die please
             async with aiohttp.ClientSession(
-                    timeout=Config.REQUESTS_TIMEOUT,
-                    headers=Config.ORIOKS_REQUESTS_HEADERS
+                    timeout=config.REQUESTS_TIMEOUT,
+                    headers=config.ORIOKS_REQUESTS_HEADERS
             ) as session:
                 try:
                     logging.info(f'request to login: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
-                    async with session.get(str(Config.ORIOKS_PAGE_URLS['login'])) as resp:
+                    async with session.get(str(config.ORIOKS_PAGE_URLS['login'])) as resp:
                         bs_content = BeautifulSoup(await resp.text(), "html.parser")
                     _csrf_token = bs_content.find('input', {'name': '_csrf'})['value']
                     login_data = {
@@ -61,27 +60,27 @@ class OrioksHelper:
                 except asyncio.TimeoutError as e:
                     raise e
                 try:
-                    async with session.post(str(Config.ORIOKS_PAGE_URLS['login']), data=login_data) as resp:
-                        if str(resp.url) == Config.ORIOKS_PAGE_URLS['login']:
+                    async with session.post(str(config.ORIOKS_PAGE_URLS['login']), data=login_data) as resp:
+                        if str(resp.url) == config.ORIOKS_PAGE_URLS['login']:
                             raise OrioksInvalidLoginCredentialsException
                 except asyncio.TimeoutError as e:
                     raise e
 
                 cookies = session.cookie_jar.filter_cookies(resp.url)
             pickle.dump(cookies,
-                        open(os.path.join(Config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'), 'wb'))
+                        open(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'), 'wb'))
             await asyncio.sleep(1)
 
     @staticmethod
     def make_orioks_logout(user_telegram_id: int) -> None:
-        CommonHelper.safe_delete(os.path.join(Config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'))
-        CommonHelper.safe_delete(os.path.join(Config.PATH_TO_STUDENTS_TRACKING_DATA, 'discipline_sources', f'{user_telegram_id}.json'))
-        CommonHelper.safe_delete(os.path.join(Config.PATH_TO_STUDENTS_TRACKING_DATA, 'news', f'{user_telegram_id}.json'))
-        CommonHelper.safe_delete(os.path.join(Config.PATH_TO_STUDENTS_TRACKING_DATA, 'marks', f'{user_telegram_id}.json'))
-        CommonHelper.safe_delete(os.path.join(Config.PATH_TO_STUDENTS_TRACKING_DATA, 'homeworks', f'{user_telegram_id}.json'))
-        CommonHelper.safe_delete(os.path.join(Config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', 'questionnaire', f'{user_telegram_id}.json'))
-        CommonHelper.safe_delete(os.path.join(Config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', 'doc', f'{user_telegram_id}.json'))
-        CommonHelper.safe_delete(os.path.join(Config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', 'reference', f'{user_telegram_id}.json'))
+        CommonHelper.safe_delete(os.path.join(config.BASEDIR, 'users_data', 'cookies', f'{user_telegram_id}.pkl'))
+        CommonHelper.safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'discipline_sources', f'{user_telegram_id}.json'))
+        CommonHelper.safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'news', f'{user_telegram_id}.json'))
+        CommonHelper.safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'marks', f'{user_telegram_id}.json'))
+        CommonHelper.safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'homeworks', f'{user_telegram_id}.json'))
+        CommonHelper.safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', 'questionnaire', f'{user_telegram_id}.json'))
+        CommonHelper.safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', 'doc', f'{user_telegram_id}.json'))
+        CommonHelper.safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', 'reference', f'{user_telegram_id}.json'))
 
         db.user_status.update_user_orioks_authenticated_status(user_telegram_id=user_telegram_id, is_user_orioks_authenticated=False)
         db.notify_settings.update_user_notify_settings_reset_to_default(user_telegram_id=user_telegram_id)

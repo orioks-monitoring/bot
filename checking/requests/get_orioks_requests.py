@@ -27,14 +27,14 @@ def _orioks_parse_requests(raw_html: str, section: str) -> dict:
             'new_messages': int(tr.find_all('td')[new_messages_td_list_index].select_one('b').text),
             'about': {
                 'name': tr.find_all('td')[3].text,
-                'url': Config.ORIOKS_PAGE_URLS['masks']['requests'][section].format(id=_thread_id),
+                'url': config.ORIOKS_PAGE_URLS['masks']['requests'][section].format(id=_thread_id),
             },
         }
     return requests
 
 
 async def get_orioks_requests(section: str, session: aiohttp.ClientSession) -> dict:
-    raw_html = await RequestHelper.get_request(url=Config.ORIOKS_PAGE_URLS['notify']['requests'][section], session=session)
+    raw_html = await RequestHelper.get_request(url=config.ORIOKS_PAGE_URLS['notify']['requests'][section], session=session)
     return _orioks_parse_requests(raw_html=raw_html, section=section)
 
 

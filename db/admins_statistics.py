@@ -2,7 +2,7 @@ import sqlite3
 import os
 from dataclasses import dataclass
 
-from config import Config
+from config import config
 
 
 @dataclass
@@ -12,29 +12,11 @@ class AdminsStatisticsRowNames:
     orioks_failed_logins: str = 'orioks_failed_logins'
 
 
-def create_and_init_admins_statistics() -> None:
-    db = sqlite3.connect(Config.PATH_TO_DB)
-    sql = db.cursor()
-
-    with open(os.path.join(Config.PATH_TO_SQL_FOLDER, 'create_admins_statistics.sql'), 'r') as sql_file:
-        sql_script = sql_file.read()
-    sql.execute(sql_script)
-    with open(os.path.join(Config.PATH_TO_SQL_FOLDER, 'init_admins_statistics.sql'), 'r') as sql_file:
-        sql_script = sql_file.read()
-    sql.execute(sql_script, {
-        'orioks_scheduled_requests': 0,
-        'orioks_success_logins': 0,
-        'orioks_failed_logins': 0,
-    })
-    db.commit()
-    db.close()
-
-
 def select_all_from_admins_statistics() -> dict:
-    db = sqlite3.connect(Config.PATH_TO_DB)
+    db = sqlite3.connect(config.PATH_TO_DB)
     sql = db.cursor()
 
-    with open(os.path.join(Config.PATH_TO_SQL_FOLDER, 'select_all_from_admins_statistics.sql'), 'r') as sql_file:
+    with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'select_all_from_admins_statistics.sql'), 'r') as sql_file:
         sql_script = sql_file.read()
     rows = sql.execute(sql_script).fetchone()
     db.close()
@@ -51,9 +33,9 @@ def update_inc_admins_statistics_row_name(row_name: str) -> None:
     if row_name not in ('orioks_scheduled_requests', 'orioks_success_logins', 'orioks_failed_logins'):
         raise Exception('update_inc_admins_statistics_row_name() -> row_name must only be in ('
                         'orioks_scheduled_requests, orioks_success_logins, orioks_failed_logins)')
-    db = sqlite3.connect(Config.PATH_TO_DB)
+    db = sqlite3.connect(config.PATH_TO_DB)
     sql = db.cursor()
-    with open(os.path.join(Config.PATH_TO_SQL_FOLDER, 'update_inc_admins_statistics_row_name.sql'), 'r') as sql_file:
+    with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'update_inc_admins_statistics_row_name.sql'), 'r') as sql_file:
         sql_script = sql_file.read()
     sql.execute(sql_script.format(row_name=row_name), {
         'row_name': row_name

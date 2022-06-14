@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-from config import Config
+from config import config
 
 
 def user_first_add_to_db(user_telegram_id: int) -> None:

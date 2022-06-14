@@ -2,26 +2,17 @@ import textwrap
 import os
 import qrcode as qrcode
 from PIL import Image, ImageDraw, ImageFont
-from typing import NamedTuple
 import pathlib
 import secrets
 
+from app.helpers.AssetsHelper import assetsHelper
 from config import Config
 
 
-class PathToImages(NamedTuple):
-    one: pathlib.Path
-    two: pathlib.Path
-    three: pathlib.Path
-    four: pathlib.Path
-    five: pathlib.Path
-    news: pathlib.Path
+class MarksPictureHelper:
 
-
-class Imager:
     def __init__(self):
-        self._base_dir = os.path.join(Config.BASEDIR, 'images', 'source')
-        self._font_path = os.path.join(self._base_dir, 'PTSansCaption-Bold.ttf')
+        self._font_path = assetsHelper.make_full_path('fonts/PTSansCaption-Bold.ttf')
 
         self._font_upper_size = 64
         self._font_downer_size = 62
@@ -34,31 +25,22 @@ class Imager:
 
         self._width_line = 27
 
-        self._background_paths = PathToImages(
-            one=pathlib.Path(os.path.join(self._base_dir, 'red.png')),
-            two=pathlib.Path(os.path.join(self._base_dir, 'orange.png')),
-            three=pathlib.Path(os.path.join(self._base_dir, 'yellow.png')),
-            four=pathlib.Path(os.path.join(self._base_dir, 'salt.png')),
-            five=pathlib.Path(os.path.join(self._base_dir, 'green.png')),
-            news=pathlib.Path(os.path.join(self._base_dir, 'news.png')),
-        )
-
     def _get_image_by_grade(self, current_grade, max_grade):
         if current_grade == 0:
-            self.image = Image.open(self._background_paths.one)
+            self.image = Image.open(assetsHelper.make_full_path('images/red.png'))
         elif current_grade / max_grade < 0.5:
-            self.image = Image.open(self._background_paths.two)
+            self.image = Image.open(assetsHelper.make_full_path('images/orange.png'))
         elif current_grade / max_grade < 0.7:
-            self.image = Image.open(self._background_paths.three)
+            self.image = Image.open(assetsHelper.make_full_path('images/yellow.png'))
         elif current_grade / max_grade < 0.85:
-            self.image = Image.open(self._background_paths.four)
+            self.image = Image.open(assetsHelper.make_full_path('images/salt.png'))
         elif current_grade / max_grade >= 0.85:
-            self.image = Image.open(self._background_paths.five)
+            self.image = Image.open(assetsHelper.make_full_path('images/green.png'))
         self.draw_text = ImageDraw.Draw(self.image)
         self.image_weight, self.image_height = self.image.size
 
     def _get_news_image(self):
-        self.image = Image.open(self._background_paths.news)
+        self.image = Image.open(assetsHelper.make_full_path('images/news.png'))
         self.draw_text = ImageDraw.Draw(self.image)
         self.image_weight, self.image_height = self.image.size
 

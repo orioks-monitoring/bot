@@ -6,7 +6,7 @@ from aiogram.utils.exceptions import BotBlocked, ChatNotFound
 
 import app
 from app.helpers import OrioksHelper
-from config import Config
+from config import config
 
 
 class TelegramMessageHelper:
@@ -27,7 +27,7 @@ class TelegramMessageHelper:
 
     @staticmethod
     async def message_to_admins(message: str) -> None:
-        for admin_telegram_id in Config.TELEGRAM_ADMIN_IDS_LIST:
+        for admin_telegram_id in config.TELEGRAM_ADMIN_IDS_LIST:
             await app.bot.send_message(
                 admin_telegram_id,
                 markdown.text(

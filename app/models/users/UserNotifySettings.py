@@ -5,6 +5,8 @@ from app.models import BaseModel
 
 class UserNotifySettings(BaseModel):
 
+    __tablename__ = 'user_notify_settings'
+
     user_telegram_id = Column(Integer, nullable=False)
     marks = Column(Boolean, nullable=False, default=True)
     news = Column(Boolean, nullable=False, default=True)

@@ -25,14 +25,14 @@ def _orioks_parse_homeworks(raw_html: str) -> dict:
             'about': {
                 'discipline': tr.find_all('td')[3].text,
                 'task': tr.find_all('td')[4].text,
-                'url': Config.ORIOKS_PAGE_URLS['masks']['homeworks'].format(id=_thread_id),
+                'url': config.ORIOKS_PAGE_URLS['masks']['homeworks'].format(id=_thread_id),
             },
         }
     return homeworks
 
 
 async def get_orioks_homeworks(session: aiohttp.ClientSession) -> dict:
-    raw_html = await RequestHelper.get_request(url=Config.ORIOKS_PAGE_URLS['notify']['homeworks'], session=session)
+    raw_html = await RequestHelper.get_request(url=config.ORIOKS_PAGE_URLS['notify']['homeworks'], session=session)
     return _orioks_parse_homeworks(raw_html)
 
 

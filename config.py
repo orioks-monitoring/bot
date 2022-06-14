@@ -1,10 +1,10 @@
 import os
 import json
 import aiohttp
+from dotenv import load_dotenv
 
 
 class Config:
-    TELEGRAM_BOT_API_TOKEN = os.getenv('TELEGRAM_BOT_API_TOKEN')
 
     BASEDIR = os.path.dirname(os.path.abspath(__file__))
     STUDENT_FILE_JSON_MASK = '{id}.json'
@@ -20,8 +20,6 @@ class Config:
         'notify_settings-homeworks',
         'notify_settings-requests'
     )
-
-    TELEGRAM_ADMIN_IDS_LIST = json.loads(os.environ['TELEGRAM_ADMIN_IDS_LIST'])
 
     ORIOKS_MAX_LOGIN_TRIES = 10
 
@@ -63,3 +61,14 @@ class Config:
             }
         }
     }
+
+    def __init__(self):
+        # Load environment variables from .env file
+        load_dotenv()
+
+        self.TELEGRAM_BOT_API_TOKEN = os.getenv('TELEGRAM_BOT_API_TOKEN')
+        self.TELEGRAM_ADMIN_IDS_LIST = json.loads(os.environ['TELEGRAM_ADMIN_IDS_LIST'])
+        self.DATABASE_URL = os.getenv('DATABASE_URL')
+
+
+config = Config()

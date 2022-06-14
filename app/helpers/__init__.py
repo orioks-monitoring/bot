@@ -1,10 +1,12 @@
 from .CommonHelper import CommonHelper
+from .AssetsHelper import AssetsHelper
 from .JsonFileHelper import JsonFileHelper
 from .OrioksHelper import OrioksHelper
 from .RequestHelper import RequestHelper
 from .TelegramMessageHelper import TelegramMessageHelper
+from .MarksPictureHelper import MarksPictureHelper
 
 __all__ = [
-    'CommonHelper', 'JsonFileHelper', 'OrioksHelper',
-    'RequestHelper', 'TelegramMessageHelper'
+    'CommonHelper', 'AssetsHelper', 'JsonFileHelper', 'OrioksHelper',
+    'RequestHelper', 'TelegramMessageHelper', 'MarksPictureHelper'
 ]

@@ -5,6 +5,8 @@ from app.models import BaseModel
 
 class UserStatus(BaseModel):
 
+    __tablename__ = 'user_status'
+
     user_telegram_id = Column(Integer, nullable=False)
     agreement_accepted = Column(Boolean, nullable=False, default=False)
     authenticated = Column(Boolean, nullable=False, default=False)

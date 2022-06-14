@@ -2,7 +2,7 @@ from typing import Type
 
 from aiogram import Dispatcher
 
-from config import Config
+from config import config
 
 from .AbstractCommandHandler import AbstractCommandHandler
 from .AbstractCallbackHandler import AbstractCallbackHandler
@@ -44,7 +44,7 @@ def register_handlers(dispatcher: Dispatcher) -> None:
         UserAgreementCallbackHandler.process, lambda c: c.data == 'button_user_agreement_accept'
     )
     dispatcher.register_callback_query_handler(
-        SettingsCallbackHandler.process, lambda c: c.data in Config.notify_settings_btns
+        SettingsCallbackHandler.process, lambda c: c.data in config.notify_settings_btns
     )
 
     # Errors

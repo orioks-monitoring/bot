@@ -2,14 +2,14 @@ import sqlite3
 from typing import Set
 import os
 
-from config import Config
+from config import config
 
 
 def get_user_agreement_status(user_telegram_id: int) -> bool:
-    db = sqlite3.connect(Config.PATH_TO_DB)
+    db = sqlite3.connect(config.PATH_TO_DB)
     sql = db.cursor()
 
-    with open(os.path.join(Config.PATH_TO_SQL_FOLDER, 'select_is_user_agreement_accepted_from_user_status.sql'),
+    with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'select_is_user_agreement_accepted_from_user_status.sql'),
               'r') as sql_file:
         sql_script = sql_file.read()
     is_user_agreement_accepted = bool(sql.execute(sql_script, {'user_telegram_id': user_telegram_id}).fetchone()[0])
@@ -18,9 +18,9 @@ def get_user_agreement_status(user_telegram_id: int) -> bool:
 
 
 def get_user_orioks_authenticated_status(user_telegram_id: int) -> bool:
-    db = sqlite3.connect(Config.PATH_TO_DB)
+    db = sqlite3.connect(config.PATH_TO_DB)
     sql = db.cursor()
-    with open(os.path.join(Config.PATH_TO_SQL_FOLDER, 'select_is_user_orioks_authenticated_from_user_status.sql'),
+    with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'select_is_user_orioks_authenticated_from_user_status.sql'),
               'r') as sql_file:
         sql_script = sql_file.read()
     is_user_orioks_authenticated = bool(sql.execute(sql_script, {'user_telegram_id': user_telegram_id}).fetchone()[0])
@@ -29,9 +29,9 @@ def get_user_orioks_authenticated_status(user_telegram_id: int) -> bool:
 
 
 def update_user_agreement_status(user_telegram_id: int, is_user_agreement_accepted: bool) -> None:
-    db = sqlite3.connect(Config.PATH_TO_DB)
+    db = sqlite3.connect(config.PATH_TO_DB)
     sql = db.cursor()
-    with open(os.path.join(Config.PATH_TO_SQL_FOLDER, 'update_user_status_set_is_user_agreement_accepted.sql'),
+    with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'update_user_status_set_is_user_agreement_accepted.sql'),
               'r') as sql_file:
         sql_script = sql_file.read()
     sql.execute(sql_script, {
@@ -43,9 +43,9 @@ def update_user_agreement_status(user_telegram_id: int, is_user_agreement_accept
 
 
 def update_user_orioks_authenticated_status(user_telegram_id: int, is_user_orioks_authenticated: bool) -> None:
-    db = sqlite3.connect(Config.PATH_TO_DB)
+    db = sqlite3.connect(config.PATH_TO_DB)
     sql = db.cursor()
-    with open(os.path.join(Config.PATH_TO_SQL_FOLDER, 'update_user_status_set_is_user_orioks_authenticated.sql'),
+    with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'update_user_status_set_is_user_orioks_authenticated.sql'),
               'r') as sql_file:
         sql_script = sql_file.read()
     sql.execute(sql_script, {
@@ -57,9 +57,9 @@ def update_user_orioks_authenticated_status(user_telegram_id: int, is_user_oriok
 
 
 def select_all_orioks_authenticated_users() -> Set[int]:
-    db = sqlite3.connect(Config.PATH_TO_DB)
+    db = sqlite3.connect(config.PATH_TO_DB)
     sql = db.cursor()
-    with open(os.path.join(Config.PATH_TO_SQL_FOLDER, 'select_all_orioks_authenticated_users.sql'), 'r') as sql_file:
+    with open(os.path.join(config.PATH_TO_SQL_FOLDER, 'select_all_orioks_authenticated_users.sql'), 'r') as sql_file:
         sql_script = sql_file.read()
     result = set()
     for user in sql.execute(sql_script).fetchall():
