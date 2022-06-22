@@ -81,7 +81,7 @@ async def get_current_new(user_telegram_id: int, session: aiohttp.ClientSession)
     try:
         last_news_id = await get_orioks_news(session=session)
     except exceptions.OrioksCantParseData:
-        logging.info('(NEWS) exception: utils.exceptions.OrioksCantParseData')
+        logging.info(f'(NEWS) [{user_telegram_id}] exception: utils.exceptions.OrioksCantParseData')
         safe_delete(path=path_users_to_file)
         raise exceptions.OrioksCantParseData
     return await get_news_by_news_id(news_id=last_news_id['last_id'], session=session)

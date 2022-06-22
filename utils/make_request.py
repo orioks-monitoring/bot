@@ -17,7 +17,7 @@ async def get_request(url: str, session: aiohttp.ClientSession) -> str:
         # TODO: is db.notify_settings.get_user_notify_settings_to_dict(user_telegram_id=user_telegram_id)
         #       else safe delete non-enabled categories
         logging.debug(f'get request to: {url}')
-        async with session.get(str(url)) as resp:
+        async with session.get(str(url), allow_redirects=False) as resp:
             raw_html = await resp.text()
         db.admins_statistics.update_inc_admins_statistics_row_name(  # TODO: sum of requests and inc for one use db
             row_name=db.admins_statistics.AdminsStatisticsRowNames.orioks_scheduled_requests
