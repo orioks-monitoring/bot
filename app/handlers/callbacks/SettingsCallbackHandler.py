@@ -1,9 +1,9 @@
 from aiogram import types
 
 import app
-import db.notify_settings
 from app.handlers import AbstractCallbackHandler
 from app.handlers.commands.settings import NotificationSettingsCommandHandler
+from app.helpers import UserHelper
 
 
 class SettingsCallbackHandler(AbstractCallbackHandler):
@@ -16,12 +16,7 @@ class SettingsCallbackHandler(AbstractCallbackHandler):
                 callback_query.id,
                 text='Эта категория ещё недоступна.', show_alert=True
             )
-        db.notify_settings.update_user_notify_settings(
-            user_telegram_id=callback_query.from_user.id,
-            row_name=_row_name,
-            to_value=not db.notify_settings.get_user_notify_settings_to_dict(
-                user_telegram_id=callback_query.from_user.id)[_row_name],
-        )
+        UserHelper.update_notification_settings(user_telegram_id=callback_query.from_user.id, setting_name=_row_name)
         await NotificationSettingsCommandHandler.send_user_settings(
             user_id=callback_query.from_user.id, callback_query=callback_query
         )

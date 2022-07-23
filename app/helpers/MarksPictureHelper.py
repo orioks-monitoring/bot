@@ -6,14 +6,13 @@ import pathlib
 import secrets
 
 from app.helpers.AssetsHelper import assetsHelper
-from config import Config
+from config import config
 
 
 class MarksPictureHelper:
 
     def __init__(self):
         self._font_path = assetsHelper.make_full_path('fonts/PTSansCaption-Bold.ttf')
-
         self._font_upper_size = 64
         self._font_downer_size = 62
 
@@ -167,7 +166,7 @@ class MarksPictureHelper:
         self._get_image_by_grade(current_grade, max_grade)
         self._calculate_font_size_and_text_width(title_text, side_text, mark_change_text=mark_change_text)
         self._draw_text_marks(title_text, mark_change_text, side_text)
-        path_to_result_image = pathlib.Path(os.path.join(Config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
+        path_to_result_image = pathlib.Path(os.path.join(config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
         self.image.save(path_to_result_image)
         return path_to_result_image
 
@@ -177,7 +176,7 @@ class MarksPictureHelper:
             side_text: str,
             url: str
     ) -> pathlib.Path:
-        path_to_result_image = pathlib.Path(os.path.join(Config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
+        path_to_result_image = pathlib.Path(os.path.join(config.BASEDIR, f'temp_{secrets.token_hex(15)}.png'))
         self._get_news_image()
         if title_text == '':
             self.image.save(path_to_result_image)

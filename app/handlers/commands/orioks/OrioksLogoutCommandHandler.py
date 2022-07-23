@@ -4,7 +4,6 @@ from aiogram.utils import markdown
 import keyboards
 from app.handlers import AbstractCommandHandler
 
-import db.user_status
 from app.helpers import OrioksHelper
 
 
@@ -12,6 +11,8 @@ class OrioksLogoutCommandHandler(AbstractCommandHandler):
 
     @staticmethod
     async def process(message: types.Message, *args, **kwargs):
+        user_telegram_id = message.from_user.id
+
         await message.reply(
             markdown.text(
                 markdown.hbold('Выход из аккаунта ОРИОКС выполнен.'),
@@ -20,8 +21,6 @@ class OrioksLogoutCommandHandler(AbstractCommandHandler):
             ),
             reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация'),
         )
-        db.user_status.update_user_orioks_authenticated_status(
-            user_telegram_id=message.from_user.id,
-            is_user_orioks_authenticated=False
-        )
-        OrioksHelper.make_orioks_logout(user_telegram_id=message.from_user.id)
+
+        # UserHelper.update_authorization_status(user_telegram_id=user_telegram_id, is_authenticated=False)
+        OrioksHelper.make_orioks_logout(user_telegram_id=user_telegram_id)

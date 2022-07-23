@@ -1,1 +1,0 @@
-SELECT orioks_scheduled_requests, orioks_success_logins, orioks_failed_logins FROM admins_statistics LIMIT 1;

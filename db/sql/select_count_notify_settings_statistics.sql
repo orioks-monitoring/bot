@@ -1,1 +1,0 @@
-SELECT COUNT(*) FROM user_notify_settings WHERE {row_name} = TRUE;

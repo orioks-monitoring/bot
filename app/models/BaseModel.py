@@ -1,4 +1,5 @@
 from sqlalchemy import Column, DateTime, func, Integer
+from sqlalchemy.exc import SQLAlchemyError
 
 from app import db_session
 from app.models import DeclarativeModelBase
@@ -16,13 +17,19 @@ class BaseModel(DeclarativeModelBase):
         return cls.query.filter_by(**query).one_or_none()
 
     def save(self):
-        if self.id is None:
-            db_session.add(self)
-        db_session.commit()
+        try:
+            if self.id is None:
+                db_session.add(self)
+            db_session.commit()
+        except SQLAlchemyError:
+            db_session.rollback()
 
     def delete(self):
-        db_session.delete(self)
-        db_session.commit()
+        try:
+            db_session.delete(self)
+            db_session.commit()
+        except SQLAlchemyError:
+            db_session.rollback()
 
     def as_dict(self):
         return {column.key: getattr(self, attr) for attr, column in self.__mapper__.c.items()}

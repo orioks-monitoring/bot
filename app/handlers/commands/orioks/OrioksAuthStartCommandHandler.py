@@ -5,15 +5,14 @@ import app
 from app.forms import OrioksAuthForm
 from app.handlers import AbstractCommandHandler
 
-import db.user_status
-import db.user_first_add
+from app.helpers import UserHelper
 
 
 class OrioksAuthStartCommandHandler(AbstractCommandHandler):
 
     @staticmethod
     async def process(message: types.Message, *args, **kwargs):
-        if db.user_status.get_user_orioks_authenticated_status(user_telegram_id=message.from_user.id):
+        if UserHelper.is_user_orioks_authenticated(user_telegram_id=message.from_user.id):
             return await message.reply(
                 markdown.text(
                     markdown.hbold('Ты уже выполнил вход в аккаунт ОРИОКС.'),

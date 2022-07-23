@@ -1,1 +1,0 @@
-UPDATE user_status SET is_user_orioks_authenticated = :is_user_orioks_authenticated WHERE user_telegram_id = :user_telegram_id;

@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 from app.exceptions import OrioksParseDataException, FileCompareException
 from app.helpers import CommonHelper, RequestHelper, JsonFileHelper, TelegramMessageHelper
-from config import Config
+from config import config
 import aiogram.utils.markdown as md
 
 
@@ -115,8 +115,8 @@ def compare(old_dict: dict, new_dict: dict) -> list:
 
 async def _user_requests_check_with_subsection(user_telegram_id: int, section: str,
                                                session: aiohttp.ClientSession) -> None:
-    student_json_file = Config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
-    path_users_to_file = os.path.join(Config.BASEDIR, 'users_data', 'tracking_data',
+    student_json_file = config.STUDENT_FILE_JSON_MASK.format(id=user_telegram_id)
+    path_users_to_file = os.path.join(config.BASEDIR, 'users_data', 'tracking_data',
                                       'requests', section, student_json_file)
     try:
         requests_dict = await get_orioks_requests(section=section, session=session)

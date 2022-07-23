@@ -17,7 +17,7 @@ class UserNotifySettings(BaseModel):
     def fill(self, user_telegram_id: int) -> None:
         self.user_telegram_id = user_telegram_id
         self.marks = True
-        self.news = True
-        self.discipline_sources = True
-        self.homeworks = True
-        self.requests = True
+        self.news = False
+        self.discipline_sources = False
+        self.homeworks = False
+        self.requests = False

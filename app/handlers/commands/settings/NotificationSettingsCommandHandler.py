@@ -3,7 +3,8 @@ from aiogram.utils import markdown
 
 import app
 from app.handlers import AbstractCommandHandler
-import db.notify_settings
+from app.helpers import UserHelper
+from app.models.users import UserNotifySettings
 
 
 class NotificationSettingsCommandHandler(AbstractCommandHandler):
@@ -17,9 +18,9 @@ class NotificationSettingsCommandHandler(AbstractCommandHandler):
     }
 
     @staticmethod
-    def _get_section_name_with_status(section_name: str, is_on_off: dict) -> str:
-        emoji = '🔔' if is_on_off[section_name] else '❌'
-        return f'{emoji} {NotificationSettingsCommandHandler.notify_settings_names_to_vars[section_name]}'
+    def _get_section_name_with_status(attribute_name: str, is_on_off: UserNotifySettings) -> str:
+        emoji = '🔔' if getattr(is_on_off, attribute_name) else '❌'
+        return f'{emoji} {NotificationSettingsCommandHandler.notify_settings_names_to_vars[attribute_name]}'
 
     @staticmethod
     def init_notify_settings_inline_btns(is_on_off: dict) -> types.InlineKeyboardMarkup:
@@ -63,7 +64,7 @@ class NotificationSettingsCommandHandler(AbstractCommandHandler):
 
     @staticmethod
     async def send_user_settings(user_id: int, callback_query: types.CallbackQuery = None) -> types.Message:
-        is_on_off_dict = db.notify_settings.get_user_notify_settings_to_dict(user_telegram_id=user_id)
+        is_on_off_dict = UserHelper.get_user_settings_by_telegram_id(user_telegram_id=user_id)
         text = markdown.text(
             markdown.text(
                 markdown.text('📓'),

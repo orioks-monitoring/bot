@@ -9,11 +9,9 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 from app.exceptions import OrioksInvalidLoginCredentialsException
-from app.helpers import TelegramMessageHelper, CommonHelper
+from app.helpers import TelegramMessageHelper, CommonHelper, UserHelper
 import aiogram.utils.markdown as md
 
-import db.user_status
-import db.notify_settings
 from config import config
 
 _sem = asyncio.Semaphore(config.ORIOKS_LOGIN_QUEUE_SEMAPHORE_VALUE)
@@ -82,5 +80,5 @@ class OrioksHelper:
         CommonHelper.safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', 'doc', f'{user_telegram_id}.json'))
         CommonHelper.safe_delete(os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'requests', 'reference', f'{user_telegram_id}.json'))
 
-        db.user_status.update_user_orioks_authenticated_status(user_telegram_id=user_telegram_id, is_user_orioks_authenticated=False)
-        db.notify_settings.update_user_notify_settings_reset_to_default(user_telegram_id=user_telegram_id)
+        UserHelper.update_authorization_status(user_telegram_id=user_telegram_id, is_authenticated=False)
+        UserHelper.reset_notification_settings(user_telegram_id=user_telegram_id)

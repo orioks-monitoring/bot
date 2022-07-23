@@ -5,10 +5,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.utils import executor
 
-from app.helpers import CommonHelper
-from app.middlewares import UserAgreementMiddleware, UserOrioksAttemptsMiddleware, AdminCommandsMiddleware
 
-from checking import on_startup
 
 from config import config
 
@@ -24,14 +21,17 @@ def initialize_database():
 def initialize_assets():
     from app.helpers.AssetsHelper import assetsHelper
     current_folder_path = os.path.dirname(os.path.abspath(__file__))
-    assetsHelper.initialize(f'{current_folder_path}/storage')
+    assetsHelper.initialize(f'{current_folder_path}/assets')
 
 
 def _settings_before_start() -> None:
     from app.handlers import register_handlers
     from app.fixtures import initialize_default_values
+    from app.middlewares import UserAgreementMiddleware, UserOrioksAttemptsMiddleware, AdminCommandsMiddleware
+    from app.helpers import CommonHelper
 
     register_handlers(dispatcher=dispatcher)
+    initialize_assets()
     initialize_default_values()
     dispatcher.middleware.setup(UserAgreementMiddleware())
     dispatcher.middleware.setup(UserOrioksAttemptsMiddleware())
@@ -46,6 +46,8 @@ dispatcher = Dispatcher(bot, storage=storage)
 db_session = initialize_database()
 
 def run():
-    logging.basicConfig(level=logging.INFO)
+    from checking import on_startup
+
+    logging.basicConfig(level=logging.DEBUG)
     _settings_before_start()
     executor.start_polling(dispatcher, skip_updates=True, on_startup=on_startup.on_startup)

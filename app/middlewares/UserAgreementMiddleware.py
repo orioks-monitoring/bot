@@ -3,8 +3,7 @@ from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.utils import markdown
 
-import db.user_first_add
-import db.user_status
+from app.helpers import UserHelper
 
 
 class UserAgreementMiddleware(BaseMiddleware):
@@ -21,8 +20,9 @@ class UserAgreementMiddleware(BaseMiddleware):
 
     # pylint: disable=unused-argument
     async def on_process_message(self, message: types.Message, *args, **kwargs):
-        db.user_first_add.user_first_add_to_db(user_telegram_id=message.from_user.id)
-        if not db.user_status.get_user_agreement_status(user_telegram_id=message.from_user.id):
+        user_telegram_id = message.from_user.id
+        UserHelper.create_user_if_not_exist(user_telegram_id=user_telegram_id)
+        if not UserHelper.is_user_agreement_accepted(user_telegram_id=user_telegram_id):
             await message.reply(
                 markdown.text(
                     markdown.text('Для получения доступа к Боту, необходимо принять Пользовательское соглашение:'),

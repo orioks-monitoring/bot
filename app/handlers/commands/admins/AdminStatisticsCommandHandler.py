@@ -3,8 +3,8 @@ from aiogram.utils import markdown
 
 from app.handlers import AbstractCommandHandler
 
-import db.admins_statistics
 from app.handlers.commands.settings import NotificationSettingsCommandHandler
+from app.helpers import AdminHelper
 from config import Config
 
 
@@ -13,7 +13,7 @@ class AdminStatisticsCommandHandler(AbstractCommandHandler):
     @staticmethod
     async def process(message: types.Message, *args, **kwargs):
         msg = ''
-        for key, value in db.admins_statistics.select_count_user_status_statistics().items():
+        for key, value in AdminHelper.get_count_users_statistics().items():
             msg += markdown.text(
                 markdown.text(key),
                 markdown.text(value),
@@ -24,12 +24,12 @@ class AdminStatisticsCommandHandler(AbstractCommandHandler):
         for category in ('marks', 'news', 'discipline_sources', 'homeworks', 'requests'):
             msg += markdown.text(
                 markdown.text(NotificationSettingsCommandHandler.notify_settings_names_to_vars[category]),
-                markdown.text(db.admins_statistics.select_count_notify_settings_row_name(row_name=category)),
+                markdown.text(AdminHelper.get_count_notify_settings_by_row_name(row_name=category)),
                 sep=': ',
             ) + '\n'
         msg += '\n'
 
-        for key, value in db.admins_statistics.select_all_from_admins_statistics().items():
+        for key, value in AdminHelper.get_general_statistics().items():
             msg += markdown.text(
                 markdown.text(key),
                 markdown.text(value),
@@ -37,12 +37,12 @@ class AdminStatisticsCommandHandler(AbstractCommandHandler):
             ) + '\n'
 
         requests_wave_time = (
-                 db.admins_statistics.select_count_notify_settings_row_name(row_name='marks') +
+                 AdminHelper.get_count_notify_settings_by_row_name(row_name='marks') +
                  2 +  # marks category
-                 db.admins_statistics.select_count_notify_settings_row_name(
+                 AdminHelper.get_count_notify_settings_by_row_name(
                      row_name='discipline_sources') +
-                 db.admins_statistics.select_count_notify_settings_row_name(row_name='homeworks') +
-                 db.admins_statistics.select_count_notify_settings_row_name(row_name='requests') * 3
+                 AdminHelper.get_count_notify_settings_by_row_name(row_name='homeworks') +
+                 AdminHelper.get_count_notify_settings_by_row_name(row_name='requests') * 3
          ) * Config.ORIOKS_SECONDS_BETWEEN_REQUESTS / 60
         msg += markdown.text(
             markdown.text('Примерное время выполнения одной волны запросов'),

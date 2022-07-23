@@ -1,1 +1,0 @@
-SELECT user_telegram_id FROM user_status WHERE is_user_orioks_authenticated = TRUE;

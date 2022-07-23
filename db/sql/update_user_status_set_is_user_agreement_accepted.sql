@@ -1,1 +1,0 @@
-UPDATE user_status SET is_user_agreement_accepted = :is_user_agreement_accepted WHERE user_telegram_id = :user_telegram_id;
