@@ -1,1 +1,0 @@
-SELECT is_user_agreement_accepted FROM user_status WHERE user_telegram_id = :user_telegram_id;

@@ -1,1 +1,0 @@
-UPDATE user_status SET orioks_login_attempts = :to_value WHERE user_telegram_id = :user_telegram_id;
