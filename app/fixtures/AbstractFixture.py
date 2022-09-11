@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Type, List, Dict
+from typing import Type
 
 from app.models import BaseModel
 
@@ -16,7 +16,7 @@ class AbstractFixture:
         return 'fill'
 
     @abstractmethod
-    def values(self) -> List[Dict]:
+    def values(self) -> list[dict]:
         raise NotImplementedError
 
     def need_to_add_values(self) -> bool:
@@ -35,3 +35,4 @@ class AbstractFixture:
             model = self.model()
             getattr(model, self.fill_method_name)(**value)
             model.save()
+        return True

@@ -6,7 +6,6 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.utils import executor
 
 
-
 from config import config
 
 
@@ -48,6 +47,6 @@ db_session = initialize_database()
 def run():
     from checking import on_startup
 
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     _settings_before_start()
     executor.start_polling(dispatcher, skip_updates=True, on_startup=on_startup.on_startup)

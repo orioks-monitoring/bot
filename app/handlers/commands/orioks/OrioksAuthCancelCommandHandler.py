@@ -1,8 +1,8 @@
 from aiogram import types
 from aiogram.utils import markdown
 
-import keyboards
 from app.handlers import AbstractCommandHandler
+from app.keyboards.authorization import AuthorizationReplyKeyboard
 
 
 class OrioksAuthCancelCommandHandler(AbstractCommandHandler):
@@ -23,6 +23,6 @@ class OrioksAuthCancelCommandHandler(AbstractCommandHandler):
                     'Если ты боишься вводить свои данные, ознакомься со следующей <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">информацией</a>'),
                 sep='\n',
             ),
-            reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация'),
+            reply_markup=await AuthorizationReplyKeyboard.show(),
             disable_web_page_preview=True,
         )

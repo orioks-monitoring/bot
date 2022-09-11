@@ -5,7 +5,7 @@ from app.handlers import AbstractCommandHandler
 
 from app.handlers.commands.settings import NotificationSettingsCommandHandler
 from app.helpers import AdminHelper
-from config import Config
+from config import config
 
 
 class AdminStatisticsCommandHandler(AbstractCommandHandler):
@@ -43,7 +43,7 @@ class AdminStatisticsCommandHandler(AbstractCommandHandler):
                      row_name='discipline_sources') +
                  AdminHelper.get_count_notify_settings_by_row_name(row_name='homeworks') +
                  AdminHelper.get_count_notify_settings_by_row_name(row_name='requests') * 3
-         ) * Config.ORIOKS_SECONDS_BETWEEN_REQUESTS / 60
+         ) * config.ORIOKS_SECONDS_BETWEEN_REQUESTS / 60
         msg += markdown.text(
             markdown.text('Примерное время выполнения одной волны запросов'),
             markdown.text(

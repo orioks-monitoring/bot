@@ -1,7 +1,7 @@
 from aiogram.utils import markdown
 
 import app
-import keyboards
+from app.keyboards.authorization import AuthorizationReplyKeyboard
 from app.helpers import UserHelper
 from app.menus.AbstractMenu import AbstractMenu
 
@@ -18,5 +18,5 @@ class OrioksAuthFailedMenu(AbstractMenu):
                     markdown.text('Попробуйте ещё раз: /login'),
                     sep='\n',
                 ),
-                reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация')
+                reply_markup=await AuthorizationReplyKeyboard.show(),
             )

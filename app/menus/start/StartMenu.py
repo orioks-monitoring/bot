@@ -4,7 +4,7 @@ import app
 from app.helpers import UserHelper
 from app.menus.AbstractMenu import AbstractMenu
 
-import keyboards
+from app.keyboards.notify_settings import NotifySettingsReplyKeyboard
 
 
 class StartMenu(AbstractMenu):
@@ -24,7 +24,7 @@ class StartMenu(AbstractMenu):
                     markdown.text('Выполнить вход в аккаунт ОРИОКС: /login'),
                     sep='\n',
                 ),
-                reply_markup=keyboards.main_menu_keyboard(first_btn_text='Авторизация'),
+                reply_markup=await NotifySettingsReplyKeyboard.show(),
             )
         else:
             await app.bot.send_message(
@@ -36,5 +36,5 @@ class StartMenu(AbstractMenu):
                     markdown.text('Выполнить выход из аккаунта ОРИОКС: /logout'),
                     sep='\n',
                 ),
-                reply_markup=keyboards.main_menu_keyboard(first_btn_text='Настройка уведомлений')
+                reply_markup=await NotifySettingsReplyKeyboard.show(),
             )

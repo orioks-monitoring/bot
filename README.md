@@ -89,8 +89,6 @@ cp setenv-example.sh setenv.sh && vim setenv.sh
 source setenv.sh
 ```
 
-
-
 7. Запуск Бота
 ```bash
 python main.py

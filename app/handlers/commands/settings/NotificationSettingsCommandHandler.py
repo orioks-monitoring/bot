@@ -3,60 +3,10 @@ from aiogram.utils import markdown
 
 import app
 from app.handlers import AbstractCommandHandler
-from app.helpers import UserHelper
-from app.models.users import UserNotifySettings
+from app.keyboards.notify_settings import NotifySettingsInlineKeyboard
 
 
 class NotificationSettingsCommandHandler(AbstractCommandHandler):
-
-    notify_settings_names_to_vars = {
-        'marks': 'Оценки',
-        'news': 'Новости',
-        'discipline_sources': 'Ресурсы',
-        'homeworks': 'Домашние задания',
-        'requests': 'Заявки',
-    }
-
-    @staticmethod
-    def _get_section_name_with_status(attribute_name: str, is_on_off: UserNotifySettings) -> str:
-        emoji = '🔔' if getattr(is_on_off, attribute_name) else '❌'
-        return f'{emoji} {NotificationSettingsCommandHandler.notify_settings_names_to_vars[attribute_name]}'
-
-    @staticmethod
-    def init_notify_settings_inline_btns(is_on_off: dict) -> types.InlineKeyboardMarkup:
-        """
-        is_on_off = {
-            'Обучение': False,
-            'Новости': False,
-            'Ресурсы': False,
-            'Домашние задания': False,
-            'Заявки': False,
-        }
-        """
-        inline_kb_full: types.InlineKeyboardMarkup = types.InlineKeyboardMarkup(row_width=1)
-        inline_kb_full.add(
-            types.InlineKeyboardButton(
-                NotificationSettingsCommandHandler._get_section_name_with_status('marks', is_on_off),
-                callback_data='notify_settings-marks'
-            ),
-            types.InlineKeyboardButton(
-                NotificationSettingsCommandHandler._get_section_name_with_status('news', is_on_off),
-                callback_data='notify_settings-news'
-            ),
-            types.InlineKeyboardButton(
-                NotificationSettingsCommandHandler._get_section_name_with_status('discipline_sources', is_on_off),
-                callback_data='notify_settings-discipline_sources'
-            ),
-            types.InlineKeyboardButton(
-                NotificationSettingsCommandHandler._get_section_name_with_status('homeworks', is_on_off),
-                callback_data='notify_settings-homeworks'
-            ),
-            types.InlineKeyboardButton(
-                NotificationSettingsCommandHandler._get_section_name_with_status('requests', is_on_off),
-                callback_data='notify_settings-requests'
-            )
-        )
-        return inline_kb_full
 
     @staticmethod
     async def process(message: types.Message, *args, **kwargs):
@@ -64,7 +14,6 @@ class NotificationSettingsCommandHandler(AbstractCommandHandler):
 
     @staticmethod
     async def send_user_settings(user_id: int, callback_query: types.CallbackQuery = None) -> types.Message:
-        is_on_off_dict = UserHelper.get_user_settings_by_telegram_id(user_telegram_id=user_id)
         text = markdown.text(
             markdown.text(
                 markdown.text('📓'),
@@ -118,13 +67,9 @@ class NotificationSettingsCommandHandler(AbstractCommandHandler):
             return await app.bot.send_message(
                 user_id,
                 text=text,
-                reply_markup=NotificationSettingsCommandHandler.init_notify_settings_inline_btns(
-                    is_on_off=is_on_off_dict
-                ),
+                reply_markup=NotifySettingsInlineKeyboard.show(user_id),
             )
         return await callback_query.message.edit_text(
             text=text,
-            reply_markup=NotificationSettingsCommandHandler.init_notify_settings_inline_btns(
-                is_on_off=is_on_off_dict
-            ),
+            reply_markup=NotifySettingsInlineKeyboard.show(user_id),
         )

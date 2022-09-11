@@ -121,7 +121,7 @@ async def _user_requests_check_with_subsection(user_telegram_id: int, section: s
     try:
         requests_dict = await get_orioks_requests(section=section, session=session)
     except OrioksParseDataException:
-        logging.info('(REQUESTS) exception: utils.exceptions.OrioksCantParseData')
+        logging.info('(REQUESTS) [%s] exception: utils.exceptions.OrioksCantParseData' % (user_telegram_id,))
         CommonHelper.safe_delete(path=path_users_to_file)
         return None
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):
