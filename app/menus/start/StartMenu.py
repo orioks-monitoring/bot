@@ -2,6 +2,7 @@ from aiogram.utils import markdown
 
 import app
 from app.helpers import UserHelper
+from app.keyboards.authorization import AuthorizationReplyKeyboard
 from app.menus.AbstractMenu import AbstractMenu
 
 from app.keyboards.notify_settings import NotifySettingsReplyKeyboard
@@ -24,7 +25,7 @@ class StartMenu(AbstractMenu):
                     markdown.text('Выполнить вход в аккаунт ОРИОКС: /login'),
                     sep='\n',
                 ),
-                reply_markup=await NotifySettingsReplyKeyboard.show(),
+                reply_markup=await AuthorizationReplyKeyboard.show(),
             )
         else:
             await app.bot.send_message(
