@@ -4,7 +4,6 @@ from aiogram import types
 
 
 class AbstractCommandHandler:
-
     @staticmethod
     @abstractmethod
     async def process(message: types.Message, *args, **kwargs):

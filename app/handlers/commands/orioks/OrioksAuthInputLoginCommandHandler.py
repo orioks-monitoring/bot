@@ -6,7 +6,6 @@ from app.handlers import AbstractCommandHandler
 
 
 class OrioksAuthInputLoginCommandHandler(AbstractCommandHandler):
-
     @staticmethod
     async def process(message: types.Message, *args, **kwargs):
         if not message.text.isdigit():
@@ -14,7 +13,7 @@ class OrioksAuthInputLoginCommandHandler(AbstractCommandHandler):
                 markdown.text(
                     markdown.text('Логин должен состоять только из цифр.'),
                     markdown.text('Введи логин (только цифры):'),
-                    sep='\n'
+                    sep='\n',
                 ),
             )
 
@@ -28,11 +27,16 @@ class OrioksAuthInputLoginCommandHandler(AbstractCommandHandler):
                 markdown.hbold('Введи пароль ОРИОКС:'),
                 markdown.text(),
                 markdown.text(
-                    markdown.hitalic('🔒 Пароль используется только для однократной авторизации'),
-                    markdown.hitalic('Он не хранится на сервере и будет удалён из истории сообщений'),
+                    markdown.hitalic(
+                        '🔒 Пароль используется только для однократной авторизации'
+                    ),
+                    markdown.hitalic(
+                        'Он не хранится на сервере и будет удалён из истории сообщений'
+                    ),
                     markdown.text(
-                        'Узнать подробнее можно <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">здесь</a>'),
-                    sep='. '
+                        'Узнать подробнее можно <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">здесь</a>'
+                    ),
+                    sep='. ',
                 ),
                 sep='\n',
             ),

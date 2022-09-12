@@ -1,3 +1,2 @@
-
 class OrioksInvalidLoginCredentialsException(Exception):
     pass

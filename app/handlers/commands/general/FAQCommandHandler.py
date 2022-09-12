@@ -5,7 +5,6 @@ from app.handlers import AbstractCommandHandler
 
 
 class FAQCommandHandler(AbstractCommandHandler):
-
     @staticmethod
     async def process(message: types.Message, *args, **kwargs):
         await message.reply(

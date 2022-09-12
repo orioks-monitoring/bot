@@ -1,4 +1,2 @@
-
-
 class StorageHelper:
     pass

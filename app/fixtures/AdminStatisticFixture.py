@@ -6,9 +6,5 @@ class AdminStatisticFixture(AbstractFixture):
 
     model = AdminStatistics
     values = [
-        {
-            'scheduled_requests': 0,
-            'success_logins': 0,
-            'failed_logins': 0
-        }
+        {'scheduled_requests': 0, 'success_logins': 0, 'failed_logins': 0}
     ]

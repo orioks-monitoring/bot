@@ -8,7 +8,6 @@ from app.keyboards.authorization import AuthorizationReplyKeyboard
 
 
 class OrioksLogoutCommandHandler(AbstractCommandHandler):
-
     @staticmethod
     async def process(message: types.Message, *args, **kwargs):
         user_telegram_id = message.from_user.id
@@ -16,7 +15,9 @@ class OrioksLogoutCommandHandler(AbstractCommandHandler):
         await message.reply(
             markdown.text(
                 markdown.hbold('Выход из аккаунта ОРИОКС выполнен.'),
-                markdown.text('Теперь ты НЕ будешь получать уведомления от Бота.'),
+                markdown.text(
+                    'Теперь ты НЕ будешь получать уведомления от Бота.'
+                ),
                 sep='\n',
             ),
             reply_markup=await AuthorizationReplyKeyboard.show(),

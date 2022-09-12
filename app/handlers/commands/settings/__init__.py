@@ -1,3 +1,5 @@
-from .NotificationSettingsCommandHandler import NotificationSettingsCommandHandler
+from .NotificationSettingsCommandHandler import (
+    NotificationSettingsCommandHandler,
+)
 
 __all__ = ['NotificationSettingsCommandHandler']

@@ -1,0 +1,23 @@
+[project]
+name = "ORIOKS Monitoring Bot"
+description = "Bot for tracking changes in the educational electronic environment (ORIOKS) National Research University of Electronic Technology MIET orioks.miet.ru on the Telegram platform."
+license = "MIT"
+authors = [
+    "Kirill Kulikov <to+git@adoge.ru>",
+    "Polina Kleiner <polina.kleiner@gmail.com>",
+    "whom <m0rtydisg@gmail.com>",
+    "Alexey Voronin <8183700@edu.miet.ru>",
+]
+maintainers = [
+    "Kirill Kulikov <to+git@adoge.ru>",
+]
+repository = "https://github.com/orioks-monitoring/bot"
+homepage = "orioks-monitoring.github.io/bot/"
+readme = "README.md"
+
+
+[tool.black]
+line-length = 79
+skip-string-normalization = true
+target-version = ['py310']
+include = '\.pyi?$'

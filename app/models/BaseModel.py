@@ -32,4 +32,7 @@ class BaseModel(DeclarativeModelBase):
             db_session.rollback()
 
     def as_dict(self):
-        return {column.key: getattr(self, attr) for attr, column in self.__mapper__.c.items()}
+        return {
+            column.key: getattr(self, attr)
+            for attr, column in self.__mapper__.c.items()
+        }

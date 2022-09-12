@@ -6,7 +6,6 @@ from app.keyboards.authorization import AuthorizationReplyKeyboard
 
 
 class OrioksAuthCancelCommandHandler(AbstractCommandHandler):
-
     @staticmethod
     async def process(message: types.Message, *args, **kwargs):
         state = kwargs.get('state', None)
@@ -20,7 +19,8 @@ class OrioksAuthCancelCommandHandler(AbstractCommandHandler):
             markdown.text(
                 markdown.hbold('Авторизация отменена.'),
                 markdown.text(
-                    'Если ты боишься вводить свои данные, ознакомься со следующей <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">информацией</a>'),
+                    'Если ты боишься вводить свои данные, ознакомься со следующей <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">информацией</a>'
+                ),
                 sep='\n',
             ),
             reply_markup=await AuthorizationReplyKeyboard.show(),

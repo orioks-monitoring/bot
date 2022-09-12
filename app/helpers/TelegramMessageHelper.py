@@ -10,18 +10,23 @@ from config import config
 
 
 class TelegramMessageHelper:
-
     @staticmethod
-    async def text_message_to_user(user_telegram_id: int, message: str) -> None:
+    async def text_message_to_user(
+        user_telegram_id: int, message: str
+    ) -> None:
         try:
             await app.bot.send_message(user_telegram_id, message)
         except (BotBlocked, ChatNotFound):
             OrioksHelper.make_orioks_logout(user_telegram_id=user_telegram_id)
 
     @staticmethod
-    async def photo_message_to_user(user_telegram_id: int, photo_path: pathlib.Path, caption: str) -> None:
+    async def photo_message_to_user(
+        user_telegram_id: int, photo_path: pathlib.Path, caption: str
+    ) -> None:
         try:
-            await app.bot.send_photo(user_telegram_id, InputFile(photo_path), caption)
+            await app.bot.send_photo(
+                user_telegram_id, InputFile(photo_path), caption
+            )
         except (BotBlocked, ChatNotFound):
             OrioksHelper.make_orioks_logout(user_telegram_id=user_telegram_id)
 
@@ -34,5 +39,5 @@ class TelegramMessageHelper:
                     markdown.hbold('[ADMIN]'),
                     markdown.text(message),
                     sep=': ',
-                )
+                ),
             )

@@ -11,7 +11,9 @@ class AdminStatistics(BaseModel):
     success_logins = Column(Integer, nullable=False, default=0)
     failed_logins = Column(Integer, nullable=False, default=0)
 
-    def fill(self, scheduled_requests: int, success_logins: int, failed_logins: int):
+    def fill(
+        self, scheduled_requests: int, success_logins: int, failed_logins: int
+    ):
         self.scheduled_requests = scheduled_requests
         self.success_logins = success_logins
         self.failed_logins = failed_logins

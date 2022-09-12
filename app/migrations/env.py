@@ -22,7 +22,9 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option('sqlalchemy.url', str(application_config.DATABASE_URL).replace('%', '%%'))
+config.set_main_option(
+    'sqlalchemy.url', str(application_config.DATABASE_URL).replace('%', '%%')
+)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -55,7 +57,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        compare_type=True
+        compare_type=True,
     )
 
     with context.begin_transaction():
@@ -77,7 +79,9 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata, compare_type=True
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,
         )
 
         with context.begin_transaction():

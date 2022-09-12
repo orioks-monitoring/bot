@@ -1,5 +1,4 @@
 class AssetsHelper:
-
     def __init__(self):
         self.__abs_assets_path = None
 

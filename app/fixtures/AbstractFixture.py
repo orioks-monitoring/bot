@@ -5,7 +5,6 @@ from app.models import BaseModel
 
 
 class AbstractFixture:
-
     @property
     @abstractmethod
     def model(self) -> Type[BaseModel]:

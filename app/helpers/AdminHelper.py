@@ -6,7 +6,6 @@ from app.models.users import UserStatus, UserNotifySettings
 
 
 class AdminHelper:
-
     @staticmethod
     def get_statistics_object() -> AdminStatistics:
         return AdminStatistics.find_one(id=1)
@@ -36,14 +35,24 @@ class AdminHelper:
 
     @staticmethod
     def get_count_users_statistics() -> Dict:
-        users_agreement_accepted = AdminHelper.get_user_status_statistics(agreement_accepted=True)
-        users_agreement_discarded = AdminHelper.get_user_status_statistics(agreement_accepted=False)
+        users_agreement_accepted = AdminHelper.get_user_status_statistics(
+            agreement_accepted=True
+        )
+        users_agreement_discarded = AdminHelper.get_user_status_statistics(
+            agreement_accepted=False
+        )
 
-        users_orioks_authentication = AdminHelper.get_user_status_statistics(authenticated=True)
-        users_orioks_no_authentication = AdminHelper.get_user_status_statistics(authenticated=False)
+        users_orioks_authentication = AdminHelper.get_user_status_statistics(
+            authenticated=True
+        )
+        users_orioks_no_authentication = (
+            AdminHelper.get_user_status_statistics(authenticated=False)
+        )
 
         all_users = users_agreement_discarded + users_agreement_accepted
-        all_orioks_users = users_orioks_no_authentication + users_orioks_authentication
+        all_orioks_users = (
+            users_orioks_no_authentication + users_orioks_authentication
+        )
         return {
             'Приняли пользовательское соглашение': f'{users_agreement_accepted} / {all_users}',
             'Выполнили вход в ОРИОКС': f'{users_orioks_authentication} / {all_orioks_users}',
@@ -51,17 +60,31 @@ class AdminHelper:
 
     @staticmethod
     def get_count_notify_settings_by_row_name(row_name: str) -> int:
-        if row_name not in ('marks', 'news', 'discipline_sources', 'homeworks', 'requests'):
-            raise Exception('select_count_notify_settings_row_name() -> row_name must only be in ('
-                            'marks, news, discipline_sources, homeworks, requests)')
+        if row_name not in (
+            'marks',
+            'news',
+            'discipline_sources',
+            'homeworks',
+            'requests',
+        ):
+            raise Exception(
+                'select_count_notify_settings_row_name() -> row_name must only be in ('
+                'marks, news, discipline_sources, homeworks, requests)'
+            )
 
-        users_count = session.\
-            query(UserStatus).\
-            join(UserNotifySettings, UserStatus.user_telegram_id == UserNotifySettings.user_telegram_id). \
-            filter(
+        users_count = (
+            session.query(UserStatus)
+            .join(
+                UserNotifySettings,
+                UserStatus.user_telegram_id
+                == UserNotifySettings.user_telegram_id,
+            )
+            .filter(
                 UserStatus.authenticated == True,
-                getattr(UserNotifySettings, row_name) == True
-            ).count()
+                getattr(UserNotifySettings, row_name) == True,
+            )
+            .count()
+        )
 
         return int(users_count)
 
