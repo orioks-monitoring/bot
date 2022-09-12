@@ -86,7 +86,7 @@ cp .env.example .env && vim .env
 
 6. Запуск Бота
 ```bash
-python main.py
+python run-app.py
 ```
 
 
