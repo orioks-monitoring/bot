@@ -79,17 +79,12 @@ pip install -r requirements.txt
         1. Пишем `/start` сюда: [@userinfobot](https://t.me/userinfobot).
         2. Запоминаем свой *Telegram ID* (для использования в `TELEGRAM_ADMIN_IDS_LIST`).
 
-5. Копирование файла с примерами установки переменных окружения в файл `setenv.sh`. Замена примеров на реальные значения
+5. Копирование файла с примерами установки переменных окружения в файл `.env`. Замена примеров на реальные значения
 ```bash
-cp setenv-example.sh setenv.sh && vim setenv.sh
+cp .env.example .env && vim .env
 ```
 
-6. Активация переменных окружения (будут сброшены после выхода из сессии вируального окружения)
-```bash
-source setenv.sh
-```
-
-7. Запуск Бота
+6. Запуск Бота
 ```bash
 python main.py
 ```
