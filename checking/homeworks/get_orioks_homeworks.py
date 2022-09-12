@@ -120,7 +120,7 @@ async def user_homeworks_check(user_telegram_id: int, session: aiohttp.ClientSes
     try:
         homeworks_dict = await get_orioks_homeworks(session=session)
     except OrioksParseDataException:
-        logging.info('(HOMEWORKS) [%s] exception: utils.exceptions.OrioksCantParseData' % (user_telegram_id,))
+        logging.info('(HOMEWORKS) [%s] exception: utils.exceptions.OrioksCantParseData', user_telegram_id)
         CommonHelper.safe_delete(path=path_users_to_file)
         return None
     if student_json_file not in os.listdir(os.path.dirname(path_users_to_file)):

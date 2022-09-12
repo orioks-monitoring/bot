@@ -21,4 +21,4 @@ class BaseErrorHandler(AbstractErrorHandler):
             pass
 
         await TelegramMessageHelper.message_to_admins(message=f'Update: {update} \n{exception}')
-        logging.exception(f'Update: %s \n %s', (update, exception, ))
+        logging.exception('Update: %s \n%s', update, exception)

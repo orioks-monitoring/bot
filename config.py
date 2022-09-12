@@ -20,6 +20,13 @@ class Config:
         'notify_settings-homeworks',
         'notify_settings-requests'
     )
+    notify_settings_names_to_vars = {
+        'marks': 'Оценки',
+        'news': 'Новости',
+        'discipline_sources': 'Ресурсы',
+        'homeworks': 'Домашние задания',
+        'requests': 'Заявки',
+    }
 
     ORIOKS_MAX_LOGIN_TRIES = 10
 

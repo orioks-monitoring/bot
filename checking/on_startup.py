@@ -92,7 +92,7 @@ async def make_all_users_news_check(tries_counter: int = 0) -> list:
         try:
             cookies = _get_user_orioks_cookies_from_telegram_id(user_telegram_id=user_telegram_id)
         except FileNotFoundError:
-            logging.error('(COOKIES) FileNotFoundError: %s' % (user_telegram_id, ))
+            logging.error('(COOKIES) FileNotFoundError: %s', user_telegram_id)
             continue
         user_session = aiohttp.ClientSession(cookies=cookies, timeout=config.REQUESTS_TIMEOUT)
         tasks.append(user_news_check_from_news_id(
@@ -110,12 +110,12 @@ async def run_requests(tasks: list) -> None:
         await TelegramMessageHelper.message_to_admins(message='Сервер ОРИОКС не отвечает')
         return
     except Exception as e:
-        logging.error('Ошибка в запросах ОРИОКС!\n %s' % (e, ))
+        logging.error('Ошибка в запросах ОРИОКС!\n %s', e)
         await TelegramMessageHelper.message_to_admins(message=f'Ошибка в запросах ОРИОКС!\n{e}')
 
 
 async def do_checks():
-    logging.info('started: %s' % (datetime.now().strftime("%H:%M:%S %d.%m.%Y"),))
+    logging.info('started: %s', datetime.now().strftime("%H:%M:%S %d.%m.%Y"))
 
     authenticated_users = UserStatus.query.filter_by(authenticated=True)
     users_telegram_ids = set(user.user_telegram_id for user in authenticated_users)
@@ -126,7 +126,7 @@ async def do_checks():
             user_telegram_id=user_telegram_id
         ))
     await run_requests(tasks=tasks)
-    logging.info('ended: %s' % (datetime.now().strftime("%H:%M:%S %d.%m.%Y"),))
+    logging.info('ended: %s', datetime.now().strftime("%H:%M:%S %d.%m.%Y"))
 
 
 async def scheduler():

@@ -4,12 +4,12 @@ import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.utils import executor
-
+from sqlalchemy.orm.scoping import ScopedSession
 
 from config import config
 
 
-def initialize_database():
+def initialize_database() -> ScopedSession:
     from sqlalchemy import create_engine
     from sqlalchemy.orm import scoped_session, sessionmaker
 
@@ -43,6 +43,7 @@ storage = MemoryStorage()
 dispatcher = Dispatcher(bot, storage=storage)
 
 db_session = initialize_database()
+
 
 def run():
     from checking import on_startup

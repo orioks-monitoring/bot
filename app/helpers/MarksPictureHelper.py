@@ -24,6 +24,13 @@ class MarksPictureHelper:
 
         self._width_line = 27
 
+        self.image = None
+        self.draw_text = None
+        self.image_weight = None
+        self.image_height = None
+        self.container_height = None
+        self.container_width = None
+
     def _get_image_by_grade(self, current_grade, max_grade):
         if current_grade == 0:
             self.image = Image.open(assetsHelper.make_full_path('images/red.png'))

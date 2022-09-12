@@ -67,9 +67,9 @@ class NotificationSettingsCommandHandler(AbstractCommandHandler):
             return await app.bot.send_message(
                 user_id,
                 text=text,
-                reply_markup=NotifySettingsInlineKeyboard.show(user_id),
+                reply_markup=await NotifySettingsInlineKeyboard.show(user_telegram_id=user_id),
             )
         return await callback_query.message.edit_text(
             text=text,
-            reply_markup=NotifySettingsInlineKeyboard.show(user_id),
+            reply_markup=await NotifySettingsInlineKeyboard.show(user_telegram_id=user_id),
         )

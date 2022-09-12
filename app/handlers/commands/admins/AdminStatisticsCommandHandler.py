@@ -3,7 +3,6 @@ from aiogram.utils import markdown
 
 from app.handlers import AbstractCommandHandler
 
-from app.handlers.commands.settings import NotificationSettingsCommandHandler
 from app.helpers import AdminHelper
 from config import config
 
@@ -23,7 +22,7 @@ class AdminStatisticsCommandHandler(AbstractCommandHandler):
 
         for category in ('marks', 'news', 'discipline_sources', 'homeworks', 'requests'):
             msg += markdown.text(
-                markdown.text(NotificationSettingsCommandHandler.notify_settings_names_to_vars[category]),
+                markdown.text(config.notify_settings_names_to_vars[category]),
                 markdown.text(AdminHelper.get_count_notify_settings_by_row_name(row_name=category)),
                 sep=': ',
             ) + '\n'

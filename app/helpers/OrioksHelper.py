@@ -24,7 +24,7 @@ class OrioksHelper:
         # pylint: disable=protected-access
         user_queue = len(_sem._waiters) + 2
         if user_queue - 2 > 0:
-            logging.info(f'login: {user_queue=}')
+            logging.info('login: %s', user_queue)
             _cats_queue_emoji = f'{"🐈" * (user_queue - 1)}🐈‍⬛'
             await TelegramMessageHelper.text_message_to_user(
                 user_telegram_id=user_telegram_id,
@@ -45,7 +45,7 @@ class OrioksHelper:
                     headers=config.ORIOKS_REQUESTS_HEADERS
             ) as session:
                 try:
-                    logging.info(f'request to login: {datetime.now().strftime("%H:%M:%S %d.%m.%Y")}')
+                    logging.info('request to login: %s', datetime.now().strftime("%H:%M:%S %d.%m.%Y"))
                     async with session.get(str(config.ORIOKS_PAGE_URLS['login'])) as resp:
                         bs_content = BeautifulSoup(await resp.text(), "html.parser")
                     _csrf_token = bs_content.find('input', {'name': '_csrf'})['value']

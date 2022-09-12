@@ -4,6 +4,7 @@ from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.utils import markdown
 
 from app.helpers import UserHelper
+from app.keyboards.user_agreement import UserAgreementInlineKeyboard
 
 
 class UserAgreementMiddleware(BaseMiddleware):
@@ -11,12 +12,6 @@ class UserAgreementMiddleware(BaseMiddleware):
         Middleware, блокирующее дальнейшее использование Бота,
         если не принято пользовательское соглашение
     """
-
-    inline_btn_user_agreement_accept = types.InlineKeyboardButton(
-        'Принять пользовательское соглашение',
-        callback_data='button_user_agreement_accept'
-    )
-    inline_agreement_accept = types.InlineKeyboardMarkup().add(inline_btn_user_agreement_accept)
 
     # pylint: disable=unused-argument
     async def on_process_message(self, message: types.Message, *args, **kwargs):
@@ -29,7 +24,7 @@ class UserAgreementMiddleware(BaseMiddleware):
                     markdown.text('https://orioks-monitoring.github.io/bot/rules'),
                     sep='\n',
                 ),
-                reply_markup=self.inline_agreement_accept,
+                reply_markup=await UserAgreementInlineKeyboard.show(),
                 disable_web_page_preview=True,
             )
             raise CancelHandler()

@@ -107,7 +107,7 @@ async def user_marks_check(user_telegram_id: int, session: aiohttp.ClientSession
         await TelegramMessageHelper.message_to_admins(message=f'FileNotFoundError - {user_telegram_id}')
         raise Exception(f'FileNotFoundError - {user_telegram_id}') from exception
     except OrioksParseDataException:
-        logging.info('(MARKS) [%s] exception: utils.exceptions.OrioksCantParseData' % (user_telegram_id,))
+        logging.info('(MARKS) [%s] exception: utils.exceptions.OrioksCantParseData', user_telegram_id)
         CommonHelper.safe_delete(path=path_users_to_file)
         return None
 

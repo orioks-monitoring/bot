@@ -8,6 +8,7 @@ from alembic import context
 from app.models import DeclarativeModelBase
 from config import config as application_config
 
+# pylint: disable=unused-import
 from app.models.users import UserStatus, UserNotifySettings
 from app.models.admins import AdminStatistics
 

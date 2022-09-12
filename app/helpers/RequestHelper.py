@@ -19,7 +19,7 @@ class RequestHelper:
             #       Обработать случай, когда пользователь к моменту достижения своей очереди разлогинился
             # TODO: is db.notify_settings.get_user_notify_settings_to_dict(user_telegram_id=user_telegram_id)
             #       else safe delete non-enabled categories
-            logging.debug('get request to: %s', (url, ))
+            logging.debug('get request to: %s', url)
             async with session.get(str(url)) as resp:
                 raw_html = await resp.text()
             # TODO: sum of requests and inc for one use db

@@ -77,7 +77,7 @@ async def get_current_new(user_telegram_id: int, session: aiohttp.ClientSession)
     try:
         last_news_id = await get_orioks_news(session=session)
     except OrioksParseDataException as exception:
-        logging.info('(NEWS) [%s] exception: utils.exceptions.OrioksCantParseData' % (user_telegram_id,))
+        logging.info('(NEWS) [%s] exception: utils.exceptions.OrioksCantParseData', user_telegram_id)
         CommonHelper.safe_delete(path=path_users_to_file)
         raise OrioksParseDataException from exception
 

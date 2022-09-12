@@ -5,5 +5,5 @@ class AbstractInlineKeyboard:
 
     @staticmethod
     @abstractmethod
-    async def show(user_telegram_id: int) -> None:
+    async def show(**kwargs) -> None:
         raise NotImplementedError
