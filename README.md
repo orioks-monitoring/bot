@@ -62,29 +62,34 @@
 git clone https://github.com/orioks-monitoring/bot.git && cd bot
 ```
 
-2. Создание вируального окружения и его активация
-```bash
-python3 -m venv venv && source venv/bin/activate
-```
-
-3. Установка необходимых зависимостей в виртуальное окружение
-```bash
-pip install -r requirements.txt
-```
-
-4. Получение [API токена для Telegram бота](https://core.telegram.org/bots/api)
+2. Получение [API токена для Telegram бота](https://core.telegram.org/bots/api)
     1. Пишем `/newbot` сюда: [@BotFather](https://t.me/botfather).
     2. Запоминаем `TELEGRAM_BOT_API_TOKEN` токен Telegram бота.
     3. Узнаём свой *Telegram ID*, например, так:
         1. Пишем `/start` сюда: [@userinfobot](https://t.me/userinfobot).
         2. Запоминаем свой *Telegram ID* (для использования в `TELEGRAM_ADMIN_IDS_LIST`).
 
-5. Копирование файла с примерами установки переменных окружения в файл `.env`. Замена примеров на реальные значения
+3. Копирование файла с примерами переменных окружения в файл `.env`. Замена примеров на реальные значения
 ```bash
 cp .env.example .env && vim .env
 ```
 
-6. Запуск Бота
+4. Создание вируального окружения и его активация
+```bash
+python3.10 -m venv env && source env/bin/activate
+```
+
+5. Установка необходимых зависимостей в виртуальное окружение
+```bash
+pip install -r requirements.txt
+```
+
+6. Применение миграций базы данных
+```bash
+alembic upgrade head
+```
+
+7. Запуск Бота
 ```bash
 python run-app.py
 ```
