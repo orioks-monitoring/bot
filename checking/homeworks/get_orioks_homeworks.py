@@ -162,6 +162,7 @@ async def user_homeworks_check(
             user_telegram_id,
         )
         CommonHelper.safe_delete(path=path_users_to_file)
+        # TODO: проверять, если UserStatus.failed_request_count больше 50, то писать пользователю, чтоб перелогинился
         return None
     if student_json_file not in os.listdir(
         os.path.dirname(path_users_to_file)
