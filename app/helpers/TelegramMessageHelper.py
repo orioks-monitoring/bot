@@ -5,7 +5,7 @@ from aiogram.utils import markdown
 from aiogram.utils.exceptions import BotBlocked, ChatNotFound
 
 import app
-from app.helpers import OrioksHelper
+import app.helpers.OrioksHelper as OrioksHelper
 from config import config
 
 
@@ -17,7 +17,9 @@ class TelegramMessageHelper:
         try:
             await app.bot.send_message(user_telegram_id, message)
         except (BotBlocked, ChatNotFound):
-            OrioksHelper.make_orioks_logout(user_telegram_id=user_telegram_id)
+            OrioksHelper.OrioksHelper.make_orioks_logout(
+                user_telegram_id=user_telegram_id
+            )
 
     @staticmethod
     async def photo_message_to_user(
@@ -28,7 +30,9 @@ class TelegramMessageHelper:
                 user_telegram_id, InputFile(photo_path), caption
             )
         except (BotBlocked, ChatNotFound):
-            OrioksHelper.make_orioks_logout(user_telegram_id=user_telegram_id)
+            OrioksHelper.OrioksHelper.make_orioks_logout(
+                user_telegram_id=user_telegram_id
+            )
 
     @staticmethod
     async def message_to_admins(message: str) -> None:
