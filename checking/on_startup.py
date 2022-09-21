@@ -158,9 +158,7 @@ async def run_requests(tasks: list) -> None:
     try:
         await asyncio.gather(*tasks)
     except asyncio.TimeoutError:
-        await TelegramMessageHelper.message_to_admins(
-            message='Сервер ОРИОКС не отвечает'
-        )
+        logging.error('Сервер ОРИОКС не отвечает')
         return
     except Exception as e:
         logging.error('Ошибка в запросах ОРИОКС!\n %s', e)

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from aiogram import types
 from aiogram.utils import markdown
@@ -9,7 +10,6 @@ from app.forms import OrioksAuthForm
 from app.handlers import AbstractCommandHandler
 from app.helpers import (
     OrioksHelper,
-    TelegramMessageHelper,
     UserHelper,
     AdminHelper,
 )
@@ -99,9 +99,7 @@ class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
                         sep='\n',
                     ),
                 )
-                await TelegramMessageHelper.message_to_admins(
-                    message='Сервер ОРИОКС не отвечает'
-                )
+                logging.error('Сервер ОРИОКС не отвечает')
                 await OrioksAuthFailedMenu.show(
                     chat_id=message.chat.id,
                     telegram_user_id=message.from_user.id,
