@@ -55,7 +55,11 @@ db_session = initialize_database()
 def run():
     from checking import on_startup
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s - %(module)s - %(funcName)s - %(lineno)d: %(message)s",
+        datefmt='%H:%M:%S %d.%m.%Y',
+    )
     _settings_before_start()
     executor.start_polling(
         dispatcher, skip_updates=True, on_startup=on_startup.on_startup
