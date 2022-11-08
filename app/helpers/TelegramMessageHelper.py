@@ -2,7 +2,7 @@ import pathlib
 
 from aiogram.types import InputFile
 from aiogram.utils import markdown
-from aiogram.utils.exceptions import BotBlocked, ChatNotFound
+from aiogram.utils.exceptions import BotBlocked, ChatNotFound, UserDeactivated
 
 import app
 import app.helpers.OrioksHelper as OrioksHelper
@@ -16,7 +16,7 @@ class TelegramMessageHelper:
     ) -> None:
         try:
             await app.bot.send_message(user_telegram_id, message)
-        except (BotBlocked, ChatNotFound):
+        except (BotBlocked, ChatNotFound, UserDeactivated):
             OrioksHelper.OrioksHelper.make_orioks_logout(
                 user_telegram_id=user_telegram_id
             )
@@ -29,7 +29,7 @@ class TelegramMessageHelper:
             await app.bot.send_photo(
                 user_telegram_id, InputFile(photo_path), caption
             )
-        except (BotBlocked, ChatNotFound):
+        except (BotBlocked, ChatNotFound, UserDeactivated):
             OrioksHelper.OrioksHelper.make_orioks_logout(
                 user_telegram_id=user_telegram_id
             )
