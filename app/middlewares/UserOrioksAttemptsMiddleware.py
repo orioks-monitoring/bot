@@ -34,7 +34,7 @@ class UserOrioksAttemptsMiddleware(BaseMiddleware):
                     ),
                     markdown.text(),
                     markdown.text(
-                        'Связаться с поддержкой Бота: @orioks_monitoring_support'
+                        'Связаться с поддержкой Бота: @orioks_monitoring_support_bot'
                     ),
                     sep='\n',
                 ),
