@@ -60,7 +60,7 @@ class Config:
             },
         },
         'notify': {
-            'marks': 'https://orioks.miet.ru/student/student',
+            'marks': 'https://orioks.miet.ru/studen1t/student',
             'news': 'https://orioks.miet.ru',
             'homeworks': 'https://orioks.miet.ru/student/homework/list',
             'requests': {

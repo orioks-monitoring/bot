@@ -128,7 +128,7 @@ class UserHelper:
             user_telegram_id=user_telegram_id
         )
         user.failed_request_count += 1
-        if user.failed_request_count > 50:
+        if user.failed_request_count > 10:
             from app.helpers import OrioksHelper
             from app.helpers import TelegramMessageHelper
 

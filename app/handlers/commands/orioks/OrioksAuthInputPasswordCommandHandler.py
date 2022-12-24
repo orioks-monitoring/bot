@@ -80,6 +80,9 @@ class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
                     ),
                 )
                 AdminHelper.increase_success_logins()
+                UserHelper.reset_failed_request_count(
+                    user_telegram_id=message.from_user.id
+                )
             except OrioksInvalidLoginCredentialsException:
                 AdminHelper.increase_failed_logins()
                 await OrioksAuthFailedMenu.show(
