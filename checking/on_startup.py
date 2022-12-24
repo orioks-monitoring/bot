@@ -3,7 +3,6 @@ import logging
 import os
 import pickle
 import random
-from datetime import datetime
 
 import aiohttp
 import aioschedule
@@ -158,9 +157,7 @@ async def run_requests(tasks: list) -> None:
     try:
         await asyncio.gather(*tasks)
     except asyncio.TimeoutError:
-        await TelegramMessageHelper.message_to_admins(
-            message='Сервер ОРИОКС не отвечает'
-        )
+        logging.error('Сервер ОРИОКС не отвечает')
         return
     except Exception as e:
         logging.error('Ошибка в запросах ОРИОКС!\n %s', e)
@@ -170,7 +167,7 @@ async def run_requests(tasks: list) -> None:
 
 
 async def do_checks():
-    logging.info('started: %s', datetime.now().strftime("%H:%M:%S %d.%m.%Y"))
+    logging.info('checking started')
 
     authenticated_users = UserStatus.query.filter_by(authenticated=True)
     users_telegram_ids = set(
@@ -181,7 +178,7 @@ async def do_checks():
     for user_telegram_id in users_telegram_ids:
         tasks.append(make_one_user_check(user_telegram_id=user_telegram_id))
     await run_requests(tasks=tasks)
-    logging.info('ended: %s', datetime.now().strftime("%H:%M:%S %d.%m.%Y"))
+    logging.info('checking ended')
 
 
 async def scheduler():

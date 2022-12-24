@@ -34,7 +34,7 @@ class OrioksAuthInputLoginCommandHandler(AbstractCommandHandler):
                         'Он не хранится на сервере и будет удалён из истории сообщений'
                     ),
                     markdown.text(
-                        'Узнать подробнее можно <a href="https://orioks-monitoring.github.io/bot/faq#почему-это-безопасно">здесь</a>'
+                        'Узнать подробнее можно <a href="https://orioks-monitoring.github.io/bot/faq.html#%D0%BF%D0%BE%D1%87%D0%B5%D0%BC%D1%83-%D1%8D%D1%82%D0%BE%D1%82-%D0%B1%D0%BE%D1%82-%D0%B1%D0%B5%D0%B7%D0%BE%D0%BF%D0%B0%D1%81%D0%B5%D0%BD">здесь</a>'
                     ),
                     sep='. ',
                 ),
