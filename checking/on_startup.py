@@ -7,7 +7,7 @@ import random
 import aiohttp
 import aioschedule
 
-from app.exceptions import OrioksParseDataException
+from app.exceptions import OrioksParseDataException, CheckBaseException
 from app.helpers import CommonHelper, TelegramMessageHelper, UserHelper
 from app.models.users import UserStatus, UserNotifySettings
 from checking.marks.get_orioks_marks import user_marks_check
@@ -87,20 +87,26 @@ async def make_one_user_check(user_telegram_id: int) -> None:
         timeout=config.REQUESTS_TIMEOUT,
         headers=config.ORIOKS_REQUESTS_HEADERS,
     ) as session:
-        if user_notify_settings.marks:
-            await user_marks_check(
-                user_telegram_id=user_telegram_id, session=session
-            )
-        if user_notify_settings.discipline_sources:
-            pass  # TODO: user_discipline_sources_check(user_telegram_id=user_telegram_id, session=session)
-        if user_notify_settings.homeworks:
-            await user_homeworks_check(
-                user_telegram_id=user_telegram_id, session=session
-            )
-        if user_notify_settings.requests:
-            await user_requests_check(
-                user_telegram_id=user_telegram_id, session=session
-            )
+        try:
+            if user_notify_settings.marks:
+                await user_marks_check(
+                    user_telegram_id=user_telegram_id, session=session
+                )
+            if user_notify_settings.discipline_sources:
+                pass  # TODO: user_discipline_sources_check(user_telegram_id=user_telegram_id, session=session)
+            if user_notify_settings.homeworks:
+                await user_homeworks_check(
+                    user_telegram_id=user_telegram_id, session=session
+                )
+            if user_notify_settings.requests:
+                await user_requests_check(
+                    user_telegram_id=user_telegram_id, session=session
+                )
+        except CheckBaseException:
+            await UserHelper.increment_failed_request_count(user_telegram_id)
+        else:
+            UserHelper.reset_failed_request_count(user_telegram_id)
+
     _delete_users_tracking_data_in_notify_settings_off(
         user_telegram_id=user_telegram_id,
         user_notify_settings=user_notify_settings,
@@ -131,6 +137,9 @@ async def make_all_users_news_check(tries_counter: int = 0) -> list:
                 user_telegram_id=picked_user_to_check_news, session=session
             )
     except OrioksParseDataException:
+        await UserHelper.increment_failed_request_count(
+            picked_user_to_check_news
+        )
         return await make_all_users_news_check(tries_counter=tries_counter + 1)
     for user_telegram_id in users_to_check_news:
         try:
@@ -139,6 +148,7 @@ async def make_all_users_news_check(tries_counter: int = 0) -> list:
             )
         except FileNotFoundError:
             logging.error('(COOKIES) FileNotFoundError: %s', user_telegram_id)
+            await UserHelper.increment_failed_request_count(user_telegram_id)
             continue
         user_session = aiohttp.ClientSession(
             cookies=cookies, timeout=config.REQUESTS_TIMEOUT

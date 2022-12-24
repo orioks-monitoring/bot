@@ -121,3 +121,29 @@ class UserHelper:
     def get_users_with_enabled_news_subscription():
         users = UserNotifySettings.query.filter_by(news=True)
         return users
+
+    @staticmethod
+    async def increment_failed_request_count(user_telegram_id: int) -> None:
+        user = UserHelper.__get_user_by_telegram_id(
+            user_telegram_id=user_telegram_id
+        )
+        user.failed_request_count += 1
+        if user.failed_request_count > 50:
+            from app.helpers import OrioksHelper
+            from app.helpers import TelegramMessageHelper
+
+            OrioksHelper.make_orioks_logout(user_telegram_id=user_telegram_id)
+            await TelegramMessageHelper.text_message_to_user(
+                user_telegram_id=user_telegram_id,
+                message='Ваш аккаунт был деавторизирован из-за ошибок при получении данных с сервера ОРИОКС. '
+                'Пожалуйста, авторизуйтесь заново: /login',
+            )
+        user.save()
+
+    @staticmethod
+    def reset_failed_request_count(user_telegram_id: int) -> None:
+        user = UserHelper.__get_user_by_telegram_id(
+            user_telegram_id=user_telegram_id
+        )
+        user.failed_request_count = 0
+        user.save()

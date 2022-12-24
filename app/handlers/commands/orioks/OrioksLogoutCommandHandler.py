@@ -23,5 +23,4 @@ class OrioksLogoutCommandHandler(AbstractCommandHandler):
             reply_markup=await AuthorizationReplyKeyboard.show(),
         )
 
-        # UserHelper.update_authorization_status(user_telegram_id=user_telegram_id, is_authenticated=False)
         OrioksHelper.make_orioks_logout(user_telegram_id=user_telegram_id)

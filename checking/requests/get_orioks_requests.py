@@ -165,13 +165,13 @@ async def _user_requests_check_with_subsection(
         requests_dict = await get_orioks_requests(
             section=section, session=session
         )
-    except OrioksParseDataException:
+    except OrioksParseDataException as exception:
         logging.info(
             '(REQUESTS) [%s] exception: utils.exceptions.OrioksCantParseData',
             user_telegram_id,
         )
         CommonHelper.safe_delete(path=path_users_to_file)
-        return None
+        raise exception
 
     if student_json_file not in os.listdir(
         os.path.dirname(path_users_to_file)
@@ -185,11 +185,11 @@ async def _user_requests_check_with_subsection(
     old_dict = JsonFileHelper.convert_dict_keys_to_int(_old_json)
     try:
         diffs = compare(old_dict=old_dict, new_dict=requests_dict)
-    except FileCompareException:
+    except FileCompareException as exception:
         await JsonFileHelper.save(
             data=requests_dict, filename=path_users_to_file
         )
-        return None
+        raise exception
 
     if len(diffs) > 0:
         msg_to_send = await get_requests_to_msg(diffs=diffs)
@@ -197,7 +197,6 @@ async def _user_requests_check_with_subsection(
             user_telegram_id=user_telegram_id, message=msg_to_send
         )
     await JsonFileHelper.save(data=requests_dict, filename=path_users_to_file)
-    return None
 
 
 async def user_requests_check(

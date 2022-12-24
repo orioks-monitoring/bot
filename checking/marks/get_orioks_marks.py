@@ -174,16 +174,16 @@ async def user_marks_check(
         await TelegramMessageHelper.message_to_admins(
             message=f'FileNotFoundError - {user_telegram_id}'
         )
-        raise Exception(
+        raise FileNotFoundError(
             f'FileNotFoundError - {user_telegram_id}'
         ) from exception
-    except OrioksParseDataException:
+    except OrioksParseDataException as exception:
         logging.info(
             '(MARKS) [%s] exception: utils.exceptions.OrioksCantParseData',
             user_telegram_id,
         )
         CommonHelper.safe_delete(path=path_users_to_file)
-        return None
+        raise exception
 
     if student_json_file not in os.listdir(
         os.path.dirname(path_users_to_file)
@@ -195,7 +195,7 @@ async def user_marks_check(
     old_json = await JsonFileHelper.open(filename=path_users_to_file)
     try:
         diffs = file_compares(old_file=old_json, new_file=detailed_info)
-    except FileCompareException:
+    except FileCompareException as exception:
         await JsonFileHelper.save(
             data=detailed_info, filename=path_users_to_file
         )
@@ -209,7 +209,7 @@ async def user_marks_check(
                 'Новости Бота в канале @orioks_monitoring',
             )
             logging.info('У кого-то начался новый семестр!..')
-        return None
+        raise exception
 
     if len(diffs) > 0:
         for discipline_obj in get_discipline_objs_from_diff(diffs=diffs):

@@ -23,3 +23,4 @@ class SettingsCallbackHandler(AbstractCallbackHandler):
         await NotificationSettingsCommandHandler.send_user_settings(
             user_id=callback_query.from_user.id, callback_query=callback_query
         )
+        await callback_query.answer()
