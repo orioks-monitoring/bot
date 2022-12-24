@@ -156,14 +156,13 @@ async def user_homeworks_check(
     )
     try:
         homeworks_dict = await get_orioks_homeworks(session=session)
-    except OrioksParseDataException:
+    except OrioksParseDataException as exception:
         logging.info(
             '(HOMEWORKS) [%s] exception: utils.exceptions.OrioksCantParseData',
             user_telegram_id,
         )
         CommonHelper.safe_delete(path=path_users_to_file)
-        # TODO: проверять, если UserStatus.failed_request_count больше 50, то писать пользователю, чтоб перелогинился
-        return None
+        raise exception
     if student_json_file not in os.listdir(
         os.path.dirname(path_users_to_file)
     ):
@@ -176,11 +175,11 @@ async def user_homeworks_check(
     old_dict = JsonFileHelper.convert_dict_keys_to_int(_old_json)
     try:
         diffs = compare(old_dict=old_dict, new_dict=homeworks_dict)
-    except FileCompareException:
+    except FileCompareException as exception:
         await JsonFileHelper.save(
             data=homeworks_dict, filename=path_users_to_file
         )
-        return None
+        raise exception
 
     if len(diffs) > 0:
         msg_to_send = await get_homeworks_to_msg(diffs=diffs)

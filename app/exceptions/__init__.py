@@ -1,3 +1,4 @@
+from .CheckBaseException import CheckBaseException
 from .OrioksInvalidLoginCredentialsException import (
     OrioksInvalidLoginCredentialsException,
 )
@@ -10,4 +11,5 @@ __all__ = [
     'OrioksParseDataException',
     'FileCompareException',
     'DatabaseException',
+    'CheckBaseException',
 ]
