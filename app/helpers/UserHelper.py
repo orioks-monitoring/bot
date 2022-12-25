@@ -1,5 +1,8 @@
+from aiogram.utils import markdown
+
 from app.exceptions import DatabaseException
 from app.models.users import UserStatus, UserNotifySettings
+from config import config
 
 
 class UserHelper:
@@ -128,15 +131,25 @@ class UserHelper:
             user_telegram_id=user_telegram_id
         )
         user.failed_request_count += 1
-        if user.failed_request_count > 10:
+        if user.failed_request_count > config.ORIOKS_MAX_FAILED_REQUESTS:
             from app.helpers import OrioksHelper
             from app.helpers import TelegramMessageHelper
 
             OrioksHelper.make_orioks_logout(user_telegram_id=user_telegram_id)
             await TelegramMessageHelper.text_message_to_user(
                 user_telegram_id=user_telegram_id,
-                message='Ваш аккаунт был деавторизирован из-за ошибок при получении данных с сервера ОРИОКС. '
-                'Пожалуйста, авторизуйтесь заново: /login',
+                message=markdown.text(
+                    markdown.hbold('Ваш аккаунт был деавторизирован.'),
+                    markdown.text(
+                        '🔧 Ошибки при получении данных с сервера ОРИОКС.'
+                    ),
+                    markdown.text('Пожалуйста, авторизуйтесь заново: /login'),
+                    markdown.text(),
+                    markdown.text(
+                        'Связаться с поддержкой Бота: @orioks_monitoring_support_bot'
+                    ),
+                    sep='\n',
+                ),
             )
         user.save()
 
