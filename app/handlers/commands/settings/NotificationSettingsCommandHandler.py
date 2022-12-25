@@ -3,12 +3,24 @@ from aiogram.utils import markdown
 
 import app
 from app.handlers import AbstractCommandHandler
+from app.helpers import UserHelper
 from app.keyboards.notify_settings import NotifySettingsInlineKeyboard
 
 
 class NotificationSettingsCommandHandler(AbstractCommandHandler):
     @staticmethod
     async def process(message: types.Message, *args, **kwargs):
+        if not UserHelper.is_user_orioks_authenticated(
+            user_telegram_id=message.from_user.id
+        ):
+            return await message.reply(
+                markdown.text(
+                    markdown.hbold('Нужно пройти авторизацию.'),
+                    markdown.text('Выполнить вход в аккаунт ОРИОКС: /login'),
+                    sep='\n',
+                )
+            )
+
         await NotificationSettingsCommandHandler.send_user_settings(
             message.from_user.id, callback_query=None
         )
