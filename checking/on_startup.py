@@ -168,11 +168,21 @@ async def run_requests(tasks: list) -> None:
         await asyncio.gather(*tasks)
     except asyncio.TimeoutError:
         logging.error('Сервер ОРИОКС не отвечает')
-        return
-    except Exception as e:
-        logging.error('Ошибка в запросах ОРИОКС!\n %s', e)
+    except aiohttp.ClientResponseError as exception:
+        if exception.status == 504:
+            logging.error(
+                'Вероятно, на сервере ОРИОКС проводятся технические работы: %s',
+                exception,
+            )
+        else:
+            logging.error('Ошибка в запросах ОРИОКС!\n %s', exception)
+            await TelegramMessageHelper.message_to_admins(
+                message=f'Ошибка в запросах ОРИОКС!\n{exception}'
+            )
+    except Exception as exception:
+        logging.error('Ошибка в запросах ОРИОКС!\n %s', exception)
         await TelegramMessageHelper.message_to_admins(
-            message=f'Ошибка в запросах ОРИОКС!\n{e}'
+            message=f'Ошибка в запросах ОРИОКС!\n{exception}'
         )
 
 

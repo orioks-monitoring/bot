@@ -71,16 +71,16 @@ class OrioksHelper:
                         'LoginForm[rememberMe]': 1,
                         '_csrf': _csrf_token,
                     }
-                except asyncio.TimeoutError as e:
-                    raise e
+                except asyncio.TimeoutError as exception:
+                    raise exception
                 try:
                     async with session.post(
                         str(config.ORIOKS_PAGE_URLS['login']), data=login_data
                     ) as resp:
                         if str(resp.url) == config.ORIOKS_PAGE_URLS['login']:
                             raise OrioksInvalidLoginCredentialsException
-                except asyncio.TimeoutError as e:
-                    raise e
+                except asyncio.TimeoutError as exception:
+                    raise exception
 
                 cookies = session.cookie_jar.filter_cookies(resp.url)
             pickle.dump(

@@ -23,6 +23,7 @@ class RequestHelper:
             #       else safe delete non-enabled categories
             logging.debug('get request to: %s', url)
             async with session.get(str(url)) as resp:
+                resp.raise_for_status()
                 raw_html = await resp.text()
             # TODO: sum of requests and inc for one use db
             AdminHelper.increase_scheduled_requests()
