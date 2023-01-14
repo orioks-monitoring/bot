@@ -24,33 +24,28 @@ class NewsObject(NamedTuple):
     id: int
 
 
-def _orioks_parse_news(raw_html: str) -> dict:
+class ActualNews(NamedTuple):
+    latest_id: int
+    student_actual_news: set[int]
+    last_new: NewsObject
+
+
+def _get_student_actual_news(raw_html: str) -> set[int]:
+    def __get_int_from_line(news_line: str) -> int:
+        return int(re.findall(r'\d+$', news_line)[0])
+
     bs_content = BeautifulSoup(raw_html, "html.parser")
     news_raw = bs_content.find(id='news')
     if news_raw is None:
         raise OrioksParseDataException
-    last_news_line = news_raw.select_one('#news tr:nth-child(2) a')['href']
-    last_news_id = int(re.findall(r'\d+$', last_news_line)[0])
-    return {'last_id': last_news_id}
-
-
-async def get_orioks_news(session: aiohttp.ClientSession) -> dict:
-    raw_html = await RequestHelper.get_request(
-        url=config.ORIOKS_PAGE_URLS['notify']['news'], session=session
+    news_id = set(
+        __get_int_from_line(x['href'])
+        for x in news_raw.select('#news tr:not(:first-child) a')
     )
-    return _orioks_parse_news(raw_html)
+    return news_id
 
 
-def _find_in_str_with_beginning_and_ending(
-    string_to_find: str, beginning: str, ending: str
-) -> str:
-    regex_result = re.findall(rf'{beginning}[\S\s]+{ending}', string_to_find)[
-        0
-    ]
-    return str(regex_result.replace(beginning, '').replace(ending, '').strip())
-
-
-async def get_news_by_news_id(
+async def get_news_object_by_news_id(
     news_id: int, session: aiohttp.ClientSession
 ) -> NewsObject:
     raw_html = await RequestHelper.get_request(
@@ -70,6 +65,30 @@ async def get_news_by_news_id(
     )
 
 
+async def get_orioks_news(session: aiohttp.ClientSession) -> ActualNews:
+    raw_html = await RequestHelper.get_request(
+        url=config.ORIOKS_PAGE_URLS['notify']['news'], session=session
+    )
+    student_actual_news = _get_student_actual_news(raw_html)
+    latest_id = max(student_actual_news)
+    return ActualNews(
+        latest_id=latest_id,
+        student_actual_news=student_actual_news,
+        last_new=await get_news_object_by_news_id(
+            news_id=latest_id, session=session
+        ),
+    )
+
+
+def _find_in_str_with_beginning_and_ending(
+    string_to_find: str, beginning: str, ending: str
+) -> str:
+    regex_result = re.findall(rf'{beginning}[\S\s]+{ending}', string_to_find)[
+        0
+    ]
+    return str(regex_result.replace(beginning, '').replace(ending, '').strip())
+
+
 def transform_news_to_msg(news_obj: NewsObject) -> str:
     return str(
         md.text(
@@ -85,9 +104,9 @@ def transform_news_to_msg(news_obj: NewsObject) -> str:
     )
 
 
-async def get_current_new(
+async def get_current_new_info(
     user_telegram_id: int, session: aiohttp.ClientSession
-) -> NewsObject:
+) -> ActualNews:
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(
         id=user_telegram_id
     )
@@ -99,7 +118,7 @@ async def get_current_new(
         student_json_file,
     )
     try:
-        last_news_id = await get_orioks_news(session=session)
+        last_news_ids: ActualNews = await get_orioks_news(session=session)
     except OrioksParseDataException as exception:
         logging.info(
             '(NEWS) [%s] exception: utils.exceptions.OrioksCantParseData',
@@ -108,16 +127,15 @@ async def get_current_new(
         CommonHelper.safe_delete(path=path_users_to_file)
         raise exception
 
-    return await get_news_by_news_id(
-        news_id=last_news_id['last_id'], session=session
-    )
+    return last_news_ids
 
 
 async def user_news_check_from_news_id(
     user_telegram_id: int,
     session: aiohttp.ClientSession,
-    current_new: NewsObject,
+    current_news: ActualNews,
 ) -> None:
+
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(
         id=user_telegram_id
     )
@@ -128,20 +146,20 @@ async def user_news_check_from_news_id(
         'news',
         student_json_file,
     )
-    last_news_id = {'last_id': current_new.id}
     if student_json_file not in os.listdir(
         os.path.dirname(path_users_to_file)
     ):
         await JsonFileHelper.save(
-            data=last_news_id, filename=path_users_to_file
+            data={'last_id': current_news.latest_id},
+            filename=path_users_to_file,
         )
         await session.close()
         return None
     old_json = await JsonFileHelper.open(filename=path_users_to_file)
-    if last_news_id['last_id'] == old_json['last_id']:
+    if current_news.latest_id == old_json['last_id']:
         await session.close()
         return None
-    if old_json['last_id'] > last_news_id['last_id']:
+    if old_json['last_id'] > current_news.latest_id:
         await TelegramMessageHelper.message_to_admins(
             message=f'[{user_telegram_id}] - old_json["last_id"] > last_news_id["last_id"]'
         )
@@ -149,15 +167,21 @@ async def user_news_check_from_news_id(
         raise Exception(
             f'[{user_telegram_id}] - old_json["last_id"] > last_news_id["last_id"]'
         )
-    difference = last_news_id['last_id'] - old_json['last_id']
+    difference = current_news.latest_id - old_json['last_id']
     for news_id in range(
         old_json['last_id'] + 1, old_json['last_id'] + difference + 1
     ):
-        if news_id == current_new.id:
-            news_obj = current_new
+        if news_id not in current_news.student_actual_news:
+            logging.info(
+                'Новость с id %s существует, но не показывается в таблице на главной странице',
+                news_id,
+            )
+            continue
+        if news_id == current_news.latest_id:
+            news_obj = current_news.last_new
         else:
             try:
-                news_obj = await get_news_by_news_id(
+                news_obj = await get_news_object_by_news_id(
                     news_id=news_id, session=session
                 )
             except IndexError:
@@ -177,4 +201,6 @@ async def user_news_check_from_news_id(
         )
         CommonHelper.safe_delete(path=path_to_img)
     await session.close()
-    await JsonFileHelper.save(data=last_news_id, filename=path_users_to_file)
+    await JsonFileHelper.save(
+        data={'last_id': current_news.latest_id}, filename=path_users_to_file
+    )
