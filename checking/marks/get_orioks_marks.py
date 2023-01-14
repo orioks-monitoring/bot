@@ -199,16 +199,6 @@ async def user_marks_check(
         await JsonFileHelper.save(
             data=detailed_info, filename=path_users_to_file
         )
-        if (
-            old_json[0]['subject'] != detailed_info[0]['subject']
-            and old_json[-1]['subject'] != detailed_info[-1]['subject']
-        ):
-            await TelegramMessageHelper.text_message_to_user(
-                user_telegram_id=user_telegram_id,
-                message='🎉 Поздравляем с началом нового семестра и желаем успехов в учёбе!\n'
-                'Новости Бота в канале @orioks_monitoring',
-            )
-            logging.info('У кого-то начался новый семестр!..')
         raise exception
 
     if len(diffs) > 0:
