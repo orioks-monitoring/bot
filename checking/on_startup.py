@@ -12,8 +12,8 @@ from app.helpers import CommonHelper, TelegramMessageHelper, UserHelper
 from app.models.users import UserStatus, UserNotifySettings
 from checking.marks.get_orioks_marks import user_marks_check
 from checking.news.get_orioks_news import (
-    get_current_new,
     user_news_check_from_news_id,
+    get_current_new_info,
 )
 from checking.homeworks.get_orioks_homeworks import user_homeworks_check
 from checking.requests.get_orioks_requests import user_requests_check
@@ -133,7 +133,7 @@ async def make_all_users_news_check(tries_counter: int = 0) -> list:
             timeout=config.REQUESTS_TIMEOUT,
             headers=config.ORIOKS_REQUESTS_HEADERS,
         ) as session:
-            current_new = await get_current_new(
+            current_news = await get_current_new_info(
                 user_telegram_id=picked_user_to_check_news, session=session
             )
     except OrioksParseDataException:
@@ -157,7 +157,7 @@ async def make_all_users_news_check(tries_counter: int = 0) -> list:
             user_news_check_from_news_id(
                 user_telegram_id=user_telegram_id,
                 session=user_session,
-                current_new=current_new,
+                current_news=current_news,
             )
         )
     return tasks
