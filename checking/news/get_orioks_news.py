@@ -3,6 +3,7 @@ import os
 
 import re
 import aiohttp
+from aiohttp import ClientResponseError
 from bs4 import BeautifulSoup
 
 from app.exceptions import OrioksParseDataException
@@ -125,6 +126,14 @@ async def get_current_new_info(
             user_telegram_id,
         )
         CommonHelper.safe_delete(path=path_users_to_file)
+        raise exception
+    except ClientResponseError as exception:
+        if 400 <= exception.status < 500:
+            logging.info(
+                '(NEWS) [%s] exception: aiohttp.ClientResponseError status in [400, 500). Raising OrioksCantParseData',
+                user_telegram_id,
+            )
+            raise OrioksParseDataException
         raise exception
 
     return last_news_ids

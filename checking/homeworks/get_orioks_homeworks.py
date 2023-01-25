@@ -3,6 +3,7 @@ import os
 
 import re
 import aiohttp
+from aiohttp import ClientResponseError
 from bs4 import BeautifulSoup
 
 from app.exceptions import OrioksParseDataException, FileCompareException
@@ -162,6 +163,14 @@ async def user_homeworks_check(
             user_telegram_id,
         )
         CommonHelper.safe_delete(path=path_users_to_file)
+        raise exception
+    except ClientResponseError as exception:
+        if 400 <= exception.status < 500:
+            logging.info(
+                '(HOMEWORKS) [%s] exception: aiohttp.ClientResponseError status in [400, 500). Raising OrioksCantParseData',
+                user_telegram_id,
+            )
+            raise OrioksParseDataException
         raise exception
     if student_json_file not in os.listdir(
         os.path.dirname(path_users_to_file)
