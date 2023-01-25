@@ -133,7 +133,7 @@ async def get_current_new_info(
                 '(NEWS) [%s] exception: aiohttp.ClientResponseError status in [400, 500). Raising OrioksCantParseData',
                 user_telegram_id,
             )
-            raise OrioksParseDataException
+            raise OrioksParseDataException from exception
         raise exception
 
     return last_news_ids

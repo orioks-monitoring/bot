@@ -179,7 +179,7 @@ async def _user_requests_check_with_subsection(
                 '(REQUESTS) [%s] exception: aiohttp.ClientResponseError status in [400, 500). Raising OrioksCantParseData',
                 user_telegram_id,
             )
-            raise OrioksParseDataException
+            raise OrioksParseDataException from exception
         raise exception
 
     if student_json_file not in os.listdir(

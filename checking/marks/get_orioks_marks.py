@@ -191,7 +191,7 @@ async def user_marks_check(
                 '(MARKS) [%s] exception: aiohttp.ClientResponseError status in [400, 500). Raising OrioksCantParseData',
                 user_telegram_id,
             )
-            raise OrioksParseDataException
+            raise OrioksParseDataException from exception
         raise exception
 
     if student_json_file not in os.listdir(
