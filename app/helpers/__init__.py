@@ -7,6 +7,7 @@ from .OrioksHelper import OrioksHelper
 from .RequestHelper import RequestHelper
 from .TelegramMessageHelper import TelegramMessageHelper
 from .MarksPictureHelper import MarksPictureHelper
+from .ClientSessionHelper import ClientSessionHelper
 
 __all__ = [
     'CommonHelper',
@@ -18,4 +19,5 @@ __all__ = [
     'MarksPictureHelper',
     'UserHelper',
     'AdminHelper',
+    'ClientSessionHelper',
 ]

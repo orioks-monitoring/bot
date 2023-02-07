@@ -2,7 +2,6 @@ import logging
 import os
 
 import re
-import aiohttp
 from aiohttp import ClientResponseError
 from bs4 import BeautifulSoup
 
@@ -12,6 +11,7 @@ from app.helpers import (
     TelegramMessageHelper,
     CommonHelper,
     RequestHelper,
+    ClientSessionHelper,
 )
 from config import config
 import aiogram.utils.markdown as md
@@ -45,7 +45,7 @@ def _orioks_parse_homeworks(raw_html: str) -> dict:
     return homeworks
 
 
-async def get_orioks_homeworks(session: aiohttp.ClientSession) -> dict:
+async def get_orioks_homeworks(session: ClientSessionHelper) -> dict:
     raw_html = await RequestHelper.get_request(
         url=config.ORIOKS_PAGE_URLS['notify']['homeworks'], session=session
     )
@@ -143,7 +143,7 @@ def compare(old_dict: dict, new_dict: dict) -> list:
 
 
 async def user_homeworks_check(
-    user_telegram_id: int, session: aiohttp.ClientSession
+    user_telegram_id: int, session: ClientSessionHelper
 ) -> None:
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(
         id=user_telegram_id

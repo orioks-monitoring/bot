@@ -3,13 +3,17 @@ import logging
 import os
 import pickle
 
-import aiohttp
 from bs4 import BeautifulSoup
 
 from datetime import datetime
 
 from app.exceptions import OrioksInvalidLoginCredentialsException
-from app.helpers import TelegramMessageHelper, CommonHelper, UserHelper
+from app.helpers import (
+    TelegramMessageHelper,
+    CommonHelper,
+    UserHelper,
+    ClientSessionHelper,
+)
 import aiogram.utils.markdown as md
 
 from config import config
@@ -47,7 +51,7 @@ class OrioksHelper:
                 ),
             )
         async with _sem:  # orioks dont die please
-            async with aiohttp.ClientSession(
+            async with ClientSessionHelper(
                 timeout=config.REQUESTS_TIMEOUT,
                 headers=config.ORIOKS_REQUESTS_HEADERS,
             ) as session:

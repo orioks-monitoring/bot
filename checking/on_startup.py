@@ -9,6 +9,7 @@ import aioschedule
 
 from app.exceptions import OrioksParseDataException, CheckBaseException
 from app.helpers import CommonHelper, TelegramMessageHelper, UserHelper
+from app.helpers.ClientSessionHelper import ClientSessionHelper
 from app.models.users import UserStatus, UserNotifySettings
 from checking.marks.get_orioks_marks import user_marks_check
 from checking.news.get_orioks_news import (
@@ -82,7 +83,8 @@ async def make_one_user_check(user_telegram_id: int) -> None:
     cookies = _get_user_orioks_cookies_from_telegram_id(
         user_telegram_id=user_telegram_id
     )
-    async with aiohttp.ClientSession(
+    async with ClientSessionHelper(
+        user_telegram_id=user_telegram_id,
         cookies=cookies,
         timeout=config.REQUESTS_TIMEOUT,
         headers=config.ORIOKS_REQUESTS_HEADERS,
@@ -128,7 +130,8 @@ async def make_all_users_news_check(tries_counter: int = 0) -> list:
         user_telegram_id=picked_user_to_check_news
     )
     try:
-        async with aiohttp.ClientSession(
+        async with ClientSessionHelper(
+            user_telegram_id=picked_user_to_check_news,
             cookies=cookies,
             timeout=config.REQUESTS_TIMEOUT,
             headers=config.ORIOKS_REQUESTS_HEADERS,
@@ -150,8 +153,10 @@ async def make_all_users_news_check(tries_counter: int = 0) -> list:
             logging.error('(COOKIES) FileNotFoundError: %s', user_telegram_id)
             await UserHelper.increment_failed_request_count(user_telegram_id)
             continue
-        user_session = aiohttp.ClientSession(
-            cookies=cookies, timeout=config.REQUESTS_TIMEOUT
+        user_session = ClientSessionHelper(
+            user_telegram_id=user_telegram_id,
+            cookies=cookies,
+            timeout=config.REQUESTS_TIMEOUT,
         )
         tasks.append(
             user_news_check_from_news_id(
@@ -176,11 +181,13 @@ async def run_requests(tasks: list) -> None:
             )
         else:
             logging.error('Ошибка в запросах ОРИОКС!\n %s', exception)
+            CommonHelper.print_traceback(exception)
             await TelegramMessageHelper.message_to_admins(
                 message=f'Ошибка в запросах ОРИОКС!\n{exception}'
             )
     except Exception as exception:
         logging.error('Ошибка в запросах ОРИОКС!\n %s', exception)
+        CommonHelper.print_traceback(exception)
         await TelegramMessageHelper.message_to_admins(
             message=f'Ошибка в запросах ОРИОКС!\n{exception}'
         )
