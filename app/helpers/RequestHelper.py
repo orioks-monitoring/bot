@@ -11,7 +11,7 @@ from config import config
 
 class RequestHelper:
     @staticmethod
-    def my_raise_for_status(
+    async def my_raise_for_status(
         response: ClientResponse, user_telegram_id: int | None = None
     ) -> None:
         if response.status >= 400:
@@ -19,6 +19,9 @@ class RequestHelper:
                 response.request_info,
                 response.history,
                 user_telegram_id=user_telegram_id,
+                raw_html=await response.text()
+                if response.status >= 500
+                else None,
                 status=response.status,
                 message=response.reason,
                 headers=response.headers,
@@ -40,7 +43,7 @@ class RequestHelper:
             )
 
             async with session.get(str(url)) as response:
-                RequestHelper.my_raise_for_status(
+                await RequestHelper.my_raise_for_status(
                     response, session.user_telegram_id
                 )
                 raw_html = await response.text()
