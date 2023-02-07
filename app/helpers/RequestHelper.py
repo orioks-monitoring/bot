@@ -12,16 +12,16 @@ from config import config
 class RequestHelper:
     @staticmethod
     async def my_raise_for_status(
-        response: ClientResponse, user_telegram_id: int | None = None
+        response: ClientResponse,
+        user_telegram_id: int | None = None,
+        raw_html: str | None = None,
     ) -> None:
         if response.status >= 400:
             raise ClientResponseErrorParamsException(
                 response.request_info,
                 response.history,
                 user_telegram_id=user_telegram_id,
-                raw_html=await response.text()
-                if response.status >= 500
-                else None,
+                raw_html=raw_html if response.status >= 500 else None,
                 status=response.status,
                 message=response.reason,
                 headers=response.headers,
@@ -43,10 +43,10 @@ class RequestHelper:
             )
 
             async with session.get(str(url)) as response:
-                await RequestHelper.my_raise_for_status(
-                    response, session.user_telegram_id
-                )
                 raw_html = await response.text()
+                await RequestHelper.my_raise_for_status(
+                    response, session.user_telegram_id, raw_html
+                )
                 # TODO: sum of requests and inc for one use db
                 AdminHelper.increase_scheduled_requests()
             return raw_html
