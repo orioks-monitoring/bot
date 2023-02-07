@@ -5,6 +5,9 @@ from .OrioksInvalidLoginCredentialsException import (
 from .OrioksParseDataException import OrioksParseDataException
 from .FileCompareException import FileCompareException
 from .DatabaseException import DatabaseException
+from .ClientResponseErrorParamsException import (
+    ClientResponseErrorParamsException,
+)
 
 __all__ = [
     'OrioksInvalidLoginCredentialsException',
@@ -12,4 +15,5 @@ __all__ = [
     'FileCompareException',
     'DatabaseException',
     'CheckBaseException',
+    'ClientResponseErrorParamsException',
 ]

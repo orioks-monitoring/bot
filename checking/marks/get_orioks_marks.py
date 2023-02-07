@@ -2,7 +2,6 @@ import json
 import os
 from dataclasses import dataclass
 
-import aiohttp
 from aiohttp import ClientResponseError
 from bs4 import BeautifulSoup
 import logging
@@ -14,6 +13,7 @@ from app.helpers import (
     TelegramMessageHelper,
     JsonFileHelper,
     MarksPictureHelper,
+    ClientSessionHelper,
 )
 from checking.marks.compares import (
     file_compares,
@@ -149,7 +149,7 @@ def _get_orioks_forang(raw_html: str):
     return json_to_save
 
 
-async def get_orioks_marks(session: aiohttp.ClientSession):
+async def get_orioks_marks(session: ClientSessionHelper):
     raw_html = await RequestHelper.get_request(
         url=config.ORIOKS_PAGE_URLS['notify']['marks'], session=session
     )
@@ -157,7 +157,7 @@ async def get_orioks_marks(session: aiohttp.ClientSession):
 
 
 async def user_marks_check(
-    user_telegram_id: int, session: aiohttp.ClientSession
+    user_telegram_id: int, session: ClientSessionHelper
 ) -> None:
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(
         id=user_telegram_id

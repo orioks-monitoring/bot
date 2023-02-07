@@ -2,7 +2,6 @@ import logging
 import os
 
 import re
-import aiohttp
 from aiohttp import ClientResponseError
 from bs4 import BeautifulSoup
 
@@ -13,6 +12,7 @@ from app.helpers import (
     JsonFileHelper,
     TelegramMessageHelper,
     MarksPictureHelper,
+    ClientSessionHelper,
 )
 from config import config
 import aiogram.utils.markdown as md
@@ -47,7 +47,7 @@ def _get_student_actual_news(raw_html: str) -> set[int]:
 
 
 async def get_news_object_by_news_id(
-    news_id: int, session: aiohttp.ClientSession
+    news_id: int, session: ClientSessionHelper
 ) -> NewsObject:
     raw_html = await RequestHelper.get_request(
         url=config.ORIOKS_PAGE_URLS['masks']['news'].format(id=news_id),
@@ -66,7 +66,7 @@ async def get_news_object_by_news_id(
     )
 
 
-async def get_orioks_news(session: aiohttp.ClientSession) -> ActualNews:
+async def get_orioks_news(session: ClientSessionHelper) -> ActualNews:
     raw_html = await RequestHelper.get_request(
         url=config.ORIOKS_PAGE_URLS['notify']['news'], session=session
     )
@@ -106,7 +106,7 @@ def transform_news_to_msg(news_obj: NewsObject) -> str:
 
 
 async def get_current_new_info(
-    user_telegram_id: int, session: aiohttp.ClientSession
+    user_telegram_id: int, session: ClientSessionHelper
 ) -> ActualNews:
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(
         id=user_telegram_id
@@ -141,7 +141,7 @@ async def get_current_new_info(
 
 async def user_news_check_from_news_id(
     user_telegram_id: int,
-    session: aiohttp.ClientSession,
+    session: ClientSessionHelper,
     current_news: ActualNews,
 ) -> None:
 
