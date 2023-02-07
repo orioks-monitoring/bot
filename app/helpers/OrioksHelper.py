@@ -50,7 +50,7 @@ class OrioksHelper:
                     sep='\n',
                 ),
             )
-        async with _sem:  # orioks dont die please
+        async with _sem:
             async with ClientSessionHelper(
                 timeout=config.REQUESTS_TIMEOUT,
                 headers=config.ORIOKS_REQUESTS_HEADERS,

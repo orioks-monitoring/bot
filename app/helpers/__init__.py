@@ -8,6 +8,7 @@ from .RequestHelper import RequestHelper
 from .TelegramMessageHelper import TelegramMessageHelper
 from .MarksPictureHelper import MarksPictureHelper
 from .ClientSessionHelper import ClientSessionHelper
+from .StorageHelper import StorageHelper
 
 __all__ = [
     'CommonHelper',
@@ -20,4 +21,5 @@ __all__ = [
     'UserHelper',
     'AdminHelper',
     'ClientSessionHelper',
+    'StorageHelper',
 ]

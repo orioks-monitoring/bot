@@ -45,3 +45,18 @@ class TelegramMessageHelper:
                     sep=': ',
                 ),
             )
+
+    @staticmethod
+    async def document_to_admins(
+        message: str, document_path: pathlib.Path
+    ) -> None:
+        for admin_telegram_id in config.TELEGRAM_ADMIN_IDS_LIST:
+            await app.bot.send_document(
+                admin_telegram_id,
+                InputFile(document_path),
+                caption=markdown.text(
+                    markdown.hbold('[ADMIN]'),
+                    markdown.text(message),
+                    sep=': ',
+                ),
+            )

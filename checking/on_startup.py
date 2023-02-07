@@ -3,12 +3,22 @@ import logging
 import os
 import pickle
 import random
+import secrets
+from pathlib import Path
 
-import aiohttp
 import aioschedule
 
-from app.exceptions import OrioksParseDataException, CheckBaseException
-from app.helpers import CommonHelper, TelegramMessageHelper, UserHelper
+from app.exceptions import (
+    OrioksParseDataException,
+    CheckBaseException,
+    ClientResponseErrorParamsException,
+)
+from app.helpers import (
+    CommonHelper,
+    TelegramMessageHelper,
+    UserHelper,
+    StorageHelper,
+)
 from app.helpers.ClientSessionHelper import ClientSessionHelper
 from app.models.users import UserStatus, UserNotifySettings
 from checking.marks.get_orioks_marks import user_marks_check
@@ -173,7 +183,7 @@ async def run_requests(tasks: list) -> None:
         await asyncio.gather(*tasks)
     except asyncio.TimeoutError:
         logging.error('Сервер ОРИОКС не отвечает')
-    except aiohttp.ClientResponseError as exception:
+    except ClientResponseErrorParamsException as exception:
         if exception.status == 504:
             logging.error(
                 'Вероятно, на сервере ОРИОКС проводятся технические работы: %s',
@@ -182,9 +192,21 @@ async def run_requests(tasks: list) -> None:
         else:
             logging.error('Ошибка в запросах ОРИОКС!\n %s', exception)
             CommonHelper.print_traceback(exception)
-            await TelegramMessageHelper.message_to_admins(
-                message=f'Ошибка в запросах ОРИОКС!\n{exception}'
+
+            _filename = Path(
+                f'{exception.user_telegram_id}_{secrets.token_hex(7)}.html'
             )
+            try:
+                await StorageHelper.save(
+                    exception.raw_html, filename=_filename
+                )
+                await TelegramMessageHelper.document_to_admins(
+                    message=f'Ошибка в запросах ОРИОКС!\n{exception}',
+                    document_path=_filename,
+                )
+            finally:
+                CommonHelper.safe_delete(_filename)
+
     except Exception as exception:
         logging.error('Ошибка в запросах ОРИОКС!\n %s', exception)
         CommonHelper.print_traceback(exception)
