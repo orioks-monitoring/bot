@@ -9,6 +9,9 @@ from .TelegramMessageHelper import TelegramMessageHelper
 from .MarksPictureHelper import MarksPictureHelper
 from .ClientSessionHelper import ClientSessionHelper
 from .StorageHelper import StorageHelper
+from .ClientResponseErrorParamsExceptionHelper import (
+    ClientResponseErrorParamsExceptionHelper,
+)
 
 __all__ = [
     'CommonHelper',
@@ -22,4 +25,5 @@ __all__ = [
     'AdminHelper',
     'ClientSessionHelper',
     'StorageHelper',
+    'ClientResponseErrorParamsExceptionHelper',
 ]
