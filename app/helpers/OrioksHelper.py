@@ -13,7 +13,6 @@ from app.helpers import (
     TelegramMessageHelper,
     CommonHelper,
     UserHelper,
-    ClientSessionHelper,
 )
 import aiogram.utils.markdown as md
 
