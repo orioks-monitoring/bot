@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 
 
 class Config:
-
     BASEDIR = os.path.dirname(os.path.abspath(__file__))
     STUDENT_FILE_JSON_MASK = '{id}.json'
     PATH_TO_STUDENTS_TRACKING_DATA = os.path.join(

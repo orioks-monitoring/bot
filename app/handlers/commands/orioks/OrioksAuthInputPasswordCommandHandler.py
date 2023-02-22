@@ -65,24 +65,6 @@ class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
                     user_password=data['password'],
                     user_telegram_id=message.from_user.id,
                 )
-                UserHelper.update_authorization_status(
-                    user_telegram_id=message.from_user.id,
-                    is_authenticated=True,
-                )
-                await StartMenu.show(
-                    chat_id=message.chat.id,
-                    telegram_user_id=message.from_user.id,
-                )
-                await app.bot.send_message(
-                    message.chat.id,
-                    markdown.text(
-                        markdown.text('Вход в аккаунт ОРИОКС выполнен!')
-                    ),
-                )
-                AdminHelper.increase_success_logins()
-                UserHelper.reset_failed_request_count(
-                    user_telegram_id=message.from_user.id
-                )
             except OrioksInvalidLoginCredentialsException:
                 AdminHelper.increase_failed_logins()
                 await OrioksAuthFailedMenu.show(
@@ -106,6 +88,25 @@ class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
                 await OrioksAuthFailedMenu.show(
                     chat_id=message.chat.id,
                     telegram_user_id=message.from_user.id,
+                )
+            else:
+                UserHelper.update_authorization_status(
+                    user_telegram_id=message.from_user.id,
+                    is_authenticated=True,
+                )
+                await StartMenu.show(
+                    chat_id=message.chat.id,
+                    telegram_user_id=message.from_user.id,
+                )
+                await app.bot.send_message(
+                    message.chat.id,
+                    markdown.text(
+                        markdown.text('Вход в аккаунт ОРИОКС выполнен!')
+                    ),
+                )
+                AdminHelper.increase_success_logins()
+                UserHelper.reset_failed_request_count(
+                    user_telegram_id=message.from_user.id
                 )
         await app.bot.delete_message(message.chat.id, message.message_id)
         await state.finish()

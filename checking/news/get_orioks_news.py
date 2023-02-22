@@ -144,7 +144,6 @@ async def user_news_check_from_news_id(
     session: ClientSessionHelper,
     current_news: ActualNews,
 ) -> None:
-
     student_json_file = config.STUDENT_FILE_JSON_MASK.format(
         id=user_telegram_id
     )

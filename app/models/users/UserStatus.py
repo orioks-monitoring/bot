@@ -4,7 +4,6 @@ from app.models import BaseModel
 
 
 class UserStatus(BaseModel):
-
     __tablename__ = 'user_status'
 
     user_telegram_id = Column(Integer, nullable=False)

@@ -4,7 +4,6 @@ from app.models import BaseModel
 
 
 class AdminStatistics(BaseModel):
-
     __tablename__ = 'admin_statistics'
 
     scheduled_requests = Column(Integer, nullable=False, default=0)

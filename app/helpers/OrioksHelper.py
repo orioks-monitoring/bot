@@ -3,6 +3,7 @@ import logging
 import os
 import pickle
 
+from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
 from datetime import datetime
@@ -51,7 +52,7 @@ class OrioksHelper:
                 ),
             )
         async with _sem:
-            async with ClientSessionHelper(
+            async with ClientSession(
                 timeout=config.REQUESTS_TIMEOUT,
                 headers=config.ORIOKS_REQUESTS_HEADERS,
             ) as session:
