@@ -94,15 +94,15 @@ class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
                     user_telegram_id=message.from_user.id,
                     is_authenticated=True,
                 )
-                await StartMenu.show(
-                    chat_id=message.chat.id,
-                    telegram_user_id=message.from_user.id,
-                )
                 await app.bot.send_message(
                     message.chat.id,
                     markdown.text(
                         markdown.text('Вход в аккаунт ОРИОКС выполнен!')
                     ),
+                )
+                await StartMenu.show(
+                    chat_id=message.chat.id,
+                    telegram_user_id=message.from_user.id,
                 )
                 AdminHelper.increase_success_logins()
                 UserHelper.reset_failed_request_count(

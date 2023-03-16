@@ -45,22 +45,7 @@ class NotificationSettingsCommandHandler(AbstractCommandHandler):
                 markdown.text('📰'),
                 markdown.text(
                     markdown.hbold('“Новости”'),
-                    markdown.text(
-                        'публикация общих новостей\n(новости по дисциплинам',
-                        markdown.hitalic('(coming soon))'),
-                    ),
-                    sep=': ',
-                ),
-                sep=' ',
-            ),
-            markdown.text(
-                markdown.text('📁'),
-                markdown.text(
-                    markdown.hbold('“Ресурсы”'),
-                    markdown.text(
-                        'изменения и загрузка файлов по дисциплине',
-                        markdown.hitalic('(coming soon)'),
-                    ),
+                    markdown.text('публикация общих новостей'),
                     sep=': ',
                 ),
                 sep=' ',
