@@ -58,14 +58,6 @@ def _delete_users_tracking_data_in_notify_settings_off(
                 f'{user_telegram_id}.json',
             )
         )
-    if not user_notify_settings.discipline_sources:
-        CommonHelper.safe_delete(
-            os.path.join(
-                config.PATH_TO_STUDENTS_TRACKING_DATA,
-                'discipline_sources',
-                f'{user_telegram_id}.json',
-            )
-        )
     if not user_notify_settings.homeworks:
         CommonHelper.safe_delete(
             os.path.join(
@@ -102,8 +94,6 @@ async def make_one_user_check(user_telegram_id: int) -> None:
                 await user_marks_check(
                     user_telegram_id=user_telegram_id, session=session
                 )
-            if user_notify_settings.discipline_sources:
-                pass  # TODO: user_discipline_sources_check(user_telegram_id=user_telegram_id, session=session)
             if user_notify_settings.homeworks:
                 await user_homeworks_check(
                     user_telegram_id=user_telegram_id, session=session

@@ -114,13 +114,6 @@ class OrioksHelper:
         CommonHelper.safe_delete(
             os.path.join(
                 config.PATH_TO_STUDENTS_TRACKING_DATA,
-                'discipline_sources',
-                f'{user_telegram_id}.json',
-            )
-        )
-        CommonHelper.safe_delete(
-            os.path.join(
-                config.PATH_TO_STUDENTS_TRACKING_DATA,
                 'news',
                 f'{user_telegram_id}.json',
             )
