@@ -17,14 +17,12 @@ class Config:
     notify_settings_btns = (
         'notify_settings-marks',
         'notify_settings-news',
-        'notify_settings-discipline_sources',
         'notify_settings-homeworks',
         'notify_settings-requests',
     )
     notify_settings_names_to_vars = {
         'marks': 'Оценки',
         'news': 'Новости',
-        'discipline_sources': 'Ресурсы',
         'homeworks': 'Домашние задания',
         'requests': 'Заявки',
     }

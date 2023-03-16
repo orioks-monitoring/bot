@@ -25,7 +25,6 @@ class AdminStatisticsCommandHandler(AbstractCommandHandler):
         for category in (
             'marks',
             'news',
-            'discipline_sources',
             'homeworks',
             'requests',
         ):
@@ -61,9 +60,6 @@ class AdminStatisticsCommandHandler(AbstractCommandHandler):
                     row_name='marks'
                 )
                 + 2
-                + AdminHelper.get_count_notify_settings_by_row_name(  # marks category
-                    row_name='discipline_sources'
-                )
                 + AdminHelper.get_count_notify_settings_by_row_name(
                     row_name='homeworks'
                 )

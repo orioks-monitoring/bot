@@ -18,12 +18,6 @@ class CommonHelper:
             exist_ok=True,
         )
         os.makedirs(
-            os.path.join(
-                config.PATH_TO_STUDENTS_TRACKING_DATA, 'discipline_sources'
-            ),
-            exist_ok=True,
-        )
-        os.makedirs(
             os.path.join(config.PATH_TO_STUDENTS_TRACKING_DATA, 'homeworks'),
             exist_ok=True,
         )

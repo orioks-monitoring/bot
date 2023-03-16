@@ -49,12 +49,6 @@ class NotifySettingsInlineKeyboard(AbstractInlineKeyboard):
             ),
             types.InlineKeyboardButton(
                 NotifySettingsInlineKeyboard._get_section_name_with_status(
-                    'discipline_sources', is_on_off
-                ),
-                callback_data='notify_settings-discipline_sources',
-            ),
-            types.InlineKeyboardButton(
-                NotifySettingsInlineKeyboard._get_section_name_with_status(
                     'homeworks', is_on_off
                 ),
                 callback_data='notify_settings-homeworks',

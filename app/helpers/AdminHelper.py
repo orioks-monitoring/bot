@@ -63,13 +63,12 @@ class AdminHelper:
         if row_name not in (
             'marks',
             'news',
-            'discipline_sources',
             'homeworks',
             'requests',
         ):
             raise Exception(
                 'select_count_notify_settings_row_name() -> row_name must only be in ('
-                'marks, news, discipline_sources, homeworks, requests)'
+                'marks, news, homeworks, requests)'
             )
 
         users_count = (
