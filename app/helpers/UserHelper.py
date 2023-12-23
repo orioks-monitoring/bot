@@ -1,8 +1,5 @@
-from aiogram.utils import markdown
-
 from app.exceptions import DatabaseException
 from app.models.users import UserStatus, UserNotifySettings
-from config import config
 
 
 class UserHelper:
@@ -46,66 +43,38 @@ class UserHelper:
             user_settings.fill(user_telegram_id=user_telegram_id)
             user_settings.save()
 
-    @staticmethod
-    def is_user_agreement_accepted(user_telegram_id: int) -> bool:
-        user = UserHelper.__get_user_by_telegram_id(
-            user_telegram_id=user_telegram_id
-        )
+    @classmethod
+    def is_user_agreement_accepted(cls, user_telegram_id: int) -> bool:
+        user = cls.__get_user_by_telegram_id(user_telegram_id=user_telegram_id)
         return user.agreement_accepted
 
-    @staticmethod
-    def accept_user_agreement(user_telegram_id: int) -> None:
-        user = UserHelper.__get_user_by_telegram_id(
-            user_telegram_id=user_telegram_id
-        )
+    @classmethod
+    def accept_user_agreement(cls, user_telegram_id: int) -> None:
+        user = cls.__get_user_by_telegram_id(user_telegram_id=user_telegram_id)
         user.agreement_accepted = True
         user.save()
 
-    @staticmethod
-    def is_user_orioks_authenticated(user_telegram_id: int) -> bool:
-        user = UserHelper.__get_user_by_telegram_id(
-            user_telegram_id=user_telegram_id
-        )
+    @classmethod
+    def is_user_orioks_authenticated(cls, user_telegram_id: int) -> bool:
+        user = cls.__get_user_by_telegram_id(user_telegram_id=user_telegram_id)
         return user.authenticated
 
-    @staticmethod
-    def get_login_attempt_count(user_telegram_id: int) -> int:
-        user = UserHelper.__get_user_by_telegram_id(
-            user_telegram_id=user_telegram_id
-        )
+    @classmethod
+    def get_login_attempt_count(cls, user_telegram_id: int) -> int:
+        user = cls.__get_user_by_telegram_id(user_telegram_id=user_telegram_id)
         return user.login_attempt_count
 
-    @staticmethod
-    def increment_login_attempt_count(user_telegram_id: int) -> None:
-        user = UserHelper.__get_user_by_telegram_id(
-            user_telegram_id=user_telegram_id
-        )
+    @classmethod
+    def increment_login_attempt_count(cls, user_telegram_id: int) -> None:
+        user = cls.__get_user_by_telegram_id(user_telegram_id=user_telegram_id)
         user.login_attempt_count += 1
         user.save()
 
-    @staticmethod
-    def update_authorization_status(
-        user_telegram_id: int, is_authenticated: bool
-    ) -> None:
-        user = UserHelper.__get_user_by_telegram_id(
-            user_telegram_id=user_telegram_id
-        )
-        user.authenticated = is_authenticated
-        user.save()
-
-    @staticmethod
-    def reset_notification_settings(user_telegram_id: int) -> None:
-        user_settings = UserHelper.get_user_settings_by_telegram_id(
-            user_telegram_id=user_telegram_id
-        )
-        user_settings.fill(user_telegram_id=user_telegram_id)
-        user_settings.save()
-
-    @staticmethod
+    @classmethod
     def update_notification_settings(
-        user_telegram_id: int, setting_name: str
+        cls, user_telegram_id: int, setting_name: str
     ) -> None:
-        user_settings = UserHelper.get_user_settings_by_telegram_id(
+        user_settings = cls.get_user_settings_by_telegram_id(
             user_telegram_id=user_telegram_id
         )
         if getattr(user_settings, setting_name) is None:
@@ -119,44 +88,3 @@ class UserHelper:
             not bool(getattr(user_settings, setting_name)),
         )
         user_settings.save()
-
-    @staticmethod
-    def get_users_with_enabled_news_subscription():
-        users = UserNotifySettings.query.filter_by(news=True)
-        return users
-
-    @staticmethod
-    async def increment_failed_request_count(user_telegram_id: int) -> None:
-        user = UserHelper.__get_user_by_telegram_id(
-            user_telegram_id=user_telegram_id
-        )
-        user.failed_request_count += 1
-        if user.failed_request_count > config.ORIOKS_MAX_FAILED_REQUESTS:
-            from app.helpers import OrioksHelper
-            from app.helpers import TelegramMessageHelper
-
-            OrioksHelper.make_orioks_logout(user_telegram_id=user_telegram_id)
-            await TelegramMessageHelper.text_message_to_user(
-                user_telegram_id=user_telegram_id,
-                message=markdown.text(
-                    markdown.hbold('Ваш аккаунт был деавторизирован.'),
-                    markdown.text(
-                        '🔧 Ошибки при получении данных с сервера ОРИОКС.'
-                    ),
-                    markdown.text('Пожалуйста, авторизуйтесь заново: /login'),
-                    markdown.text(),
-                    markdown.text(
-                        'Связаться с поддержкой Бота: @orioks_monitoring_support_bot'
-                    ),
-                    sep='\n',
-                ),
-            )
-        user.save()
-
-    @staticmethod
-    def reset_failed_request_count(user_telegram_id: int) -> None:
-        user = UserHelper.__get_user_by_telegram_id(
-            user_telegram_id=user_telegram_id
-        )
-        user.failed_request_count = 0
-        user.save()

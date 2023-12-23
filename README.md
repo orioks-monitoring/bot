@@ -102,7 +102,7 @@ alembic upgrade head
 
 7. Запуск Бота
 ```bash
-python run-app.py
+python run.py
 ```
 
 

@@ -1,5 +1,4 @@
 import logging
-import os
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -19,13 +18,6 @@ def initialize_database() -> ScopedSession:
     )
 
 
-def initialize_assets():
-    from app.helpers.AssetsHelper import assetsHelper
-
-    current_folder_path = os.path.dirname(os.path.abspath(__file__))
-    assetsHelper.initialize(f'{current_folder_path}/assets')
-
-
 def _settings_before_start() -> None:
     from app.handlers import register_handlers
     from app.fixtures import initialize_default_values
@@ -34,15 +26,12 @@ def _settings_before_start() -> None:
         UserOrioksAttemptsMiddleware,
         AdminCommandsMiddleware,
     )
-    from app.helpers import CommonHelper
 
     register_handlers(dispatcher=dispatcher)
-    initialize_assets()
     initialize_default_values()
     dispatcher.middleware.setup(UserAgreementMiddleware())
     dispatcher.middleware.setup(UserOrioksAttemptsMiddleware())
     dispatcher.middleware.setup(AdminCommandsMiddleware())
-    CommonHelper.make_dirs()
 
 
 bot = Bot(token=config.TELEGRAM_BOT_API_TOKEN, parse_mode=types.ParseMode.HTML)
@@ -52,9 +41,19 @@ dispatcher = Dispatcher(bot, storage=storage)
 db_session = initialize_database()
 
 
-def run():
-    from checking import on_startup
+async def on_startup(_) -> None:
+    from app.helpers import MessageToAdminsHelper
 
+    await MessageToAdminsHelper.send("Bot запущен")
+
+
+async def on_shutdown(_) -> None:
+    from app.helpers import MessageToAdminsHelper
+
+    await MessageToAdminsHelper.send("Bot остановлен!")
+
+
+def run():
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s - %(module)s - %(funcName)s - %(lineno)d: %(message)s",
@@ -62,5 +61,8 @@ def run():
     )
     _settings_before_start()
     executor.start_polling(
-        dispatcher, skip_updates=True, on_startup=on_startup.on_startup
+        dispatcher,
+        skip_updates=False,
+        on_startup=on_startup,
+        on_shutdown=on_shutdown,
     )

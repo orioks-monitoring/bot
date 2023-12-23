@@ -3,7 +3,7 @@ from aiogram.utils import markdown
 
 from app.handlers import AbstractCommandHandler
 
-from app.helpers import OrioksHelper
+from app.helpers import LoginLogoutHelper
 from app.keyboards.authorization import AuthorizationReplyKeyboard
 
 
@@ -23,4 +23,4 @@ class OrioksLogoutCommandHandler(AbstractCommandHandler):
             reply_markup=await AuthorizationReplyKeyboard.show(),
         )
 
-        OrioksHelper.make_orioks_logout(user_telegram_id=user_telegram_id)
+        await LoginLogoutHelper.make_logout(user_telegram_id)

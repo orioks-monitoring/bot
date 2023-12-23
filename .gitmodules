@@ -1,0 +1,4 @@
+[submodule "message_models"]
+	path = message_models
+	url = git@github.com:orioks-monitoring/message_models.git
+	branch = main

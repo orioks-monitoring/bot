@@ -72,6 +72,7 @@ class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
                     telegram_user_id=message.from_user.id,
                 )
             except (asyncio.TimeoutError, TypeError):
+                logging.exception("Can't login to orioks", exc_info=True)
                 await app.bot.send_message(
                     chat_id=message.chat.id,
                     text=markdown.text(
@@ -84,16 +85,11 @@ class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
                         sep='\n',
                     ),
                 )
-                logging.error('Сервер ОРИОКС не отвечает')
                 await OrioksAuthFailedMenu.show(
                     chat_id=message.chat.id,
                     telegram_user_id=message.from_user.id,
                 )
             else:
-                UserHelper.update_authorization_status(
-                    user_telegram_id=message.from_user.id,
-                    is_authenticated=True,
-                )
                 await app.bot.send_message(
                     message.chat.id,
                     markdown.text(
@@ -105,9 +101,7 @@ class OrioksAuthInputPasswordCommandHandler(AbstractCommandHandler):
                     telegram_user_id=message.from_user.id,
                 )
                 AdminHelper.increase_success_logins()
-                UserHelper.reset_failed_request_count(
-                    user_telegram_id=message.from_user.id
-                )
+
         await app.bot.delete_message(message.chat.id, message.message_id)
         await state.finish()
 

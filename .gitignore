@@ -8,4 +8,6 @@ users_data/**/*.pkl
 
 .env
 
-database.sqlite3
+database.sqlite3*
+
+.DS_Store

@@ -1,6 +1,7 @@
 import os
 import json
 import aiohttp
+from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 
 
@@ -37,7 +38,6 @@ class Config:
     ORIOKS_SECONDS_BETWEEN_WAVES = 5
     ORIOKS_REQUESTS_SEMAPHORE_VALUE = 1
     ORIOKS_LOGIN_QUEUE_SEMAPHORE_VALUE = 1
-    ORIOKS_MAX_FAILED_REQUESTS = 50
 
     ORIOKS_REQUESTS_HEADERS = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -78,6 +78,36 @@ class Config:
             os.environ['TELEGRAM_ADMIN_IDS_LIST']
         )
         self.DATABASE_URL = os.getenv('DATABASE_URL')
+        self.RABBIT_MQ_URL = os.getenv(
+            "RABBIT_MQ_URL", "amqp://guest:guest@localhost/"
+        )
+        self.FERNET_KEY_FOR_COOKIES = bytes(
+            os.getenv(
+                "FERNET_KEY_FOR_COOKIES", "my32lengthsupersecretnooneknows1"
+            ),
+            "utf-8",
+        )
+        self.FERNET_CIPHER_SUITE = Fernet(self.FERNET_KEY_FOR_COOKIES)
+        self.LOGIN_LOGOUT_SERVICE_TOKEN = os.getenv(
+            "LOGIN_LOGOUT_SERVICE_TOKEN", "SecretToken"
+        )
+        self.LOGIN_LOGOUT_SERVICE_HEADER_NAME = os.getenv(
+            "LOGIN_LOGOUT_SERVICE_HEADER_NAME", "X-Auth-Token"
+        )
+        self.LOGIN_LOGOUT_SERVICE_URL_FOR_LOGIN = os.getenv(
+            "LOGIN_LOGOUT_SERVICE_URL_FOR_LOGIN",
+            "http://127.0.0.1:8000/user/{user_telegram_id}/login",
+        )
+        assert (
+            "{user_telegram_id}" in self.LOGIN_LOGOUT_SERVICE_URL_FOR_LOGIN
+        ), "LOGIN_LOGOUT_SERVICE_URL_FOR_LOGIN must contain {user_telegram_id}"
+        self.LOGIN_LOGOUT_SERVICE_URL_FOR_LOGOUT = os.getenv(
+            "LOGIN_LOGOUT_SERVICE_URL_FOR_LOGOUT",
+            "http://127.0.0.1:8000/user/{user_telegram_id}/logout",
+        )
+        assert (
+            "{user_telegram_id}" in self.LOGIN_LOGOUT_SERVICE_URL_FOR_LOGOUT
+        ), "LOGIN_LOGOUT_SERVICE_URL_FOR_LOGOUT must contain {user_telegram_id}"
 
 
 config = Config()
