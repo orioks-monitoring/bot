@@ -7,7 +7,11 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 COPY requirements.txt .
-RUN --mount=type=cache,target=/root/.cache pip wheel --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache \
+    pip wheel \
+    --no-deps \
+    --wheel-dir /usr/src/app/wheels \
+    -r requirements.txt
 
 
 # App stage

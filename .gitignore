@@ -5,6 +5,7 @@ setenv.sh
 users_data/**/*.json
 users_data/**/*.pkl
 *.db
+logs/
 
 .env
 
