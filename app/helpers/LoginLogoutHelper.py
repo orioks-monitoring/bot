@@ -1,4 +1,5 @@
 import logging
+from typing import Mapping
 
 from aiohttp import ClientSession
 
@@ -17,7 +18,7 @@ class LoginLogoutHelper:
 
     @classmethod
     async def make_login(
-        cls, encrypted_cookies: dict[str, str], user_telegram_id: int
+        cls, encrypted_cookies: Mapping[str, str], user_telegram_id: int
     ) -> None:
         logging.info(
             "Sending login request to login-logout service for user %s",
@@ -62,6 +63,4 @@ class LoginLogoutHelper:
                     await service_response.text(),
                 )
                 service_response.raise_for_status()
-        logging.info(
-            "Successfully sent logout request to login-logout service"
-        )
+        logging.info("Successfully sent logout request to login-logout service")
