@@ -27,7 +27,7 @@ class OrioksHelper:
         user_login: int, user_password: str, user_telegram_id: int
     ) -> None:
         # pylint: disable=protected-access
-        user_queue = len(_sem._waiters) + 2
+        user_queue = len(_sem._waiters) + 2 if _sem._waiters else 0
         if user_queue - 2 > 0:
             logging.info('login: %s', user_queue)
             _cats_queue_emoji = f'{"🐈" * (user_queue - 1)}🐈‍⬛'
