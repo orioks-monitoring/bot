@@ -127,6 +127,7 @@ class UserHelper:
 
     @staticmethod
     async def increment_failed_request_count(user_telegram_id: int) -> None:
+        return # FIXME
         user = UserHelper.__get_user_by_telegram_id(
             user_telegram_id=user_telegram_id
         )
