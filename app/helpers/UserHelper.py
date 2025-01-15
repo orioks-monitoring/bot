@@ -1,8 +1,5 @@
-from aiogram.utils import markdown
-
 from app.exceptions import DatabaseException
 from app.models.users import UserStatus, UserNotifySettings
-from config import config
 
 
 class UserHelper:
@@ -126,32 +123,8 @@ class UserHelper:
         return users
 
     @staticmethod
-    async def increment_failed_request_count(user_telegram_id: int) -> None:
-        user = UserHelper.__get_user_by_telegram_id(
-            user_telegram_id=user_telegram_id
-        )
-        user.failed_request_count += 1
-        if user.failed_request_count > config.ORIOKS_MAX_FAILED_REQUESTS:
-            from app.helpers import OrioksHelper
-            from app.helpers import TelegramMessageHelper
-
-            OrioksHelper.make_orioks_logout(user_telegram_id=user_telegram_id)
-            await TelegramMessageHelper.text_message_to_user(
-                user_telegram_id=user_telegram_id,
-                message=markdown.text(
-                    markdown.hbold('Ваш аккаунт был деавторизирован.'),
-                    markdown.text(
-                        '🔧 Ошибки при получении данных с сервера ОРИОКС.'
-                    ),
-                    markdown.text('Пожалуйста, авторизуйтесь заново: /login'),
-                    markdown.text(),
-                    markdown.text(
-                        'Связаться с поддержкой Бота: @orioks_monitoring_support_bot'
-                    ),
-                    sep='\n',
-                ),
-            )
-        user.save()
+    async def increment_failed_request_count(_: int) -> None:
+        return  # FIXME
 
     @staticmethod
     def reset_failed_request_count(user_telegram_id: int) -> None:

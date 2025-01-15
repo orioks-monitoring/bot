@@ -10,11 +10,9 @@ from datetime import datetime
 
 from app.exceptions import OrioksInvalidLoginCredentialsException
 from app.helpers import (
-    TelegramMessageHelper,
     CommonHelper,
     UserHelper,
 )
-import aiogram.utils.markdown as md
 
 from config import config
 
@@ -27,29 +25,6 @@ class OrioksHelper:
         user_login: int, user_password: str, user_telegram_id: int
     ) -> None:
         # pylint: disable=protected-access
-        user_queue = len(_sem._waiters) + 2
-        if user_queue - 2 > 0:
-            logging.info('login: %s', user_queue)
-            _cats_queue_emoji = f'{"🐈" * (user_queue - 1)}🐈‍⬛'
-            await TelegramMessageHelper.text_message_to_user(
-                user_telegram_id=user_telegram_id,
-                message=md.text(
-                    md.text(_cats_queue_emoji),
-                    md.text(
-                        md.text(
-                            f'Твой номер в очереди на авторизацию: {user_queue}.'
-                        ),
-                        md.text(
-                            'Ты получишь уведомление, когда она будет выполнена.'
-                        ),
-                        sep=' ',
-                    ),
-                    md.text(
-                        'Это предотвращает слишком большую нагрузку на ОРИОКС'
-                    ),
-                    sep='\n',
-                ),
-            )
         async with _sem:
             async with ClientSession(
                 timeout=config.REQUESTS_TIMEOUT,

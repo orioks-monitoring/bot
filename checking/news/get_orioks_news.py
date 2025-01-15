@@ -172,6 +172,7 @@ async def user_news_check_from_news_id(
             message=f'[{user_telegram_id}] - old_json["last_id"] > last_news_id["last_id"]'
         )
         await session.close()
+        CommonHelper.safe_delete(path=path_users_to_file)
         raise Exception(
             f'[{user_telegram_id}] - old_json["last_id"] > last_news_id["last_id"]'
         )
