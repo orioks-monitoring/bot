@@ -1,0 +1,103 @@
+services:
+  mongo-express:
+    image: mongo-express:1.0.2
+    container_name: mongo-express
+    ports:
+      - "8081:8081"
+    networks:
+      - omb-net
+    expose:
+      - 8081
+    environment:
+      ME_CONFIG_MONGODB_URL: "mongodb://mongodb:27017"
+      # ME_CONFIG_MONGODB_URL: "mongodb://host.docker.internal:27017"
+      ME_CONFIG_BASICAUTH_USERNAME: "admin"
+      ME_CONFIG_BASICAUTH_PASSWORD: "admin"
+    volumes:
+      - $PWD/mongo-express/mongo-express_healthcheck.sh:/mongo-express_healthcheck.sh
+    healthcheck:
+      test: ["CMD", "./mongo-express_healthcheck.sh"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:v1.118.0
+    container_name: victoria-metrics
+    hostname: victoria-metrics
+    networks:
+      - omb-net
+    ports:
+      - "8428:8428"
+    volumes:
+      - $PWD/victoria-metrics_volume:/storage
+      - $PWD/victoria-metrics/prometheus.yml:/etc/prometheus.yml
+    command:
+      - "--promscrape.config=/etc/prometheus.yml"
+      - "--storageDataPath=/storage"
+      - "--retentionPeriod=2y"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8428"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - omb-net
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - $PWD/grafana_volume:/var/alpinelib/grafana
+      - $PWD/grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f localhost:3000/api/health && echo 'ready'" ]
+      interval: 10s
+      retries: 30
+
+  loki:
+    image: grafana/loki:3.5
+    container_name: loki
+    hostname: loki
+    networks:
+      - omb-net
+    ports:
+      - "3100:3100"
+    volumes:
+      - $PWD/loki/loki-config.yaml:/etc/loki/local-config.yaml
+      - $PWD/loki_volume:/data/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3100/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  
+  fluent-bit:
+    image: fluent/fluent-bit:4.0-debug
+    container_name: fluent-bit
+    networks:
+      - omb-net
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    volumes:
+      - $PWD/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - $PWD/fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf
+      - omb-app-logs:/logs:ro
+    depends_on:
+      - loki
+
+
+
+networks:
+  omb-net:
+    external: true
+
+
+volumes:
+  omb-app-logs:
+    external: true

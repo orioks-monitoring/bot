@@ -1,18 +1,20 @@
-[submodule "bot"]
-	path = bot
-	url = git@github.com:orioks-monitoring/bot.git
-	branch = main
 [submodule "notifier"]
 	path = notifier
 	url = git@github.com:orioks-monitoring/notifier.git
-	branch = main
-[submodule "login-logout"]
-	path = logout
-	url = git@github.com:orioks-monitoring/login-logout.git
-	branch = main
+	branch = develop
 [submodule "checking"]
 	path = checking
 	url = git@github.com:orioks-monitoring/checking.git
+	branch = develop
 [submodule "orioks_requester"]
 	path = orioks_requester
 	url = git@github.com:orioks-monitoring/orioks_requester.git
+	branch = develop
+[submodule "login-logout"]
+	path = login-logout
+	url = git@github.com:orioks-monitoring/login-logout.git
+    branch = develop
+[submodule "tg_bot"]
+	path = tg_bot
+	url = git@github.com:orioks-monitoring/tg_bot.git
+	branch = develop

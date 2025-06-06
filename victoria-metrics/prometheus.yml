@@ -1,0 +1,27 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets: ['rabbitmq:15692']
+  
+  - job_name: 'orioks-requester'
+    static_configs:
+      - targets: ['orioks-requester:8880']
+    
+  - job_name: 'bot'
+    static_configs:
+      - targets: ['bot:8880']
+
+  - job_name: 'login-logout'
+    static_configs:
+      - targets: ['login-logout:8000']
+
+  - job_name: 'checking'
+    static_configs:
+      - targets: ['checking:8880']
+  
+  - job_name: 'notifier'
+    static_configs:
+      - targets: ['notifier:8880']

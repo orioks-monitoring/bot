@@ -1,0 +1,44 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+common:
+  path_prefix: /data/loki
+  storage:
+    filesystem:
+      chunks_directory: /data/loki/chunks
+      rules_directory: /data/loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2024-01-01
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+limits_config:
+  max_global_streams_per_user: 5000
+  max_query_length: 2y
+  max_query_parallelism: 32
+  max_streams_per_user: 0
+  max_line_size: 256000
+  retention_period: 1y
+
+compactor:
+  working_directory: /data/loki/compactor
+  compaction_interval: 24h
+  retention_enabled: true
+  retention_delete_delay: 24h
+  retention_delete_worker_count: 10
+  delete_request_store: filesystem
+
+analytics:
+  reporting_enabled: false

@@ -1,0 +1,110 @@
+services:
+  bot:
+    build: $PWD/bot
+    image: bot
+    hostname: bot
+    environment:
+      SERVICE_NAME: "bot"
+      TELEGRAM_BOT_API_TOKEN: "${TELEGRAM_BOT_API_TOKEN}"
+      TELEGRAM_ADMIN_IDS_LIST: "${TELEGRAM_ADMIN_IDS_LIST}"
+      DATABASE_URL: "${DATABASE_URL}"
+      RABBIT_MQ_URL: "${RABBIT_MQ_URL}"
+      FERNET_KEY_FOR_COOKIES: "${FERNET_KEY_FOR_COOKIES}"
+      LOGIN_LOGOUT_SERVICE_TOKEN: "${LOGIN_LOGOUT_SERVICE_TOKEN}"
+      LOGIN_LOGOUT_SERVICE_HEADER_NAME: "${LOGIN_LOGOUT_SERVICE_HEADER_NAME}"
+      LOGIN_LOGOUT_SERVICE_URL_FOR_LOGIN: "http://login-logout:8000/user/{user_telegram_id}/login"
+      LOGIN_LOGOUT_SERVICE_URL_FOR_LOGOUT: "http://login-logout:8000/user/{user_telegram_id}/logout"
+    depends_on:
+      login-logout:
+        condition: service_started
+    command: [ "/bin/sh", "entrypoint.sh" ]
+    volumes:
+      - omb-app-logs:/app/logs/
+    networks:
+      - omb-net
+
+  login-logout:
+    build: $PWD/login-logout
+    image: login-logout
+    hostname: login-logout
+    environment:
+      SERVICE_NAME: "login-logout"
+      DATABASE_URL: "${DATABASE_URL}"
+      LOGIN_LOGOUT_SERVICE_TOKEN: "${LOGIN_LOGOUT_SERVICE_TOKEN}"
+      MONGODB_URL: "${MONGODB_URL}"
+    ports:
+      - "8000:8000"
+    command: [ "/bin/sh", "entrypoint.sh" ]
+    volumes:
+      - omb-app-logs:/app/logs/
+    networks:
+      - omb-net
+
+  notifier:
+    build: $PWD/notifier
+    image: notifier
+    hostname: notifier
+    environment:
+      SERVICE_NAME: "notifier"
+      TELEGRAM_BOT_API_TOKEN: "${TELEGRAM_BOT_API_TOKEN}"
+      TELEGRAM_LOGS_BOT_API_TOKEN: "${TELEGRAM_LOGS_BOT_API_TOKEN}"
+      TELEGRAM_LOGS_CHAT_ID: "${TELEGRAM_LOGS_CHAT_ID}"
+      LOGIN_LOGOUT_SERVICE_TOKEN: "${LOGIN_LOGOUT_SERVICE_TOKEN}"
+      LOGIN_LOGOUT_SERVICE_HEADER_NAME: "${LOGIN_LOGOUT_SERVICE_HEADER_NAME}"
+      LOGIN_LOGOUT_SERVICE_URL_FOR_LOGOUT: "http://login-logout:8000/user/{user_telegram_id}/logout"
+      RABBIT_MQ_URL: "${RABBIT_MQ_URL}"
+    depends_on:
+      login-logout:
+        condition: service_started
+    command: [ "/bin/sh", "entrypoint.sh" ]
+    volumes:
+      - omb-app-logs:/app/logs/
+    networks:
+      - omb-net
+
+  orioks-requester:
+    build: $PWD/orioks_requester
+    image: orioks-requester
+    environment:
+      SERVICE_NAME: "orioks-requester"
+      FERNET_KEY_FOR_COOKIES: "${FERNET_KEY_FOR_COOKIES}"
+      RABBIT_MQ_URL: "${RABBIT_MQ_URL}"
+      MONGODB_URL: "${MONGODB_URL}"
+      ORIOKS_REQUESTER_SECONDS_BETWEEN_REQUESTS: "${ORIOKS_REQUESTER_SECONDS_BETWEEN_REQUESTS}"
+    command: [ "/bin/sh", "entrypoint.sh" ]
+    volumes:
+      - omb-app-logs:/app/logs/
+    networks:
+      - omb-net
+
+  checking:
+    build: $PWD/checking
+    image: checking
+    environment:
+      SERVICE_NAME: "checking"
+      FERNET_KEY_FOR_COOKIES: "${FERNET_KEY_FOR_COOKIES}"
+      RABBIT_MQ_URL: "${RABBIT_MQ_URL}"
+      DATABASE_URL: "${DATABASE_URL}"
+      LOGIN_LOGOUT_SERVICE_TOKEN: "${LOGIN_LOGOUT_SERVICE_TOKEN}"
+      LOGIN_LOGOUT_SERVICE_HEADER_NAME: "${LOGIN_LOGOUT_SERVICE_HEADER_NAME}"
+      LOGIN_LOGOUT_SERVICE_URL_FOR_LOGOUT: "http://login-logout:8000/user/{user_telegram_id}/logout"
+      MONGODB_URL: "${MONGODB_URL}"
+    depends_on:
+      orioks-requester:
+        condition: service_started
+      bot:
+        condition: service_started  # for migrations
+    command: [ "/bin/sh", "entrypoint.sh" ]
+    volumes:
+      - omb-app-logs:/app/logs/
+    networks:
+      - omb-net
+
+
+networks:
+  omb-net:
+    external: true
+
+volumes:
+  omb-app-logs:
+    external: true
